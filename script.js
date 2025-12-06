@@ -1,9 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
     // alert("VERSION 5.0 LOADED ✅"); // Uncomment if needed for hard check
 
-    // === DEBUGGING ===
+    // === DEBUGGING FORCE REFRESH ===
+    const style = document.createElement('link');
+    style.rel = 'stylesheet';
+    style.href = `style.css?v=${Date.now()}`;
+    document.head.appendChild(style);
+
     window.onerror = function (msg, url, line, col, error) {
-        alert("ERR: " + msg + "\nL: " + line);
+        alert("Error: " + msg + "\nLine: " + line);
     };
 
     // Initialize Telegram
@@ -123,6 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="card-image-container">
                     <img src="${item.image}" alt="${item.title}" class="card-image" loading="lazy">
                     <div class="image-overlay">${item.category || 'Разное'}</div>
+                    ${!isPublicView ? `<button class="delete-icon-btn" data-id="${item.id}">✕</button>` : ''}
                 </div>
                 <div class="card-content">
                     <h3>${item.title}</h3>
@@ -133,11 +139,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="progress-bar-bg">
                         <div class="progress-bar-fill" style="width: ${percent}%"></div>
                     </div>
-                </div>
                     <div class="card-actions">
                         <button class="btn btn-primary pay-btn" data-id="${item.id}">Пополнить</button>
                         <button class="btn btn-secondary details-btn">Детали</button>
-                        ${!isPublicView ? `<button class="btn btn-icon delete-btn" data-id="${item.id}" style="margin-left:auto; color: #ff4d4d;">🗑️</button>` : ''}
                     </div>
                 </div>
             `;
@@ -147,15 +151,19 @@ document.addEventListener('DOMContentLoaded', () => {
         // Re-attach listeners
         document.querySelectorAll('.pay-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const title = e.target.closest('.wish-card').querySelector('h3').innerText;
-                openModal(title);
+                const card = e.target.closest('.wish-card');
+                const title = card.querySelector('h3').innerText;
+                const id = e.target.dataset.id;
+                openModal(title, id);
             });
         });
 
-        // Delete listeners
-        document.querySelectorAll('.delete-btn').forEach(btn => {
+        // Delete listeners (updated class)
+        document.querySelectorAll('.delete-icon-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                if (confirm('Удалить желание?')) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (confirm('Точно хотите удалить это желание?')) {
                     deleteItem(e.currentTarget.dataset.id);
                 }
             });
@@ -186,8 +194,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- MODAL & PAYMENT ---
-    function openModal(itemTitle) {
+    function openModal(itemTitle, itemId) {
         if (!paymentModal) return;
+        paymentModal.dataset.itemId = itemId; // Store ID for logic
         paymentModal.classList.remove('hidden');
         amountInput.value = '';
         requestAnimationFrame(() => {
@@ -224,8 +233,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             let finalLink = KASPI_PAY_LINK;
+
+            // SIMULATE PAYMENT SUCCESS FOR DEMO (Since we can't track real Kaspi callbacks client-side)
+            // In real app, this would happen via webhook
+            const itemId = paymentModal.dataset.itemId;
+            const item = wishListItems.find(i => i.id == itemId);
+            if (item) {
+                const payAmount = parseInt(amount);
+                item.collected += payAmount;
+                saveState();
+                renderItems();
+                alert(`Успешно пополнено на ${formatCurrency(payAmount)}!`);
+            }
+
             if (finalLink.includes('YOUR_MERCHANT_NAME')) {
-                alert('Пожалуйста, настройте KASPI_PAY_LINK в файле script.js');
+                // alert('Пожалуйста, настройте KASPI_PAY_LINK в файле script.js');
                 window.open('https://kaspi.kz/pay', '_blank');
             } else {
                 window.open(finalLink, '_blank');
