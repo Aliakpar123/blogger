@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Wish List</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=5.0">
+    <!-- Telegram WebApp Script -->
+    <script src="https://telegram.org/js/telegram-web-app.js?v=5.0"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <button class="icon-btn header-back-btn hidden" id="header-back-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="back-icon" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5" />
+                    <path d="M12 19l-7-7 7-7" />
+                </svg>
+            </button>
+            <div class="user-info" id="header-user-info">
+                <div class="brand-logo">
+                    <div class="heart-icon">❤️</div>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-merci">Merci</span> <span class="brand-divider">/</span> <span
+                        class="brand-wish">Wish list</span> <span style="font-size: 10px; opacity: 0.5;">v5.0</span>
+                </div>
+            </div>
+            <h1 class="header-title hidden" id="header-title"></h1>
+            <button class="icon-btn" id="header-action-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M18 8C19.6569 8 21 6.65685 21 5C21 3.34315 19.6569 2 18 2C16.3431 2 15 3.34315 15 5C15 6.65685 16.3431 8 18 8Z"
+                        stroke="currentColor" stroke-width="2" />
+                    <path
+                        d="M6 15C7.65685 15 9 13.6569 9 12C9 10.3431 7.65685 9 6 9C4.34315 9 3 10.3431 3 12C3 13.6569 4.34315 15 6 15Z"
+                        stroke="currentColor" stroke-width="2" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Main Content -->
+        <main class="content-area" id="home-view">
+            <!-- MAIN CONTENT (WISH LIST) -->
+            <div id="wish-list-container" class="grid-container">
+                <!-- Items will be injected here -->
+            </div>
+        </main>
+
+        <div class="content-area hidden" id="create-view">
+            <div class="create-step-1">
+                <div class="create-header">
+                    <h2>Добавить желание</h2>
+                    <p>Вставьте ссылку на товар из Kaspi.kz</p>
+                </div>
+
+                <div class="url-input-container">
+                    <div class="input-icon-wrapper">
+                        <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                        </svg>
+                        <input type="url" id="kaspi-link" placeholder="https://kaspi.kz/shop/..." class="styled-input">
+                    </div>
+                    <button id="parse-link-btn" class="btn btn-primary full-width" disabled>Далее</button>
+                </div>
+            </div>
+
+            <!-- Hidden Step 2: Confirm Details -->
+            <div class="create-step-2 hidden" id="create-step-2">
+                <div class="preview-image-upload">
+                    <img src="" id="new-item-image" alt="Preview">
+                    <div class="upload-btn-overlay">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Название</label>
+                    <input type="text" id="new-item-title" class="styled-input">
+                </div>
+
+                <div class="form-group">
+                    <label>Стоимость (₸)</label>
+                    <input type="number" id="new-item-price" class="styled-input">
+                </div>
+
+                <button id="confirm-create-btn" class="btn btn-primary full-width">Создать</button>
+                <button id="cancel-create-btn" class="btn btn-text full-width">Отмена</button>
+            </div>
+        </div>
+
+        <div class="content-area hidden" id="tasks-view">
+            <div class="slots-header">
+                <div class="slots-info">
+                    <span class="slots-label">Ваши слоты</span>
+                    <h2 id="slots-counter">1/3</h2>
+                </div>
+                <!-- Circular progress or simple bar could go here -->
+            </div>
+
+            <div class="tasks-list">
+                <h3>Задания</h3>
+                <div class="task-card">
+                    <div class="task-icon">🤝</div>
+                    <div class="task-info">
+                        <h4>Пригласи друга</h4>
+                        <p>Получи +5 слотов за каждого</p>
+                    </div>
+                    <button class="btn btn-sm btn-primary task-btn" id="invite-btn">Выполнить</button>
+                </div>
+
+                <div class="task-card" style="opacity: 0.7;">
+                    <div class="task-icon">📢</div>
+                    <div class="task-info">
+                        <h4>Подпишись на канал</h4>
+                        <p class="coming-soon">Скоро</p>
+                    </div>
+                    <button class="btn btn-sm btn-secondary" disabled>Скоро</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- USERS VIEW (Redesigned) -->
+        <div id="profile-view" class="content-area hidden">
+            <!-- Generous Users List -->
+            <div class="section-header" style="margin-top: 0;">
+                <h3>Щедрые пользователи 🏆</h3>
+            </div>
+            <div id="generous-users-list" class="users-list">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- PERSONAL PROFILE VIEW (Instagram Style) -->
+        <div id="user-profile-view" class="content-area hidden">
+            <!-- Top Header: Avatar + Stats -->
+            <div class="insta-header">
+                <div class="insta-avatar-container">
+                    <img src="" id="profile-avatar" alt="Avatar" class="insta-avatar">
+                    <!-- <button class="edit-badge" id="edit-avatar-btn">+</button> -->
+                </div>
+
+                <div class="insta-stats-container">
+                    <div class="insta-stat">
+                        <span class="stat-val" id="stat-wishes">0</span>
+                        <span class="stat-label">Желаний</span>
+                    </div>
+                    <div class="insta-stat">
+                        <span class="stat-val" id="stat-subscribers">0</span>
+                        <span class="stat-label">Подписчики</span>
+                    </div>
+                    <div class="insta-stat">
+                        <span class="stat-val">0</span>
+                        <span class="stat-label">Подписки</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bio Section -->
+            <div class="insta-bio-section">
+                <h2 id="profile-name">Name</h2>
+                <p id="profile-bio">Bio</p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="insta-actions">
+                <button class="btn-insta-edit" id="edit-profile-btn">Редактировать</button>
+                <button class="btn-insta-share" id="share-profile-btn">Поделиться</button>
+            </div>
+
+            <!-- Highlights / Settings -->
+            <div class="insta-settings-group">
+                <div class="insta-setting-row">
+                    <div class="setting-left">
+                        <span class="setting-icon">🔒</span>
+                        <span>Закрытый аккаунт</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="private-mode-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+
+                <div class="insta-setting-row" id="public-preview-btn">
+                    <div class="setting-left">
+                        <span class="setting-icon">👀</span>
+                        <span>Предпросмотр (Гость)</span>
+                    </div>
+                    <span class="arrow-grey">›</span>
+                </div>
+
+                <div class="insta-setting-row" style="border-bottom: none;">
+                    <div class="setting-left">
+                        <span class="setting-icon">⚙️</span>
+                        <span>Настройки</span>
+                    </div>
+                    <span class="arrow-grey">›</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Locked Content Overlay (for Public View) -->
+        <div id="locked-overlay" class="hidden">
+            <div class="locked-content">
+                <div class="lock-icon">🔒</div>
+                <h3>Профиль закрыт</h3>
+                <p>Подпишитесь, чтобы увидеть список желаний</p>
+                <button class="btn btn-primary" id="subscribe-btn">Подписаться</button>
+            </div>
+        </div>
+
+        <!-- Payment Modal -->
+        <div id="payment-modal" class="modal-overlay hidden">
+            <div class="modal-content">
+                <button class="close-modal">&times;</button>
+                <h3>Сумма пополнения</h3>
+
+                <div class="amount-input-wrapper">
+                    <input type="number" id="payment-amount" placeholder="5000" class="amount-input">
+                    <span class="currency-label">₸</span>
+                </div>
+
+                <div class="quick-amounts">
+                    <button class="chip" data-amount="1000">+1K</button>
+                    <button class="chip" data-amount="2000">+2K</button>
+                    <button class="chip" data-amount="5000">+5K</button>
+                </div>
+
+                <button id="pay-kaspi-btn" class="kaspi-btn">
+                    <span class="btn-icon">🔴</span>
+                    Оплатить через Kaspi
+                </button>
+
+                <p class="payment-hint">Переход в приложение Kaspi.kz</p>
+            </div>
+        </div>
+
+        <!-- Limit Reached Modal -->
+        <div id="limit-modal" class="modal-overlay hidden">
+            <div class="modal-content">
+                <button class="close-modal close-limit-modal">&times;</button>
+                <h3>Слоты закончились! 🔒</h3>
+                <p>Чтобы добавить больше желаний, выполняйте задания и приглашайте друзей.</p>
+                <div style="margin-top: 20px;">
+                    <button id="go-to-tasks-btn" class="btn btn-primary full-width">Перейти к заданиям</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-target="home-view">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="heart-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#FF9A9E;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#FECFEF;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <path
+                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+                        fill="url(#heart-gradient)" stroke="none" />
+                </svg>
+                <span
+                    style="background: linear-gradient(90deg, #ff9a9e 0%, #fecfef 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 600;">My</span>
+            </button>
+            <button class="nav-item" data-target="tasks-view">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 11l3 3L22 4" />
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1-2-2h11" />
+                </svg>
+                <span>Задания</span>
+            </button>
+            <div class="fab-container">
+                <button class="nav-item fab-wrapper" data-target="create-view">
+                    <div class="fab">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </div>
+                </button>
+            </div>
+            <button class="nav-item" data-target="profile-view">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="cup-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ffe259;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#ffa751;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <path
+                        d="M19 5h-2V3a1 1 0 0 0-1-1h-8a1 1 0 0 0-1 1v2H5a3 3 0 0 0-3 3v2a6 6 0 0 0 6 6h.17A6.45 6.45 0 0 0 11 18.89V21H9a1 1 0 0 0 0 2h6a1 1 0 0 0 0-2h-2v-2.11A6.45 6.45 0 0 0 15.83 16h.17a6 6 0 0 0 6-6V8a3 3 0 0 0-3-3zM8 10V5h2v5a2 2 0 0 1-2 0zm6 0a2 2 0 0 1-2 0V5h2zM4 10V8a1 1 0 0 1 1-1h2v5a4 4 0 0 1-3-3.86zm11 3.86a4 4 0 0 1-3 0V5h2a1 1 0 0 1 1 1v2z"
+                        fill="url(#cup-gradient)" stroke="none" />
+                </svg>
+                <span
+                    style="background: linear-gradient(90deg, #ffe259 0%, #ffa751 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 600;">Рейтинг</span>
+            </button>
+            <button class="nav-item" data-target="user-profile-view">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <span>Профиль</span>
+            </button>
+        </nav>
+    </div>
+    <script src="script.js?v=5.0"></script>
+</body>
+
+</html>
