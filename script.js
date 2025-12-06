@@ -133,9 +133,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="progress-bar-bg">
                         <div class="progress-bar-fill" style="width: ${percent}%"></div>
                     </div>
+                </div>
                     <div class="card-actions">
                         <button class="btn btn-primary pay-btn" data-id="${item.id}">Пополнить</button>
                         <button class="btn btn-secondary details-btn">Детали</button>
+                        ${!isPublicView ? `<button class="btn btn-icon delete-btn" data-id="${item.id}" style="margin-left:auto; color: #ff4d4d;">🗑️</button>` : ''}
                     </div>
                 </div>
             `;
@@ -149,6 +151,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 openModal(title);
             });
         });
+
+        // Delete listeners
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                if (confirm('Удалить желание?')) {
+                    deleteItem(e.currentTarget.dataset.id);
+                }
+            });
+        });
+    }
+
+    function deleteItem(id) {
+        wishListItems = wishListItems.filter(item => item.id != id);
+        saveState();
+        renderItems();
     }
 
     function updateProfileUI() {
@@ -297,15 +314,25 @@ document.addEventListener('DOMContentLoaded', () => {
             parseBtn.disabled = true;
 
             try {
-                // Try primary proxy
-                const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
-                const response = await fetch(proxyUrl);
-                const data = await response.json();
+                // Strategy 1: AllOrigins
+                let proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+                let response = await fetch(proxyUrl);
+                let data = await response.json();
+                let htmlContent = data.contents;
 
-                if (!data.contents) throw new Error('No content');
+                // Strategy 2: CorsProxy (Fallback if 1 fails or returns empty)
+                if (!htmlContent) {
+                    // console.log("Retrying with fallback proxy...");
+                    // proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+                    // response = await fetch(proxyUrl);
+                    // htmlContent = await response.text();
+                    throw new Error('Proxy failed');
+                }
+
+                if (!htmlContent) throw new Error('No content');
 
                 const parser = new DOMParser();
-                const doc = parser.parseFromString(data.contents, 'text/html');
+                const doc = parser.parseFromString(htmlContent, 'text/html');
 
                 // 1. Title (Try OG tag first, then h1)
                 let title = doc.querySelector('meta[property="og:title"]')?.content ||
@@ -353,10 +380,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             } catch (e) {
                 console.error("Parsing error:", e);
+                alert("Не удалось загрузить данные автоматически (Kaspi защита). Заполните вручную.");
+
                 // Fail gracefully to manual mode
                 document.querySelector('.create-step-1').classList.add('hidden');
                 document.getElementById('create-step-2').classList.remove('hidden');
-                // Allow user to fill
+                document.getElementById('new-item-image').src = 'https://placehold.co/600x400?text=Foto';
             } finally {
                 parseBtn.textContent = 'Далее';
                 parseBtn.disabled = false;
