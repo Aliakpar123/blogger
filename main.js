@@ -18,7 +18,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // === CONFIGURATION ===
+    const API_URL = 'http://localhost:3000/api'; // Local backend
     const KASPI_PAY_LINK = 'https://kaspi.kz/pay/YOUR_MERCHANT_NAME';
+
+    // === API HELPERS ===
+    async function apiFetch(endpoint, options = {}) {
+        try {
+            const res = await fetch(`${API_URL}${endpoint}`, {
+                ...options,
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                }
+            });
+            if (!res.ok) throw new Error(`API Error: ${res.status}`);
+            return await res.json();
+        } catch (e) {
+            console.error('API Request Failed:', e);
+            return null; // Fallback to handling null (i.e., offline/no server)
+        }
+    }
 
     // Safe JSON Parse
     function safeParse(key, defaultVal) {
@@ -77,7 +96,40 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('wishlist_items', JSON.stringify(wishListItems));
         localStorage.setItem('max_slots', maxSlots);
         updateSlotsUI();
+
+        // Sync with API
+        if (userProfile && userProfile.id) {
+            apiFetch('/wishes', {
+                method: 'POST',
+                body: JSON.stringify({ userId: userProfile.id, wishes: wishListItems })
+            });
+        }
     }
+
+    // Sync User Profile to Server on Load
+    async function syncUserProfile() {
+        // Ensure user has an ID (use Telegram ID or generated one)
+        if (!userProfile.id) {
+            userProfile.id = window.Telegram?.WebApp?.initDataUnsafe?.user?.id || Date.now();
+            localStorage.setItem('user_profile', JSON.stringify(userProfile));
+        }
+
+        const res = await apiFetch('/users', {
+            method: 'POST',
+            body: JSON.stringify(userProfile)
+        });
+
+        if (res && res.user) {
+            console.log("User synced with server");
+            // Could update local profile with server data if server is source of truth
+
+            // Refresh the list so I appear immediately!
+            setTimeout(fetchAllUsers, 500);
+        }
+    }
+
+    // Call it
+    syncUserProfile();
 
     function updateSlotsUI() {
         const counter = document.getElementById('slots-counter');
@@ -957,33 +1009,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- GENEROUS USERS LOGIC ---
     // Combined list of all users for the rating (as requested: "all existing users")
     // We will merge GENEROUS_USERS and MOCK_USERS and maybe add more
-    const ALL_USERS_DB = [
-        // All mock users removed by request ("remove non-existing").
-        // Now only the logged-in user will appear here (via logic below).
-    ];
+    // Combined list from Server
+    let ALL_USERS_DB = [];
 
-    // Merge Current User into the "Community" list if not already there
-    // We treat this list as "Everyone" now
-    const GENEROUS_USERS = [...ALL_USERS_DB];
-
-    // Add current user to the top or bottom? 
-    // "Who downloaded" -> Maybe just add them to the list to show participation
-    if (userProfile) {
-        // Check if already in DB by some ID? No, just add locally
-        GENEROUS_USERS.push({
-            ...userProfile,
-            id: 999, // self
-            donated: "0 ₸", // default
-            isSelf: true
-        });
+    async function fetchAllUsers() {
+        const users = await apiFetch('/users');
+        if (users) {
+            ALL_USERS_DB = users;
+            // If we want to hide self or highlight self, we can do it here. 
+            // But server returns everyone.
+            renderGenerousUsers(); // Re-render after fetch
+        }
     }
+
+    // Initial fetch
+    fetchAllUsers();
 
     function renderGenerousUsers() {
         const listContainer = document.getElementById('generous-users-list');
         if (!listContainer) return;
 
         listContainer.innerHTML = '';
-        GENEROUS_USERS.forEach((user, index) => {
+
+        // Use Server DB if available, else empty (or fallback if we kept mock)
+        const usersToRender = ALL_USERS_DB.length > 0 ? ALL_USERS_DB : [];
+
+        usersToRender.forEach((user, index) => {
             const div = document.createElement('div');
             div.className = 'user-card-item';
             div.innerHTML = `
