@@ -411,22 +411,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const inviteBtn = document.getElementById('invite-btn');
     // ... invite logic skipped for brevity, standard ...
 
-    // Share Button - SIMPLIFIED
-    const mainShareBtn = document.getElementById('main-share-btn');
-    if (mainShareBtn) {
-        mainShareBtn.addEventListener('click', () => {
-            const botUsername = "wishlist_bloggers_bot";
-            const userId = userProfile?.id || "unknown";
-            const shareUrl = `https://t.me/${botUsername}/app?startapp=user_${userId}`;
-
-            navigator.clipboard.writeText(shareUrl).then(() => {
-                alert('Ссылка скопирована! 📋');
-            }).catch(() => {
-                prompt("Скопируйте ссылку:", shareUrl);
-            });
-        });
-    }
-
+    // Share Button - REMOVED BY USER REQUEST
+    // const mainShareBtn = ...;
     // Navigation
     const navItems = document.querySelectorAll('.nav-item');
     const views = document.querySelectorAll('.content-area, .view-section');
