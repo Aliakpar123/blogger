@@ -509,268 +509,262 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('+5 Слотов получено!');
                 inviteBtn.innerText = "Выполнить снова";
                 inviteBtn.disabled = false;
-                setTimeout(() => {
-                    maxSlots += 5;
-                    saveState();
-                    alert('+5 Слотов получено!');
-                    inviteBtn.innerText = "Выполнить снова";
-                    inviteBtn.disabled = false;
-                }, 3000);
-            });
-        }
+            }, 3000);
+        });
+    }
 
     // Donation Logic
     const donateBtn = document.getElementById('donate-dev-btn');
-        if (donateBtn) {
-            donateBtn.addEventListener('click', () => {
-                // Open modal but set context for Donation
-                if (paymentModal) {
-                    paymentModal.dataset.mode = 'donation'; // Set mode
-                    paymentModal.classList.remove('hidden');
-                    amountInput.value = '';
-                    document.querySelector('#payment-modal h3').innerText = "Поддержка проекта 🎁";
-                    requestAnimationFrame(() => {
-                        paymentModal.classList.add('active');
-                        amountInput.focus();
-                    });
-                }
-            });
+    if (donateBtn) {
+        donateBtn.addEventListener('click', () => {
+            // Open modal but set context for Donation
+            if (paymentModal) {
+                paymentModal.dataset.mode = 'donation'; // Set mode
+                paymentModal.classList.remove('hidden');
+                amountInput.value = '';
+                document.querySelector('#payment-modal h3').innerText = "Поддержка проекта 🎁";
+                requestAnimationFrame(() => {
+                    paymentModal.classList.add('active');
+                    amountInput.focus();
+                });
+            }
+        });
+    }
+
+
+    // --- NAVIGATION ---
+    const navItems = document.querySelectorAll('.nav-item');
+    const views = document.querySelectorAll('.content-area');
+    const headerBackBtn = document.getElementById('header-back-btn');
+    const headerUserInfo = document.getElementById('header-user-info');
+    const headerTitle = document.getElementById('header-title');
+    let historyStack = ['home-view'];
+
+    function navigateTo(targetId) {
+        if (targetId !== historyStack[historyStack.length - 1]) {
+            historyStack.push(targetId);
         }
 
+        navItems.forEach(item => {
+            if (item.dataset.target === targetId) item.classList.add('active');
+            else item.classList.remove('active');
+        });
 
-        // --- NAVIGATION ---
-        const navItems = document.querySelectorAll('.nav-item');
-        const views = document.querySelectorAll('.content-area');
-        const headerBackBtn = document.getElementById('header-back-btn');
-        const headerUserInfo = document.getElementById('header-user-info');
-        const headerTitle = document.getElementById('header-title');
-        let historyStack = ['home-view'];
+        views.forEach(view => {
+            if (view.id === targetId) view.classList.remove('hidden');
+            else view.classList.add('hidden');
+        });
 
-        function navigateTo(targetId) {
-            if (targetId !== historyStack[historyStack.length - 1]) {
-                historyStack.push(targetId);
-            }
-
-            navItems.forEach(item => {
-                if (item.dataset.target === targetId) item.classList.add('active');
-                else item.classList.remove('active');
-            });
-
-            views.forEach(view => {
-                if (view.id === targetId) view.classList.remove('hidden');
-                else view.classList.add('hidden');
-            });
-
-            // Header Logic
-            if (targetId === 'home-view') {
-                if (visitedProfile) {
-                    // GUEST MODE
-                    headerBackBtn.classList.remove('hidden');
-                    headerUserInfo.classList.add('hidden');
-                    headerUserInfo.style.display = 'none';
-                    headerTitle.classList.remove('hidden');
-                    headerTitle.innerHTML = `В гостях: ${visitedProfile.name}`;
-
-                    // Back button acts as Exit
-                    headerBackBtn.onclick = () => {
-                        // Override default history pop
-                        exitVisitedProfile();
-                    };
-
-                    if (window.Telegram?.WebApp?.BackButton) {
-                        window.Telegram.WebApp.BackButton.show();
-                        window.Telegram.WebApp.BackButton.onClick(exitVisitedProfile);
-                    }
-                } else {
-                    // NORMAL HOME
-                    headerBackBtn.classList.add('hidden');
-                    headerTitle.classList.add('hidden');
-                    headerUserInfo.classList.remove('hidden');
-                    headerUserInfo.style.display = 'flex';
-                    if (window.Telegram?.WebApp?.BackButton) window.Telegram.WebApp.BackButton.hide();
-
-                    // Reset back button listener just in case
-                    headerBackBtn.onclick = () => {
-                        historyStack.pop();
-                        navigateTo(historyStack[historyStack.length - 1] || 'home-view');
-                    };
-                }
-            } else {
-                // OTHER VIEWS
+        // Header Logic
+        if (targetId === 'home-view') {
+            if (visitedProfile) {
+                // GUEST MODE
                 headerBackBtn.classList.remove('hidden');
                 headerUserInfo.classList.add('hidden');
                 headerUserInfo.style.display = 'none';
                 headerTitle.classList.remove('hidden');
-                // Restore default listener
+                headerTitle.innerHTML = `В гостях: ${visitedProfile.name}`;
+
+                // Back button acts as Exit
+                headerBackBtn.onclick = () => {
+                    // Override default history pop
+                    exitVisitedProfile();
+                };
+
+                if (window.Telegram?.WebApp?.BackButton) {
+                    window.Telegram.WebApp.BackButton.show();
+                    window.Telegram.WebApp.BackButton.onClick(exitVisitedProfile);
+                }
+            } else {
+                // NORMAL HOME
+                headerBackBtn.classList.add('hidden');
+                headerTitle.classList.add('hidden');
+                headerUserInfo.classList.remove('hidden');
+                headerUserInfo.style.display = 'flex';
+                if (window.Telegram?.WebApp?.BackButton) window.Telegram.WebApp.BackButton.hide();
+
+                // Reset back button listener just in case
                 headerBackBtn.onclick = () => {
                     historyStack.pop();
                     navigateTo(historyStack[historyStack.length - 1] || 'home-view');
                 };
+            }
+        } else {
+            // OTHER VIEWS
+            headerBackBtn.classList.remove('hidden');
+            headerUserInfo.classList.add('hidden');
+            headerUserInfo.style.display = 'none';
+            headerTitle.classList.remove('hidden');
+            // Restore default listener
+            headerBackBtn.onclick = () => {
+                historyStack.pop();
+                navigateTo(historyStack[historyStack.length - 1] || 'home-view');
+            };
 
-                if (targetId === 'create-view') headerTitle.textContent = 'Создать';
-                if (targetId === 'profile-view') headerTitle.textContent = 'Рейтинг';
-                if (targetId === 'user-profile-view') headerTitle.textContent = 'Профиль';
-                if (targetId === 'tasks-view') headerTitle.textContent = 'Задания';
+            if (targetId === 'create-view') headerTitle.textContent = 'Создать';
+            if (targetId === 'profile-view') headerTitle.textContent = 'Рейтинг';
+            if (targetId === 'user-profile-view') headerTitle.textContent = 'Профиль';
+            if (targetId === 'tasks-view') headerTitle.textContent = 'Задания';
 
-                if (window.Telegram?.WebApp?.BackButton) {
-                    window.Telegram.WebApp.BackButton.show();
-                    window.Telegram.WebApp.BackButton.onClick(() => {
-                        historyStack.pop();
-                        navigateTo(historyStack[historyStack.length - 1] || 'home-view');
-                    });
-                }
+            if (window.Telegram?.WebApp?.BackButton) {
+                window.Telegram.WebApp.BackButton.show();
+                window.Telegram.WebApp.BackButton.onClick(() => {
+                    historyStack.pop();
+                    navigateTo(historyStack[historyStack.length - 1] || 'home-view');
+                });
             }
         }
+    }
 
-        navItems.forEach(nav => {
-            nav.addEventListener('click', (e) => {
-                const target = e.currentTarget.dataset.target;
-                if (target) navigateTo(target);
-            });
+    navItems.forEach(nav => {
+        nav.addEventListener('click', (e) => {
+            const target = e.currentTarget.dataset.target;
+            if (target) navigateTo(target);
         });
+    });
 
-        headerBackBtn.addEventListener('click', () => {
-            historyStack.pop();
-            navigateTo(historyStack[historyStack.length - 1] || 'home-view');
-        });
+    headerBackBtn.addEventListener('click', () => {
+        historyStack.pop();
+        navigateTo(historyStack[historyStack.length - 1] || 'home-view');
+    });
 
-        // Telegram Init
-        if (window.Telegram?.WebApp) {
-            window.Telegram.WebApp.expand();
-            window.Telegram.WebApp.setHeaderColor('#0f1115');
-        }
+    // Telegram Init
+    if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.expand();
+        window.Telegram.WebApp.setHeaderColor('#0f1115');
+    }
 
-        // --- SEARCH LOGIC ---
-        const MOCK_USERS = [
-            { id: 1, name: "Anna Smirnova", username: "@annas", avatar: "https://ui-avatars.com/api/?name=Anna+S&background=random&color=fff", bio: "Photography Lover 📷", isPrivate: true, subscribers: 5400 },
-            { id: 2, name: "Max Payne", username: "@maxp", avatar: "https://ui-avatars.com/api/?name=Max+P&background=random&color=fff", bio: "Gamer & Streamer 🎮", isPrivate: false, subscribers: 1200 },
-            { id: 3, name: "Elena K.", username: "@elenak", avatar: "https://ui-avatars.com/api/?name=Elena+K&background=random&color=fff", bio: "Traveler ✈️", isPrivate: true, subscribers: 8900 },
-        ];
+    // --- SEARCH LOGIC ---
+    const MOCK_USERS = [
+        { id: 1, name: "Anna Smirnova", username: "@annas", avatar: "https://ui-avatars.com/api/?name=Anna+S&background=random&color=fff", bio: "Photography Lover 📷", isPrivate: true, subscribers: 5400 },
+        { id: 2, name: "Max Payne", username: "@maxp", avatar: "https://ui-avatars.com/api/?name=Max+P&background=random&color=fff", bio: "Gamer & Streamer 🎮", isPrivate: false, subscribers: 1200 },
+        { id: 3, name: "Elena K.", username: "@elenak", avatar: "https://ui-avatars.com/api/?name=Elena+K&background=random&color=fff", bio: "Traveler ✈️", isPrivate: true, subscribers: 8900 },
+    ];
 
-        const searchInput = document.getElementById('user-search-input');
-        const searchResults = document.getElementById('search-results');
+    const searchInput = document.getElementById('user-search-input');
+    const searchResults = document.getElementById('search-results');
 
-        // State for viewing other profiles
-        let visitedProfile = null; // If set, we are viewing this user
+    // State for viewing other profiles
+    let visitedProfile = null; // If set, we are viewing this user
 
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase();
-                if (query.length < 2) {
-                    searchResults.classList.add('hidden');
-                    return;
-                }
-
-                const filtered = MOCK_USERS.filter(u =>
-                    u.name.toLowerCase().includes(query) ||
-                    u.username.toLowerCase().includes(query)
-                );
-
-                renderSearchResults(filtered);
-            });
-        }
-
-        function renderSearchResults(users) {
-            searchResults.innerHTML = '';
-            if (users.length === 0) {
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            if (query.length < 2) {
                 searchResults.classList.add('hidden');
                 return;
             }
 
-            searchResults.classList.remove('hidden');
-            users.forEach(user => {
-                const div = document.createElement('div');
-                div.className = 'search-result-item';
-                div.innerHTML = `
+            const filtered = MOCK_USERS.filter(u =>
+                u.name.toLowerCase().includes(query) ||
+                u.username.toLowerCase().includes(query)
+            );
+
+            renderSearchResults(filtered);
+        });
+    }
+
+    function renderSearchResults(users) {
+        searchResults.innerHTML = '';
+        if (users.length === 0) {
+            searchResults.classList.add('hidden');
+            return;
+        }
+
+        searchResults.classList.remove('hidden');
+        users.forEach(user => {
+            const div = document.createElement('div');
+            div.className = 'search-result-item';
+            div.innerHTML = `
                 <img src="${user.avatar}" class="result-avatar">
                 <div class="result-info">
                     <span class="result-name">${user.name}</span>
                     <span class="result-username">${user.username}</span>
                 </div>
             `;
-                div.addEventListener('click', () => {
-                    openVisitedProfile(user);
-                    searchResults.classList.add('hidden');
-                    searchInput.value = '';
-                });
-                searchResults.appendChild(div);
+            div.addEventListener('click', () => {
+                openVisitedProfile(user);
+                searchResults.classList.add('hidden');
+                searchInput.value = '';
             });
+            searchResults.appendChild(div);
+        });
+    }
+
+    function openVisitedProfile(user) {
+        visitedProfile = user;
+
+        // Enter "Public View" mode for this user
+        isPublicView = true;
+        isSubscribedMock = false; // Reset sub state for new profile
+
+        // Update header logic to show we are in search
+        // For simplicity, we reuse Public View Banner but change text?
+        // Actually, let's keep it simple: Just switch to Public View
+
+        // Update User Profile Data temporarily for UI
+        // We need updateProfileUI to accept data OR read from visitedProfile
+        updateProfileUI(); // Will now read visitedProfile
+
+        // Show Banner
+        const banner = document.getElementById('public-view-banner');
+        if (banner) {
+            banner.querySelector('p').innerHTML = `В гостях у <b>${user.name}</b>. <a href="#" id="exit-visited-btn">Вернуться</a>`;
+            banner.classList.remove('hidden');
+
+            // Re-bind exit button for this case
+            document.getElementById('exit-visited-btn').onclick = (e) => {
+                e.preventDefault();
+                exitVisitedProfile();
+            };
         }
 
-        function openVisitedProfile(user) {
-            visitedProfile = user;
+        // Show their wishlist (Mocking different wishlists for demo)
+        // We will just clear current list or show random subset? 
+        // For demo, let's show ALL items but randomized status? 
+        // Or just keep same items for MVP.
 
-            // Enter "Public View" mode for this user
-            isPublicView = true;
-            isSubscribedMock = false; // Reset sub state for new profile
+        // Go to Home to see items
+        document.querySelector('[data-target="home-view"]').click();
+        renderItems();
+    }
 
-            // Update header logic to show we are in search
-            // For simplicity, we reuse Public View Banner but change text?
-            // Actually, let's keep it simple: Just switch to Public View
+    function exitVisitedProfile() {
+        visitedProfile = null;
+        isPublicView = false;
 
-            // Update User Profile Data temporarily for UI
-            // We need updateProfileUI to accept data OR read from visitedProfile
-            updateProfileUI(); // Will now read visitedProfile
+        document.getElementById('public-view-banner').classList.add('hidden');
 
-            // Show Banner
-            const banner = document.getElementById('public-view-banner');
-            if (banner) {
-                banner.querySelector('p').innerHTML = `В гостях у <b>${user.name}</b>. <a href="#" id="exit-visited-btn">Вернуться</a>`;
-                banner.classList.remove('hidden');
+        // Restore My Profile UI
+        updateProfileUI();
 
-                // Re-bind exit button for this case
-                document.getElementById('exit-visited-btn').onclick = (e) => {
-                    e.preventDefault();
-                    exitVisitedProfile();
-                };
-            }
+        // Go back to profile search
+        document.querySelector('[data-target="profile-view"]').click();
+    }
 
-            // Show their wishlist (Mocking different wishlists for demo)
-            // We will just clear current list or show random subset? 
-            // For demo, let's show ALL items but randomized status? 
-            // Or just keep same items for MVP.
+    // --- OVERRIDE/UPDATE FUNCTIONS ---
 
-            // Go to Home to see items
-            document.querySelector('[data-target="home-view"]').click();
-            renderItems();
-        }
+    // We need to update updateProfileUI to check visitedProfile first
+    // const originalUpdateProfileUI = updateProfileUI; // we can't really super it in functional style easily without rewriting it.
 
-        function exitVisitedProfile() {
-            visitedProfile = null;
-            isPublicView = false;
+    // --- GENEROUS USERS LOGIC ---
+    const GENEROUS_USERS = [
+        { id: 101, name: "Кристина W.", avatar: "https://ui-avatars.com/api/?name=Kristina&background=random", donated: "2.5M ₸" },
+        { id: 102, name: "Alex B.", avatar: "https://ui-avatars.com/api/?name=Alex&background=random", donated: "1.8M ₸" },
+        { id: 103, name: "Dana Life", avatar: "https://ui-avatars.com/api/?name=Dana&background=random", donated: "950k ₸" },
+        { id: 104, name: "Mr. Beast KZ", avatar: "https://ui-avatars.com/api/?name=Mr+Beast&background=random", donated: "500k ₸" },
+        { id: 105, name: "Aigerim", avatar: "https://ui-avatars.com/api/?name=Aigerim&background=random", donated: "320k ₸" },
+    ];
 
-            document.getElementById('public-view-banner').classList.add('hidden');
+    function renderGenerousUsers() {
+        const listContainer = document.getElementById('generous-users-list');
+        if (!listContainer) return;
 
-            // Restore My Profile UI
-            updateProfileUI();
-
-            // Go back to profile search
-            document.querySelector('[data-target="profile-view"]').click();
-        }
-
-        // --- OVERRIDE/UPDATE FUNCTIONS ---
-
-        // We need to update updateProfileUI to check visitedProfile first
-        // const originalUpdateProfileUI = updateProfileUI; // we can't really super it in functional style easily without rewriting it.
-
-        // --- GENEROUS USERS LOGIC ---
-        const GENEROUS_USERS = [
-            { id: 101, name: "Кристина W.", avatar: "https://ui-avatars.com/api/?name=Kristina&background=random", donated: "2.5M ₸" },
-            { id: 102, name: "Alex B.", avatar: "https://ui-avatars.com/api/?name=Alex&background=random", donated: "1.8M ₸" },
-            { id: 103, name: "Dana Life", avatar: "https://ui-avatars.com/api/?name=Dana&background=random", donated: "950k ₸" },
-            { id: 104, name: "Mr. Beast KZ", avatar: "https://ui-avatars.com/api/?name=Mr+Beast&background=random", donated: "500k ₸" },
-            { id: 105, name: "Aigerim", avatar: "https://ui-avatars.com/api/?name=Aigerim&background=random", donated: "320k ₸" },
-        ];
-
-        function renderGenerousUsers() {
-            const listContainer = document.getElementById('generous-users-list');
-            if (!listContainer) return;
-
-            listContainer.innerHTML = '';
-            GENEROUS_USERS.forEach((user, index) => {
-                const div = document.createElement('div');
-                div.className = 'user-card-item';
-                div.innerHTML = `
+        listContainer.innerHTML = '';
+        GENEROUS_USERS.forEach((user, index) => {
+            const div = document.createElement('div');
+            div.className = 'user-card-item';
+            div.innerHTML = `
                 <span class="uc-rank">${index + 1}</span>
                 <img src="${user.avatar}" class="uc-avatar">
                 <div class="uc-info">
@@ -779,63 +773,63 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <span class="uc-arrow"> ></span>
             `;
-                // Mock visit on click
-                div.addEventListener('click', () => {
-                    openVisitedProfile({
-                        ...user,
-                        bio: "Щедрый пользователь 🎁",
-                        isPrivate: false,
-                        subscribers: Math.floor(Math.random() * 5000)
-                    });
+            // Mock visit on click
+            div.addEventListener('click', () => {
+                openVisitedProfile({
+                    ...user,
+                    bio: "Щедрый пользователь 🎁",
+                    isPrivate: false,
+                    subscribers: Math.floor(Math.random() * 5000)
                 });
-                listContainer.appendChild(div);
             });
-        }
+            listContainer.appendChild(div);
+        });
+    }
 
-        // --- OVERRIDE/UPDATE FUNCTIONS ---
+    // --- OVERRIDE/UPDATE FUNCTIONS ---
 
-        // REDEFINING updateProfileUI for Community View
-        function updateProfileUI() {
-            const target = visitedProfile || userProfile; // View visited or Self
+    // REDEFINING updateProfileUI for Community View
+    function updateProfileUI() {
+        const target = visitedProfile || userProfile; // View visited or Self
 
-            // Elements for new design
-            const profileNameEl = document.getElementById('profile-name');
-            const profileBioEl = document.getElementById('profile-bio');
-            const profileAvatarEl = document.getElementById('profile-avatar');
+        // Elements for new design
+        const profileNameEl = document.getElementById('profile-name');
+        const profileBioEl = document.getElementById('profile-bio');
+        const profileAvatarEl = document.getElementById('profile-avatar');
 
-            if (profileNameEl) profileNameEl.innerText = target.name;
-            if (profileBioEl) profileBioEl.innerText = target.bio;
-            if (profileAvatarEl) profileAvatarEl.src = target.avatar;
-        }
+        if (profileNameEl) profileNameEl.innerText = target.name;
+        if (profileBioEl) profileBioEl.innerText = target.bio;
+        if (profileAvatarEl) profileAvatarEl.src = target.avatar;
+    }
 
-        // REDEFINING renderItems slightly to use target's privacy
-        function renderItems() {
-            if (!container) return;
-            container.innerHTML = '';
+    // REDEFINING renderItems slightly to use target's privacy
+    function renderItems() {
+        if (!container) return;
+        container.innerHTML = '';
 
-            const target = visitedProfile || userProfile;
+        const target = visitedProfile || userProfile;
 
-            // PRIVACY CHECK
-            if (isPublicView && target.isPrivate && !isSubscribedMock) {
-                const overlay = document.getElementById('locked-overlay');
-                if (overlay) {
-                    overlay.classList.remove('hidden');
-                    // Update text
-                    overlay.querySelector('h3').textContent = `Профиль ${target.name} закрыт`;
-                }
-                return;
-            } else {
-                const overlay = document.getElementById('locked-overlay');
-                if (overlay) overlay.classList.add('hidden');
+        // PRIVACY CHECK
+        if (isPublicView && target.isPrivate && !isSubscribedMock) {
+            const overlay = document.getElementById('locked-overlay');
+            if (overlay) {
+                overlay.classList.remove('hidden');
+                // Update text
+                overlay.querySelector('h3').textContent = `Профиль ${target.name} закрыт`;
             }
+            return;
+        } else {
+            const overlay = document.getElementById('locked-overlay');
+            if (overlay) overlay.classList.add('hidden');
+        }
 
-            wishListItems.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'wish-card';
+        wishListItems.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'wish-card';
 
-                const percent = item.goal > 0 ? Math.min(100, Math.round((item.collected / item.goal) * 100)) : 0;
+            const percent = item.goal > 0 ? Math.min(100, Math.round((item.collected / item.goal) * 100)) : 0;
 
-                card.innerHTML = `
+            card.innerHTML = `
                 <div class="card-image-container">
                     <img src="${item.image}" alt="${item.title}" class="card-image" loading="lazy">
                     <div class="image-overlay">${item.category || 'Разное'}</div>
@@ -855,23 +849,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             `;
-                container.appendChild(card);
+            container.appendChild(card);
+        });
+
+        document.querySelectorAll('.pay-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const title = e.target.closest('.wish-card').querySelector('h3').innerText;
+                openModal(title);
             });
+        });
+    }
 
-            document.querySelectorAll('.pay-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const title = e.target.closest('.wish-card').querySelector('h3').innerText;
-                    openModal(title);
-                });
-            });
-        }
+    // INITIAL RENDER
+    updateSlotsUI();
+    updateProfileUI(); // Call the new version
+    renderGenerousUsers(); // NEW
+    renderItems();     // Call the new version
 
-        // INITIAL RENDER
-        updateSlotsUI();
-        updateProfileUI(); // Call the new version
-        renderGenerousUsers(); // NEW
-        renderItems();     // Call the new version
-
-        // Tab switching fix for nav (ensure default active)
-        document.querySelector('.nav-item.active')?.click();
-    });
+    // Tab switching fix for nav (ensure default active)
+    document.querySelector('.nav-item.active')?.click();
+});
