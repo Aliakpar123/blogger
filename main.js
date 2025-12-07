@@ -571,6 +571,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Subscribe Channel Task
+    const subChannelBtn = document.getElementById('subscribe-channel-btn');
+    if (subChannelBtn) {
+        subChannelBtn.addEventListener('click', () => {
+            // Open Channel
+            window.open('https://t.me/merciwishlist', '_blank');
+
+            subChannelBtn.innerText = "Проверка...";
+            subChannelBtn.disabled = true;
+
+            // Artificial Delay for "Verification"
+            setTimeout(() => {
+                maxSlots += 3; // Reward
+                saveState();
+                alert('Спасибо! +3 Слота получено!');
+                subChannelBtn.innerText = "Выполнено";
+                subChannelBtn.classList.remove('btn-primary');
+                subChannelBtn.classList.add('btn-secondary');
+            }, 5000);
+        });
+    }
+
     // Donation Logic
     const donateBtn = document.getElementById('donate-dev-btn');
     if (donateBtn) {
