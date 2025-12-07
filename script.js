@@ -619,172 +619,173 @@ document.addEventListener('DOMContentLoaded', () => {
         if (targetId === 'user-profile-view') {
             updateProfileUI();
         }
+    } // End navigateTo
 
-        navItems.forEach(nav => {
-            nav.addEventListener('click', (e) => {
-                const target = e.currentTarget.dataset.target;
-                if (target) navigateTo(target);
-            });
+    navItems.forEach(nav => {
+        nav.addEventListener('click', (e) => {
+            const target = e.currentTarget.dataset.target;
+            if (target) navigateTo(target);
         });
+    });
 
-        headerBackBtn.addEventListener('click', () => {
-            historyStack.pop();
-            navigateTo(historyStack[historyStack.length - 1] || 'home-view');
-        });
+    headerBackBtn.addEventListener('click', () => {
+        historyStack.pop();
+        navigateTo(historyStack[historyStack.length - 1] || 'home-view');
+    });
 
-        // Telegram Init
-        if (window.Telegram?.WebApp) {
-            window.Telegram.WebApp.expand();
-            window.Telegram.WebApp.setHeaderColor('#0f1115');
-        }
+    // Telegram Init
+    if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.expand();
+        window.Telegram.WebApp.setHeaderColor('#0f1115');
+    }
 
-        // --- SEARCH LOGIC ---
-        const MOCK_USERS = [
-            { id: 1, name: "Anna Smirnova", username: "@annas", avatar: "https://ui-avatars.com/api/?name=Anna+S&background=random&color=fff", bio: "Photography Lover 📷", isPrivate: true, subscribers: 5400 },
-            { id: 2, name: "Max Payne", username: "@maxp", avatar: "https://ui-avatars.com/api/?name=Max+P&background=random&color=fff", bio: "Gamer & Streamer 🎮", isPrivate: false, subscribers: 1200 },
-            { id: 3, name: "Elena K.", username: "@elenak", avatar: "https://ui-avatars.com/api/?name=Elena+K&background=random&color=fff", bio: "Traveler ✈️", isPrivate: true, subscribers: 8900 },
-        ];
+    // --- SEARCH LOGIC ---
+    const MOCK_USERS = [
+        { id: 1, name: "Anna Smirnova", username: "@annas", avatar: "https://ui-avatars.com/api/?name=Anna+S&background=random&color=fff", bio: "Photography Lover 📷", isPrivate: true, subscribers: 5400 },
+        { id: 2, name: "Max Payne", username: "@maxp", avatar: "https://ui-avatars.com/api/?name=Max+P&background=random&color=fff", bio: "Gamer & Streamer 🎮", isPrivate: false, subscribers: 1200 },
+        { id: 3, name: "Elena K.", username: "@elenak", avatar: "https://ui-avatars.com/api/?name=Elena+K&background=random&color=fff", bio: "Traveler ✈️", isPrivate: true, subscribers: 8900 },
+    ];
 
-        const searchInput = document.getElementById('user-search-input');
-        const searchResults = document.getElementById('search-results');
+    const searchInput = document.getElementById('user-search-input');
+    const searchResults = document.getElementById('search-results');
 
-        // State for viewing other profiles (Duplicate removed)
-        // visitedProfile is declared at top
+    // State for viewing other profiles (Duplicate removed)
+    // visitedProfile is declared at top
 
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase();
-                if (query.length < 2) {
-                    searchResults.classList.add('hidden');
-                    return;
-                }
-
-                const filtered = MOCK_USERS.filter(u =>
-                    u.name.toLowerCase().includes(query) ||
-                    u.username.toLowerCase().includes(query)
-                );
-
-                renderSearchResults(filtered);
-            });
-        }
-
-        function renderSearchResults(users) {
-            searchResults.innerHTML = '';
-            if (users.length === 0) {
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            if (query.length < 2) {
                 searchResults.classList.add('hidden');
                 return;
             }
 
-            searchResults.classList.remove('hidden');
-            users.forEach(user => {
-                const div = document.createElement('div');
-                div.className = 'search-result-item';
-                div.innerHTML = `
+            const filtered = MOCK_USERS.filter(u =>
+                u.name.toLowerCase().includes(query) ||
+                u.username.toLowerCase().includes(query)
+            );
+
+            renderSearchResults(filtered);
+        });
+    }
+
+    function renderSearchResults(users) {
+        searchResults.innerHTML = '';
+        if (users.length === 0) {
+            searchResults.classList.add('hidden');
+            return;
+        }
+
+        searchResults.classList.remove('hidden');
+        users.forEach(user => {
+            const div = document.createElement('div');
+            div.className = 'search-result-item';
+            div.innerHTML = `
                 <img src="${user.avatar}" class="result-avatar">
                 <div class="result-info">
                     <span class="result-name">${user.name}</span>
                     <span class="result-username">${user.username}</span>
                 </div>
             `;
-                div.addEventListener('click', () => {
-                    openVisitedProfile(user);
-                    searchResults.classList.add('hidden');
-                    searchInput.value = '';
-                });
-                searchResults.appendChild(div);
+            div.addEventListener('click', () => {
+                openVisitedProfile(user);
+                searchResults.classList.add('hidden');
+                searchInput.value = '';
             });
+            searchResults.appendChild(div);
+        });
+    }
+
+    function openVisitedProfile(user) {
+        // alert('DEBUG: Opening profile for ' + user.name); // REMOVED
+        visitedProfile = user;
+
+        // Enter "Public View" mode for this user
+        isPublicView = true;
+        isSubscribedMock = false; // Reset sub state for new profile
+
+        // Update header logic to show we are in search
+        // For simplicity, we reuse Public View Banner but change text?
+        // Actually, let's keep it simple: Just switch to Public View
+
+        // Update User Profile Data temporarily for UI
+        // We need updateProfileUI to accept data OR read from visitedProfile
+        updateProfileUI(); // Will now read visitedProfile
+
+        // Show Banner
+        const banner = document.getElementById('public-view-banner');
+        if (banner) {
+            banner.querySelector('p').innerHTML = `В гостях у <b>${user.name}</b>. <a href="#" id="exit-visited-btn">Вернуться</a>`;
+            banner.classList.remove('hidden');
+
+            // Re-bind exit button for this case
+            document.getElementById('exit-visited-btn').onclick = (e) => {
+                e.preventDefault();
+                exitVisitedProfile();
+            };
         }
 
-        function openVisitedProfile(user) {
-            // alert('DEBUG: Opening profile for ' + user.name); // REMOVED
-            visitedProfile = user;
+        // Hide Create Button (FAB) in Guest Mode
+        const fab = document.querySelector('.fab-wrapper');
+        if (fab) fab.style.display = 'none';
 
-            // Enter "Public View" mode for this user
-            isPublicView = true;
-            isSubscribedMock = false; // Reset sub state for new profile
+        // Show their wishlist (Mocking different wishlists for demo)
+        // We will just clear current list or show random subset? 
+        // For demo, let's show ALL items but randomized status? 
+        // Or just keep same items for MVP.
 
-            // Update header logic to show we are in search
-            // For simplicity, we reuse Public View Banner but change text?
-            // Actually, let's keep it simple: Just switch to Public View
-
-            // Update User Profile Data temporarily for UI
-            // We need updateProfileUI to accept data OR read from visitedProfile
-            updateProfileUI(); // Will now read visitedProfile
-
-            // Show Banner
-            const banner = document.getElementById('public-view-banner');
-            if (banner) {
-                banner.querySelector('p').innerHTML = `В гостях у <b>${user.name}</b>. <a href="#" id="exit-visited-btn">Вернуться</a>`;
-                banner.classList.remove('hidden');
-
-                // Re-bind exit button for this case
-                document.getElementById('exit-visited-btn').onclick = (e) => {
-                    e.preventDefault();
-                    exitVisitedProfile();
-                };
-            }
-
-            // Hide Create Button (FAB) in Guest Mode
-            const fab = document.querySelector('.fab-wrapper');
-            if (fab) fab.style.display = 'none';
-
-            // Show their wishlist (Mocking different wishlists for demo)
-            // We will just clear current list or show random subset? 
-            // For demo, let's show ALL items but randomized status? 
-            // Or just keep same items for MVP.
-
-            // Go to Profile to see their profile first
-            // Go to Profile to see their profile first
-            const profileTab = document.querySelector('[data-target="user-profile-view"]');
-            if (profileTab) {
-                profileTab.click();
-                // Force update UI AFTER tab switch to ensure it renders correctly
-                setTimeout(() => {
-                    updateProfileUI();
-                }, 50);
-            }
+        // Go to Profile to see their profile first
+        // Go to Profile to see their profile first
+        const profileTab = document.querySelector('[data-target="user-profile-view"]');
+        if (profileTab) {
+            profileTab.click();
+            // Force update UI AFTER tab switch to ensure it renders correctly
+            setTimeout(() => {
+                updateProfileUI();
+            }, 50);
         }
+    }
 
-        function exitVisitedProfile() {
-            visitedProfile = null;
-            isPublicView = false;
+    function exitVisitedProfile() {
+        visitedProfile = null;
+        isPublicView = false;
 
-            document.getElementById('public-view-banner').classList.add('hidden');
+        document.getElementById('public-view-banner').classList.add('hidden');
 
-            // Restore Create Button (FAB)
-            const fab = document.querySelector('.fab-wrapper');
-            if (fab) fab.style.display = 'flex';
+        // Restore Create Button (FAB)
+        const fab = document.querySelector('.fab-wrapper');
+        if (fab) fab.style.display = 'flex';
 
-            // Restore My Profile UI
-            updateProfileUI();
+        // Restore My Profile UI
+        updateProfileUI();
 
-            // Go back to profile search
-            document.querySelector('[data-target="profile-view"]').click();
-        }
+        // Go back to profile search
+        document.querySelector('[data-target="profile-view"]').click();
+    }
 
-        // --- OVERRIDE/UPDATE FUNCTIONS ---
+    // --- OVERRIDE/UPDATE FUNCTIONS ---
 
-        // We need to update updateProfileUI to check visitedProfile first
-        // const originalUpdateProfileUI = updateProfileUI; // we can't really super it in functional style easily without rewriting it.
+    // We need to update updateProfileUI to check visitedProfile first
+    // const originalUpdateProfileUI = updateProfileUI; // we can't really super it in functional style easily without rewriting it.
 
-        // --- GENEROUS USERS LOGIC ---
-        const GENEROUS_USERS = [
-            { id: 101, name: "Кристина W.", avatar: "https://ui-avatars.com/api/?name=Kristina&background=random", donated: "2.5M ₸" },
-            { id: 102, name: "Alex B.", avatar: "https://ui-avatars.com/api/?name=Alex&background=random", donated: "1.8M ₸" },
-            { id: 103, name: "Dana Life", avatar: "https://ui-avatars.com/api/?name=Dana&background=random", donated: "950k ₸" },
-            { id: 104, name: "Mr. Beast KZ", avatar: "https://ui-avatars.com/api/?name=Mr+Beast&background=random", donated: "500k ₸" },
-            { id: 105, name: "Aigerim", avatar: "https://ui-avatars.com/api/?name=Aigerim&background=random", donated: "320k ₸" },
-        ];
+    // --- GENEROUS USERS LOGIC ---
+    const GENEROUS_USERS = [
+        { id: 101, name: "Кристина W.", avatar: "https://ui-avatars.com/api/?name=Kristina&background=random", donated: "2.5M ₸" },
+        { id: 102, name: "Alex B.", avatar: "https://ui-avatars.com/api/?name=Alex&background=random", donated: "1.8M ₸" },
+        { id: 103, name: "Dana Life", avatar: "https://ui-avatars.com/api/?name=Dana&background=random", donated: "950k ₸" },
+        { id: 104, name: "Mr. Beast KZ", avatar: "https://ui-avatars.com/api/?name=Mr+Beast&background=random", donated: "500k ₸" },
+        { id: 105, name: "Aigerim", avatar: "https://ui-avatars.com/api/?name=Aigerim&background=random", donated: "320k ₸" },
+    ];
 
-        function renderGenerousUsers() {
-            const listContainer = document.getElementById('generous-users-list');
-            if (!listContainer) return;
+    function renderGenerousUsers() {
+        const listContainer = document.getElementById('generous-users-list');
+        if (!listContainer) return;
 
-            listContainer.innerHTML = '';
-            GENEROUS_USERS.forEach((user, index) => {
-                const div = document.createElement('div');
-                div.className = 'user-card-item';
-                div.innerHTML = `
+        listContainer.innerHTML = '';
+        GENEROUS_USERS.forEach((user, index) => {
+            const div = document.createElement('div');
+            div.className = 'user-card-item';
+            div.innerHTML = `
                 <span class="uc-rank">${index + 1}</span>
                 <img src="${user.avatar}" class="uc-avatar">
                 <div class="uc-info">
@@ -793,57 +794,57 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <span class="uc-arrow"> ></span>
             `;
-                // Mock visit on click
-                div.addEventListener('click', () => {
-                    // alert('DEBUG: Clicked user ' + user.name); // Debug click removed
-                    openVisitedProfile({
-                        ...user,
-                        bio: "Щедрый пользователь 🎁",
-                        isPrivate: false,
-                        subscribers: Math.floor(Math.random() * 5000)
-                    });
+            // Mock visit on click
+            div.addEventListener('click', () => {
+                // alert('DEBUG: Clicked user ' + user.name); // Debug click removed
+                openVisitedProfile({
+                    ...user,
+                    bio: "Щедрый пользователь 🎁",
+                    isPrivate: false,
+                    subscribers: Math.floor(Math.random() * 5000)
                 });
-                listContainer.appendChild(div);
             });
+            listContainer.appendChild(div);
+        });
+    }
+
+    // --- OVERRIDE/UPDATE FUNCTIONS ---
+
+    // updateProfileUI functionality is handled by the main function definition above.
+    // Duplicate removed.
+
+    // REDEFINING renderItems slightly to use target's privacy
+    function renderItems() {
+        const container = document.getElementById('wish-list-container');
+        if (!container) {
+            console.error("Container #wish-list-container not found!");
+            return;
+        }
+        container.innerHTML = '';
+
+        const target = visitedProfile || userProfile;
+
+        // PRIVACY CHECK
+        if (isPublicView && target.isPrivate && !isSubscribedMock) {
+            const overlay = document.getElementById('locked-overlay');
+            if (overlay) {
+                overlay.classList.remove('hidden');
+                // Update text
+                overlay.querySelector('h3').textContent = `Профиль ${target.name} закрыт`;
+            }
+            return;
+        } else {
+            const overlay = document.getElementById('locked-overlay');
+            if (overlay) overlay.classList.add('hidden');
         }
 
-        // --- OVERRIDE/UPDATE FUNCTIONS ---
+        wishListItems.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'wish-card';
 
-        // updateProfileUI functionality is handled by the main function definition above.
-        // Duplicate removed.
+            const percent = item.goal > 0 ? Math.min(100, Math.round((item.collected / item.goal) * 100)) : 0;
 
-        // REDEFINING renderItems slightly to use target's privacy
-        function renderItems() {
-            const container = document.getElementById('wish-list-container');
-            if (!container) {
-                console.error("Container #wish-list-container not found!");
-                return;
-            }
-            container.innerHTML = '';
-
-            const target = visitedProfile || userProfile;
-
-            // PRIVACY CHECK
-            if (isPublicView && target.isPrivate && !isSubscribedMock) {
-                const overlay = document.getElementById('locked-overlay');
-                if (overlay) {
-                    overlay.classList.remove('hidden');
-                    // Update text
-                    overlay.querySelector('h3').textContent = `Профиль ${target.name} закрыт`;
-                }
-                return;
-            } else {
-                const overlay = document.getElementById('locked-overlay');
-                if (overlay) overlay.classList.add('hidden');
-            }
-
-            wishListItems.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'wish-card';
-
-                const percent = item.goal > 0 ? Math.min(100, Math.round((item.collected / item.goal) * 100)) : 0;
-
-                card.innerHTML = `
+            card.innerHTML = `
                 <div class="card-image-container">
                     <img src="${item.image}" alt="${item.title}" class="card-image" loading="lazy">
                     <div class="image-overlay">${item.category || 'Разное'}</div>
@@ -864,43 +865,43 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             `;
-                container.appendChild(card);
+            container.appendChild(card);
+        });
+
+        // Re-attach listeners
+        document.querySelectorAll('.pay-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const card = e.target.closest('.wish-card');
+                const title = card.querySelector('h3').innerText;
+                const id = e.target.dataset.id;
+                openModal(title, id);
             });
+        });
 
-            // Re-attach listeners
-            document.querySelectorAll('.pay-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const card = e.target.closest('.wish-card');
-                    const title = card.querySelector('h3').innerText;
-                    const id = e.target.dataset.id;
-                    openModal(title, id);
-                });
+        // Delete listeners (Restored)
+        document.querySelectorAll('.delete-icon-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (confirm('Точно хотите удалить это желание?')) {
+                    deleteItem(e.currentTarget.dataset.id);
+                }
             });
+        });
+    } // End renderItems
 
-            // Delete listeners (Restored)
-            document.querySelectorAll('.delete-icon-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (confirm('Точно хотите удалить это желание?')) {
-                        deleteItem(e.currentTarget.dataset.id);
-                    }
-                });
-            });
-        } // End renderItems
+    // INITIAL RENDER
+    try {
+        updateSlotsUI();
+        updateProfileUI();
+        renderGenerousUsers();
+        renderItems();
+    } catch (e) {
+        alert("Render Error: " + e.message);
+        console.error(e);
+    }
 
-        // INITIAL RENDER
-        try {
-            updateSlotsUI();
-            updateProfileUI();
-            renderGenerousUsers();
-            renderItems();
-        } catch (e) {
-            alert("Render Error: " + e.message);
-            console.error(e);
-        }
+    // Tab switching fix for nav (ensure default active)
+    document.querySelector('.nav-item.active')?.click();
 
-        // Tab switching fix for nav (ensure default active)
-        document.querySelector('.nav-item.active')?.click();
-
-    }); // End DOMContentLoaded
+}); // End DOMContentLoaded
