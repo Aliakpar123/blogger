@@ -702,6 +702,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function openVisitedProfile(user) {
+        // alert('DEBUG: Opening profile for ' + user.name);
         visitedProfile = user;
 
         // Enter "Public View" mode for this user
@@ -735,7 +736,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Or just keep same items for MVP.
 
         // Go to Profile to see their profile first
-        document.querySelector('[data-target="profile-view"]').click();
+        document.querySelector('[data-target="user-profile-view"]').click();
         // renderItems(); // We don't render items on profile view immediately unless we add them there
     }
 
@@ -785,6 +786,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             // Mock visit on click
             div.addEventListener('click', () => {
+                // alert('DEBUG: Clicked user ' + user.name); // Debug click
                 openVisitedProfile({
                     ...user,
                     bio: "Щедрый пользователь 🎁",
