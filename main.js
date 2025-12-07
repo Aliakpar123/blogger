@@ -1316,9 +1316,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // Show Modal
             if (sModal) {
                 sModal.classList.remove('hidden');
+                // alert('Debug: Modal Opened?'); 
             } else {
                 console.error("Share modal not found");
-                alert("Ошибка: окно 'Поделиться' не найдено");
+                alert("Ошибка: окно 'Поделиться' не найдено (ID share-modal)");
             }
 
         } catch (e) {
@@ -1402,14 +1403,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Share Button (Profile View)
         if (e.target.id === 'share-profile-btn' || e.target.closest('#share-profile-btn')) {
             e.preventDefault();
-            console.log('Global Delegate: Share Profile Clicked');
+            alert('Debug: Button Clicked!'); // Uncommented for user feedback
             shareProfile();
         }
 
         // Share Button (Home View)
         if (e.target.id === 'main-share-btn' || e.target.closest('#main-share-btn')) {
             e.preventDefault();
-            console.log('Global Delegate: Main Share Clicked');
             shareProfile();
         }
     });
