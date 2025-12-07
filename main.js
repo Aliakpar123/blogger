@@ -40,10 +40,30 @@ document.addEventListener('DOMContentLoaded', () => {
     let userProfile = safeParse('user_profile', {
         name: "Ali Akbar",
         bio: "Digital Creator & Blogger 📸",
-        avatar: "https://ui-avatars.com/api/?name=Ali+Akbar&background=random&color=fff",
+        avatar: "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif", // Buddy the Elf
         isPrivate: false,
         subscribers: 1240
     });
+
+    // ... (keeping other lines same, but replace MOCK_USERS and GENEROUS_USERS below)
+
+    // --- SEARCH LOGIC ---
+    const MOCK_USERS = [
+        { id: 1, name: "Anna Smirnova", username: "@annas", avatar: "https://media.giphy.com/media/3o6fJdYXEWgW3TfDwt/giphy.gif", bio: "Photography Lover 📷", isPrivate: true, subscribers: 5400 },
+        { id: 2, name: "Max Payne", username: "@maxp", avatar: "https://media.giphy.com/media/xUySTxD71WmjOwi2I/giphy.gif", bio: "Gamer & Streamer 🎮", isPrivate: false, subscribers: 1200 },
+        { id: 3, name: "Elena K.", username: "@elenak", avatar: "https://media.giphy.com/media/3otPoSefCKYjsiyIxW/giphy.gif", bio: "Traveler ✈️", isPrivate: true, subscribers: 8900 },
+    ];
+
+    // ...
+
+    // --- GENEROUS USERS LOGIC ---
+    const GENEROUS_USERS = [
+        { id: 101, name: "Кристина W.", avatar: "https://media.giphy.com/media/3otPoSefCKYjsiyIxW/giphy.gif", donated: "2.5M ₸" },
+        { id: 102, name: "Alex B.", avatar: "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif", donated: "1.8M ₸" },
+        { id: 103, name: "Dana Life", avatar: "https://media.giphy.com/media/3o6fJdYXEWgW3TfDwt/giphy.gif", donated: "950k ₸" },
+        { id: 104, name: "Mr. Beast KZ", avatar: "https://media.giphy.com/media/xUySTxD71WmjOwi2I/giphy.gif", donated: "500k ₸" },
+        { id: 105, name: "Aigerim", avatar: "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif", donated: "320k ₸" },
+    ];
 
     // Public View API
     let isPublicView = false;
@@ -649,11 +669,61 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- SEARCH LOGIC ---
+    // --- SEARCH LOGIC ---
     const MOCK_USERS = [
-        { id: 1, name: "Anna Smirnova", username: "@annas", avatar: "https://ui-avatars.com/api/?name=Anna+S&background=random&color=fff", bio: "Photography Lover 📷", isPrivate: true, subscribers: 5400 },
-        { id: 2, name: "Max Payne", username: "@maxp", avatar: "https://ui-avatars.com/api/?name=Max+P&background=random&color=fff", bio: "Gamer & Streamer 🎮", isPrivate: false, subscribers: 1200 },
-        { id: 3, name: "Elena K.", username: "@elenak", avatar: "https://ui-avatars.com/api/?name=Elena+K&background=random&color=fff", bio: "Traveler ✈️", isPrivate: true, subscribers: 8900 },
+        { id: 1, name: "Anna Smirnova", username: "@annas", avatar: "https://media.giphy.com/media/3o6fJdYXEWgW3TfDwt/giphy.gif", bio: "Photography Lover 📷", isPrivate: true, subscribers: 5400 },
+        { id: 2, name: "Max Payne", username: "@maxp", avatar: "https://media.giphy.com/media/xUySTxD71WmjOwi2I/giphy.gif", bio: "Gamer & Streamer 🎮", isPrivate: false, subscribers: 1200 },
+        { id: 3, name: "Elena K.", username: "@elenak", avatar: "https://media.giphy.com/media/3otPoSefCKYjsiyIxW/giphy.gif", bio: "Traveler ✈️", isPrivate: true, subscribers: 8900 },
     ];
+
+    // ... (lines 648-774 skipped in target to keep simple match if possible, but they are too far apart. I will do separate replaces if needed. Let's try to match just the arrays if the first one fails)
+
+    // Actually, I'll do separate calls to be safe.
+    // This call will fail because I put multiple unrelated blocks in ReplacementContent without matching TargetContent precisely including the gap.
+    // I should use `multi_replace_file_content` OR separate calls.
+    // I already sent a tool call above, which was risky because it spanned lines 39 to ~780+ which is HUGE.
+    // The previous tool call will almost certainly fail or replace the WHOLE content in between with nothing if I matched start/end.
+    // WAIT. My TargetContent in previous step was only the User Profile part:
+    /*
+    // User Profile API
+    let userProfile = safeParse('user_profile', {
+        name: "Ali Akbar",
+        bio: "Digital Creator & Blogger 📸",
+        avatar: "https://ui-avatars.com/api/?name=Ali+Akbar&background=random&color=fff",
+        isPrivate: false,
+        subscribers: 1240
+    });
+    */
+    // But I provided replacement content that INCLUDED "MOCK_USERS" way down.
+    // The `replace_file_content` tool REPLACES `TargetContent` with `ReplacementContent`.
+    // So if I only matched the top part, I would be inserting the bottom part right there, DUPLICATING it and messing up the file structure.
+    // I MUST ABORT OR CORRECT THIS.
+    // I will assume the previous tool call might execute as is, which would be bad (inserting mock users at the top).
+    // actually, I did not execute it yet technically in "thought", but I did output the tool call.
+    // I should issue a NEW tool call to correct it if I can, but I can't "undo" a sent tool call in the same turn usually.
+    // However, since I am generating the response, I can just output the correct tool calls now in sequence.
+    // The previous `replace_file_content` only targeted lines 39-46 roughly.
+    // If I replace that with code that includes `MOCK_USERS` arrays... the file will have `MOCK_USERS` defined twice (once at top, once at bottom).
+    // AND I will have deleted the lines in between? NO. `replace_file_content` replaces specific block.
+    // So I will just have `MOCK_USERS` defined at the top too. The bottom one remains.
+    // That's messy but not fatal JS usually, unless `const` redeclaration throws error.
+    // `const MOCK_USERS` redeclaration WILL throw error.
+
+    // I must split this into 3 separate replaces: Profile, Search Users, Generous Users.
+    // AND I should not use the huge block from the previous thought trace if I can avoid it.
+
+    // RE-PLANNING:
+    // I will issue 3 separate `replace_file_content` calls.
+    // 1. User Profile Avatar
+    // 2. Mock Users Avatars
+    // 3. Generous Users Avatars
+
+    // Since I cannot "take back" the tool call I visualized in thought, I just have to hope the system hasn't executed it. 
+    // Wait, I am the model. I haven't output the JSON yet in the final response block.
+    // Accessing `default_api`...
+
+    // OK, I will emit correct multiple calls now.
+
 
     const searchInput = document.getElementById('user-search-input');
     const searchResults = document.getElementById('search-results');
@@ -773,11 +843,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- GENEROUS USERS LOGIC ---
     const GENEROUS_USERS = [
-        { id: 101, name: "Кристина W.", avatar: "https://ui-avatars.com/api/?name=Kristina&background=random", donated: "2.5M ₸" },
-        { id: 102, name: "Alex B.", avatar: "https://ui-avatars.com/api/?name=Alex&background=random", donated: "1.8M ₸" },
-        { id: 103, name: "Dana Life", avatar: "https://ui-avatars.com/api/?name=Dana&background=random", donated: "950k ₸" },
-        { id: 104, name: "Mr. Beast KZ", avatar: "https://ui-avatars.com/api/?name=Mr+Beast&background=random", donated: "500k ₸" },
-        { id: 105, name: "Aigerim", avatar: "https://ui-avatars.com/api/?name=Aigerim&background=random", donated: "320k ₸" },
+        { id: 101, name: "Кристина W.", avatar: "https://media.giphy.com/media/3otPoSefCKYjsiyIxW/giphy.gif", donated: "2.5M ₸" },
+        { id: 102, name: "Alex B.", avatar: "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif", donated: "1.8M ₸" },
+        { id: 103, name: "Dana Life", avatar: "https://media.giphy.com/media/3o6fJdYXEWgW3TfDwt/giphy.gif", donated: "950k ₸" },
+        { id: 104, name: "Mr. Beast KZ", avatar: "https://media.giphy.com/media/xUySTxD71WmjOwi2I/giphy.gif", donated: "500k ₸" },
+        { id: 105, name: "Aigerim", avatar: "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif", donated: "320k ₸" },
     ];
 
     function renderGenerousUsers() {
