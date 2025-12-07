@@ -1325,6 +1325,11 @@ document.addEventListener('DOMContentLoaded', () => {
         renderGenerousUsers();
         renderItems();
         renderTasks();
+
+        // Sync critical data on load
+        syncUserProfile();
+        syncUserWishes();
+
         setTimeout(checkDeepLink, 500); // Check deep link after init
     } catch (e) {
         alert("Render Error: " + e.message);
