@@ -1182,7 +1182,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- TASKS LOGIC ---
 
     const TASKS_DB = [
-        { id: 't1', title: 'Подписаться на канал', reward: 3, link: 'https://t.me/durov', type: 'link', icon: '📢' },
+        { id: 't1', title: 'Подписаться на канал Merci Wishlist', reward: 3, link: 'https://t.me/merciwishlist', type: 'link', icon: '📢' },
         { id: 't2', title: 'Пригласить друга', reward: 5, link: null, type: 'invite', icon: '🤝' },
         { id: 't3', title: 'Вступить в чат', reward: 2, link: 'https://t.me/telegram', type: 'link', icon: '💬' }
     ];
