@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // alert("VERSION 9.9.77 LOADED ✅"); 
-    console.log("SCRIPT STARTED v9.9.77");
+    alert("✅ SYSTEM ONLINE v9.9.78");
+    console.log("SCRIPT STARTED v9.9.78");
 
     // === DEBUGGING FORCE REFRESH ===
     const style = document.createElement('link');
