@@ -496,7 +496,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Method C: Regex Fallback (Search in raw HTML)
                 if (!price) {
                     // Look for "price": 12345 or "price": "12345"
-                    // Also look for "price":12345
                     const jsonMatch = htmlContent.match(/"price"\s*:\s*"?(\d+)"?/i);
                     if (jsonMatch && jsonMatch[1]) {
                         price = parseInt(jsonMatch[1]);
@@ -510,17 +509,35 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
-                // Method D: Last Resort - Look for any big number followed by T or ₸ inside a price-like class
+                // Method D: Super Aggressive Search (Last Resort)
+                // Search for ANY number sequence that looks like a price (e.g. > 500) near keywords like "price", "цена"
                 if (!price) {
-                    // Sometimes classes are like "price_123" or similar obfuscation
-                    // We just search for the first reasonable price-like string in the body text
-                    const bodyText = doc.body.innerText;
-                    const looseMatch = bodyText.match(/(\d{1,3}(?:\s\d{3})*)\s?[₸T]/);
-                    if (looseMatch && looseMatch[1]) {
-                        const potentialPrice = parseInt(looseMatch[1].replace(/\s/g, ''));
-                        // Sanity check: Price usually > 100
-                        if (potentialPrice > 100) price = potentialPrice;
+                    // scan for price patterns in a window around keywords
+                    const lowerHTML = htmlContent.toLowerCase();
+                    const keywords = ['price', 'цена', 'стоимость', 'kaspi-shop-price'];
+
+                    for (let word of keywords) {
+                        const idx = lowerHTML.indexOf(word);
+                        if (idx !== -1) {
+                            // Look at next 100 chars
+                            const snippet = htmlContent.substring(idx, idx + 100);
+                            const match = snippet.match(/(\d{1,3}(?:\s\d{3})*)/);
+                            if (match && match[1]) {
+                                const val = parseInt(match[1].replace(/\s/g, ''));
+                                if (val > 500) { // Assume reasonable price > 500
+                                    price = val;
+                                    break;
+                                }
+                            }
+                        }
                     }
+                }
+
+                // If price is STILL 0, ask user immediately? 
+                // No, better to let them edit it on the next screen.
+                // But we can prompt for it if we got Title but no Price.
+                if (price === 0 && title !== 'Товар') {
+                    // A small helper to parse price from title if they pasted it there? Unlikely.
                 }
 
                 document.querySelector('.create-step-1').classList.add('hidden');
