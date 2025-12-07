@@ -376,21 +376,44 @@ document.addEventListener('DOMContentLoaded', () => {
             parseBtn.disabled = true;
 
             try {
-                // Strategy 1: AllOrigins
-                let proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
-                let response = await fetch(proxyUrl);
-                let data = await response.json();
-                let htmlContent = data.contents;
+                let htmlContent = null;
+                const isShortLink = url.includes('l.kaspi.kz');
 
-                // Strategy 2: CorsProxy (Fallback if 1 fails or returns empty)
-                if (!htmlContent) {
-                    console.log("Retrying with fallback proxy...");
+                // Strategy 1: CorsProxy (Better for redirects & short links)
+                // We use this FIRST for l.kaspi.kz, or if preferred
+                if (isShortLink) {
                     try {
-                        proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
-                        response = await fetch(proxyUrl);
+                        console.log("Using CorsProxy for short link...");
+                        let proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+                        let response = await fetch(proxyUrl);
                         htmlContent = await response.text();
-                    } catch (err) {
-                        console.warn("Strategy 2 failed", err);
+                    } catch (e) {
+                        console.warn("CorsProxy failed for short link", e);
+                    }
+                }
+
+                // Strategy 2: AllOrigins (Fallback or Primary for normal links)
+                if (!htmlContent) {
+                    try {
+                        console.log("Using AllOrigins...");
+                        let proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+                        let response = await fetch(proxyUrl);
+                        let data = await response.json();
+                        htmlContent = data.contents;
+                    } catch (e) {
+                        console.warn("AllOrigins failed", e);
+                    }
+                }
+
+                // Strategy 3: CorsProxy Fallback (if AllOrigins failed and we haven't tried it yet)
+                if (!htmlContent && !isShortLink) {
+                    try {
+                        console.log("Retry with CorsProxy...");
+                        let proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+                        let response = await fetch(proxyUrl);
+                        htmlContent = await response.text();
+                    } catch (e) {
+                        console.warn("CorsProxy retry failed", e);
                     }
                 }
 
