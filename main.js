@@ -174,6 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         updateProfileUI(); // Re-render buttons and stats
+        renderItems(); // Re-render items (to unlock if needed)
     }
 
     function shareProfile() {
