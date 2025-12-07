@@ -1141,7 +1141,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="progress-bar-fill" style="width: ${percent}%"></div>
                     </div>
                     <div class="card-actions">
-                        <button class="btn btn-primary pay-btn" data-id="${item.id}">Пополнить</button>
+                        ${item.collected >= item.goal
+                    ? `<button class="btn btn-executed pay-btn" disabled>Исполнено ✅</button>`
+                    : `<button class="btn btn-primary pay-btn" data-id="${item.id}">Пополнить</button>`
+                }
                         <button class="btn btn-secondary details-btn">Детали</button>
                     </div>
                 </div>
