@@ -737,7 +737,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- NAVIGATION ---
     const navItems = document.querySelectorAll('.nav-item');
-    const views = document.querySelectorAll('.content-area');
+    const views = document.querySelectorAll('.content-area, .view-section');
     const headerBackBtn = document.getElementById('header-back-btn');
     const headerUserInfo = document.getElementById('header-user-info');
     const headerTitle = document.getElementById('header-title');
