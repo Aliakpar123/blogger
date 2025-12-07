@@ -1264,8 +1264,9 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const botUsername = "wishlist_bloggers_bot";
             const userId = userProfile && userProfile.id ? userProfile.id : "unknown";
-            const text = `Посмотри мой вишлист "Merci"! 🎁`;
             const shareUrl = `https://t.me/${botUsername}/app?startapp=user_${userId}`;
+            // Appending URL to text so it is actually sent!
+            const text = `Посмотри мой вишлист "Merci"! 🎁\n${shareUrl}`;
 
             // 1. Try Telegram Native Share
             if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.switchInlineQuery) {
