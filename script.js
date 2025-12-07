@@ -679,6 +679,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (targetId === 'user-profile-view') headerTitle.textContent = 'Профиль';
             if (targetId === 'tasks-view') headerTitle.textContent = 'Задания';
 
+            // Force re-render of profile UI when entering that view
+            if (targetId === 'user-profile-view') {
+                // Slight delay to ensure DOM is ready? No, synchronous is fine ideally, 
+                // but let's be safe as we had race conditions.
+                updateProfileUI();
+            }
+
             if (window.Telegram?.WebApp?.BackButton) {
                 window.Telegram.WebApp.BackButton.show();
                 window.Telegram.WebApp.BackButton.onClick(() => {
