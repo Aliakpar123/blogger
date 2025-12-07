@@ -1007,11 +1007,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // const originalUpdateProfileUI = updateProfileUI; // we can't really super it in functional style easily without rewriting it.
 
     // --- GENEROUS USERS LOGIC ---
-    // Combined list of all users for the rating (as requested: "all existing users")
-    // We will merge GENEROUS_USERS and MOCK_USERS and maybe add more
-    // Combined list from Server
-    // DEFAULT TO OFFLINE MOCKS (So list is never empty if server fails)
-    let ALL_USERS_DB = [
+
+    // 1. Fixed "Community" Mocks (Always visible)
+    const FIXED_MOCKS = [
         { id: 101, name: "Кристина W.", username: "@kristina", avatar: "https://media.giphy.com/media/3otPoSefCKYjsiyIxW/giphy.gif", donated: "2.5M ₸", bio: "Щедрый пользователь 🎁", isPrivate: false, subscribers: 5200 },
         { id: 102, name: "Alex B.", username: "@alexb", avatar: "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif", donated: "1.8M ₸", bio: "Investments 📈", isPrivate: false, subscribers: 3100 },
         { id: 103, name: "Dana Life", username: "@danalife", avatar: "https://media.giphy.com/media/3o6fJdYXEWgW3TfDwt/giphy.gif", donated: "950k ₸", bio: "Lifestyle blog ✨", isPrivate: true, subscribers: 15400 },
@@ -1022,15 +1020,14 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 3, name: "Elena K.", username: "@elenak", avatar: "https://media.giphy.com/media/3otPoSefCKYjsiyIxW/giphy.gif", donated: "10k ₸", bio: "Traveler ✈️", isPrivate: true, subscribers: 8900 }
     ];
 
+    // 2. Dynamic Users from Server
+    let serverUsers = [];
+
     async function fetchAllUsers() {
         const users = await apiFetch('/users');
         if (users && Array.isArray(users)) {
-            ALL_USERS_DB = users;
-            // If we want to hide self or highlight self, we can do it here. 
-            // But server returns everyone.
-            renderGenerousUsers(); // Re-render after fetch
-        } else {
-            console.log("Could not fetch users, using offline mock data");
+            serverUsers = users;
+            renderGenerousUsers();
         }
     }
 
@@ -1043,29 +1040,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
         listContainer.innerHTML = '';
 
-        // 1. Start with fetched DB or fallback mocks
-        let usersToRender = (ALL_USERS_DB && ALL_USERS_DB.length > 0) ? [...ALL_USERS_DB] : [
-            // Fallback Mocks if DB is empty
-            { id: 101, name: "Кристина W.", username: "@kristina", avatar: "https://media.giphy.com/media/3otPoSefCKYjsiyIxW/giphy.gif", donated: "2.5M ₸", bio: "Щедрый пользователь 🎁", isPrivate: false, subscribers: 5200 },
-            { id: 102, name: "Alex B.", username: "@alexb", avatar: "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif", donated: "1.8M ₸", bio: "Investments 📈", isPrivate: false, subscribers: 3100 },
-            { id: 103, name: "Dana Life", username: "@danalife", avatar: "https://media.giphy.com/media/3o6fJdYXEWgW3TfDwt/giphy.gif", donated: "950k ₸", bio: "Lifestyle blog ✨", isPrivate: true, subscribers: 15400 },
-            { id: 104, name: "Mr. Beast KZ", username: "@mrbeastkz", avatar: "https://media.giphy.com/media/xUySTxD71WmjOwi2I/giphy.gif", donated: "500k ₸", bio: "Charity & Fun", isPrivate: false, subscribers: 50000 },
-            { id: 105, name: "Aigerim", username: "@aika", avatar: "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif", donated: "320k ₸", bio: "Student 📚", isPrivate: true, subscribers: 800 }
-        ];
+        // MERGE STRATEGY:
+        // 1. Start with Fixed Mocks
+        let finalUserList = [...FIXED_MOCKS];
 
-        // 2. FORCE MERGE current user if they are not already in the list
+        // 2. Add Server Users (avoid duplicates based on ID)
+        if (serverUsers.length > 0) {
+            serverUsers.forEach(sUser => {
+                // If this user ID is not in fixed mocks, add them
+                const isFixed = finalUserList.some(m => m.id == sUser.id);
+                if (!isFixed) {
+                    finalUserList.push(sUser);
+                }
+            });
+        }
+
+        // 3. Add CURRENT USER (if not present)
         if (userProfile && userProfile.id) {
-            const exists = usersToRender.some(u => u.id == userProfile.id);
+            const exists = finalUserList.some(u => u.id == userProfile.id);
             if (!exists) {
-                // Add to the bottom or top? Let's add to bottom for now
-                usersToRender.push({
+                finalUserList.push({
                     ...userProfile,
                     isSelf: true
                 });
+            } else {
+                // Mark existing as self for styling if needed
+                finalUserList = finalUserList.map(u => u.id == userProfile.id ? { ...u, isSelf: true } : u);
             }
         }
 
-        usersToRender.forEach((user, index) => {
+        finalUserList.forEach((user, index) => {
             const div = document.createElement('div');
             div.className = 'user-card-item';
             div.innerHTML = `
