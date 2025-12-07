@@ -1,142 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
-    alert("✅ SYSTEM ONLINE v9.9.78");
+    // alert("✅ SYSTEM ONLINE v9.9.78");
     console.log("SCRIPT STARTED v9.9.78");
 
-    // === DEBUGGING FORCE REFRESH ===
-    const style = document.createElement('link');
-    style.rel = 'stylesheet';
-    style.href = `style.css?v=${Date.now()}`;
-    document.head.appendChild(style);
-
-    // Initialize Telegram
-    if (window.Telegram?.WebApp) {
-        window.Telegram.WebApp.ready();
-        window.Telegram.WebApp.expand();
-        try {
-            window.Telegram.WebApp.setHeaderColor('#0f1115');
-        } catch (e) { }
-    }
-
-    // === CONFIGURATION ===
-    const API_URL = 'http://localhost:3000/api'; // Local backend
-    const KASPI_PAY_LINK = 'https://kaspi.kz/pay/YOUR_MERCHANT_NAME';
-
-    // === API HELPERS ===
-    async function apiFetch(endpoint, options = {}) {
-        try {
-            const res = await fetch(`${API_URL}${endpoint}`, {
-                ...options,
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...options.headers
-                }
-            });
-            if (!res.ok) throw new Error(`API Error: ${res.status}`);
-            return await res.json();
-        } catch (e) {
-            console.error('API Request Failed:', e);
-            return null; // Fallback to handling null (i.e., offline/no server)
-        }
-    }
-
-    // Safe JSON Parse
-    function safeParse(key, defaultVal) {
-        try {
-            const val = localStorage.getItem(key);
-            return val ? JSON.parse(val) : defaultVal;
-        } catch (e) {
-            console.error('Data error', e);
-            return defaultVal;
-        }
-    }
-
-    // State
-    const DEFAULT_SLOTS = 3;
-    let maxSlots = parseInt(localStorage.getItem('max_slots')) || DEFAULT_SLOTS;
-    let wishListItems = safeParse('wishlist_items', []);
-
-    const FESTIVE_AVATARS = {
-        elf: [
-            "https://media.giphy.com/media/3otPoSefCKYjsiyIxW/giphy.gif", // Will Ferrell Elf
-            "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif", // Dancing Elf
-            "https://media.giphy.com/media/xUySTxD71WmjOwi2I/giphy.gif" // Elf Cheering
-        ],
-        santa: [
-            "https://media.giphy.com/media/l1AvyLF0kdgZEhLZS/giphy.gif", // Santa Waving
-            "https://media.giphy.com/media/3o6fJdYXEWgW3TfDwt/giphy.gif", // Santa Dancing
-            "https://media.giphy.com/media/4Tbi3JylIFpQQ/giphy.gif" // Bad Santa
-        ]
-    };
-
-    let userProfile = safeParse('user_profile', {
-        id: 'u_' + Date.now(),
-        name: 'Guest',
-        username: '@guest',
-        avatar: FESTIVE_AVATARS.santa[0], // Default temp
-        subscribers: 0,
-        isPrivate: false
-    });
-
-    // MIGRATION: Force update avatar to random Festive one if generic/old
-    // We check if it is included in our new list, if not -> randomize (optional, or just randomize specific unwanted ones)
-    const allFestive = [...FESTIVE_AVATARS.elf, ...FESTIVE_AVATARS.santa];
-    // If avatar is "ui-avatars" or "random" or simply we want to refresh everyone to festive:
-    if (userProfile.avatar.includes('ui-avatars.com') || !allFestive.includes(userProfile.avatar)) {
-        const randomAv = allFestive[Math.floor(Math.random() * allFestive.length)];
-        userProfile.avatar = randomAv;
-        localStorage.setItem('user_profile', JSON.stringify(userProfile));
-    }
-
-    // ONE TIME DEFAULT ITEMS (If list is totally empty)
-    // Removed by user request - list starts empty
-    // if (wishListItems.length === 0) { ... }
-
-    // User Profile API...
-
-    // --- MOVED FIXED_MOCKS HERE FOR GLOBAL ACCESS ---
-    const FIXED_MOCKS = [
-        { id: 101, name: "Кристина W.", username: "@kristina", avatar: FESTIVE_AVATARS.elf[0], donated: "2.5M ₸", bio: "Щедрый пользователь 🎁", isPrivate: false, subscribers: 5200 },
-        { id: 102, name: "Alex B.", username: "@alexb", avatar: FESTIVE_AVATARS.santa[0], donated: "1.8M ₸", bio: "Investments 📈", isPrivate: false, subscribers: 3100 },
-        { id: 103, name: "Dana Life", username: "@danalife", avatar: FESTIVE_AVATARS.elf[1], donated: "950k ₸", bio: "Lifestyle blog ✨", isPrivate: true, subscribers: 15400 },
-        { id: 104, name: "Mr. Beast KZ", username: "@mrbeastkz", avatar: FESTIVE_AVATARS.santa[1], donated: "500k ₸", bio: "Charity & Fun", isPrivate: false, subscribers: 50000 },
-        { id: 105, name: "Aigerim", username: "@aika", avatar: FESTIVE_AVATARS.elf[2], donated: "320k ₸", bio: "Student 📚", isPrivate: true, subscribers: 800 },
-        { id: 1, name: "Anna Smirnova", username: "@annas", avatar: FESTIVE_AVATARS.santa[0], donated: "150k ₸", bio: "Photography Lover 📷", isPrivate: true, subscribers: 5400 },
-        { id: 2, name: "Max Payne", username: "@maxp", avatar: FESTIVE_AVATARS.elf[1], donated: "5k ₸", bio: "Gamer & Streamer 🎮", isPrivate: false, subscribers: 1200 },
-        { id: 3, name: "Elena K.", username: "@elenak", avatar: FESTIVE_AVATARS.santa[1], donated: "10k ₸", bio: "Traveler ✈️", isPrivate: true, subscribers: 8900 }
-    ];
-
-    // ... (keeping other lines same, but replace MOCK_USERS and GENEROUS_USERS below)
-
-    // ... (keeping other lines)
-
-    // Public View API
-
-    // Public View API
-    let isPublicView = false;
-    let isSubscribedMock = false;
-    let visitedProfile = null;
-
-    // Elements
-    const container = document.getElementById('wish-list-container');
-    const paymentModal = document.getElementById('payment-modal');
-    const amountInput = document.getElementById('payment-amount');
-
-    // --- FUNCTIONS ---
-
-    function saveState() {
-        localStorage.setItem('wishlist_items', JSON.stringify(wishListItems));
-        localStorage.setItem('user_profile', JSON.stringify(userProfile));
-        localStorage.setItem('max_slots', maxSlots);
-        updateSlotsUI();
-
-        // Sync to Server
-        syncUserProfile();
-        syncUserWishes();
-    }
+    // ... (lines 6-138)
 
     // Debounce helper to prevent flooding server
     let debounceTimer;
     function syncUserWishes() {
+        /* SERVER SYNC DISABLED BY USER REQUEST
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
             if (userProfile && userProfile.id) {
@@ -146,10 +17,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }).catch(err => console.error("Sync wishes fail", err));
             }
         }, 1000);
+        */
     }
 
     // Sync User Profile to Server on Load
     async function syncUserProfile() {
+        /* SERVER SYNC DISABLED BY USER REQUEST
         // Ensure user has an ID (use Telegram ID or generated one)
         if (!userProfile.id) {
             userProfile.id = window.Telegram?.WebApp?.initDataUnsafe?.user?.id || Date.now();
@@ -168,10 +41,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // Refresh the list so I appear immediately!
             setTimeout(fetchAllUsers, 500);
         }
+        */
     }
 
     // Call it
-    syncUserProfile();
+    // syncUserProfile();
 
     function updateSlotsUI() {
         const counter = document.getElementById('slots-counter');
