@@ -36,16 +36,51 @@ document.addEventListener('DOMContentLoaded', () => {
     let maxSlots = parseInt(localStorage.getItem('max_slots')) || DEFAULT_SLOTS;
     let wishListItems = safeParse('wishlist_items', []);
 
-    // ONE TIME DEFAULT ITEM (If list is totally empty)
+    // ONE TIME DEFAULT ITEMS (If list is totally empty)
     if (wishListItems.length === 0) {
-        wishListItems.push({
-            id: 999,
-            title: "Пример: Новый Макбук 💻",
-            collected: 15000,
-            goal: 500000,
-            image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca4?auto=format&fit=crop&w=800&q=80",
-            category: "Гаджеты"
-        });
+        const defaults = [
+            {
+                id: 999,
+                title: "Пример: Новый Макбук 💻",
+                collected: 15000,
+                goal: 500000,
+                image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca4?auto=format&fit=crop&w=800&q=80",
+                category: "Гаджеты"
+            },
+            {
+                id: 998,
+                title: "Поездка на Бали 🌴",
+                collected: 0,
+                goal: 400000,
+                image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=800&q=80",
+                category: "Путешествия"
+            },
+            {
+                id: 997,
+                title: "Dyson Airwrap 💇‍♀️",
+                collected: 20000,
+                goal: 250000,
+                image: "https://images.unsplash.com/photo-1585751119414-ef2636f8aede?auto=format&fit=crop&w=800&q=80",
+                category: "Красота"
+            },
+            {
+                id: 996,
+                title: "iPhone 16 Pro 📱",
+                collected: 5000,
+                goal: 600000,
+                image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=800&q=80",
+                category: "Гаджеты"
+            },
+            {
+                id: 995,
+                title: "Ужин в ресторане 🍷",
+                collected: 0,
+                goal: 50000,
+                image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80",
+                category: "Еда"
+            }
+        ];
+        wishListItems.push(...defaults);
         localStorage.setItem('wishlist_items', JSON.stringify(wishListItems));
     }
 
