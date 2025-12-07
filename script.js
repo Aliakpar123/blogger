@@ -887,7 +887,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
             });
-        }
+        } // End renderItems
 
         // INITIAL RENDER
         try {
@@ -902,4 +902,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Tab switching fix for nav (ensure default active)
         document.querySelector('.nav-item.active')?.click();
-    });
+
+    }); // End DOMContentLoaded
