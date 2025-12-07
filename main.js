@@ -384,14 +384,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Strategy 2: CorsProxy (Fallback if 1 fails or returns empty)
                 if (!htmlContent) {
-                    // console.log("Retrying with fallback proxy...");
-                    // proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
-                    // response = await fetch(proxyUrl);
-                    // htmlContent = await response.text();
-                    throw new Error('Proxy failed');
+                    console.log("Retrying with fallback proxy...");
+                    try {
+                        proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+                        response = await fetch(proxyUrl);
+                        htmlContent = await response.text();
+                    } catch (err) {
+                        console.warn("Strategy 2 failed", err);
+                    }
                 }
 
-                if (!htmlContent) throw new Error('No content');
+                if (!htmlContent || htmlContent.length < 500) throw new Error('No content or blocked');
 
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(htmlContent, 'text/html');
@@ -442,12 +445,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             } catch (e) {
                 console.error("Parsing error:", e);
-                alert("Не удалось загрузить данные автоматически (Kaspi защита). Заполните вручную.");
-
-                // Fail gracefully to manual mode
-                document.querySelector('.create-step-1').classList.add('hidden');
-                document.getElementById('create-step-2').classList.remove('hidden');
-                document.getElementById('new-item-image').src = 'https://placehold.co/600x400?text=Foto';
+                const manual = confirm("Не удалось загрузить данные автоматически (Kaspi включил защиту). Заполнить вручную?");
+                if (manual) {
+                    document.querySelector('.create-step-1').classList.add('hidden');
+                    document.getElementById('create-step-2').classList.remove('hidden');
+                    document.getElementById('new-item-image').src = 'https://placehold.co/600x400?text=Foto';
+                }
             } finally {
                 parseBtn.textContent = 'Далее';
                 parseBtn.disabled = false;
