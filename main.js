@@ -34,16 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // State
     const DEFAULT_SLOTS = 3;
     let maxSlots = parseInt(localStorage.getItem('max_slots')) || DEFAULT_SLOTS;
-    let wishListItems = safeParse('wishlist_items', [
-        {
-            id: 1,
-            title: "Дрон DJI Mini 3 Pro",
-            collected: 279000,
-            goal: 382500,
-            image: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-            category: "Техника"
-        }
-    ]);
+    let wishListItems = safeParse('wishlist_items', []);
 
     // User Profile API
     let userProfile = safeParse('user_profile', {
