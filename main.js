@@ -1424,10 +1424,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- GLOBAL EVENT DELEGATION (Fix for dynamic buttons) ---
     document.body.addEventListener('click', (e) => {
         // Share Button (Removed by user request)
-        // Share Button (Home View)
+        // Share Button (Home View) - DIRECT COPY ACTION
         if (e.target.id === 'main-share-btn' || e.target.closest('#main-share-btn')) {
             e.preventDefault();
-            shareProfile();
+
+            const botUsername = "wishlist_bloggers_bot";
+            const userId = userProfile && userProfile.id ? userProfile.id : "unknown";
+            const shareUrl = `https://t.me/${botUsername}/app?startapp=user_${userId}`;
+
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                alert('Ссылка скопирована! 📋\nОтправьте её друзьям.');
+            }).catch(err => {
+                console.error('Failed to copy', err);
+                // Fallback: Open the modal if direct copy fails
+                shareProfile();
+            });
         }
     });
 
