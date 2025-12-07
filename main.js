@@ -785,14 +785,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- SEARCH LOGIC ---
     // --- SEARCH LOGIC ---
-    const MOCK_USERS = [
-        { id: 1, name: "Anna Smirnova", username: "@annas", avatar: "https://media.giphy.com/media/3o6fJdYXEWgW3TfDwt/giphy.gif", bio: "Photography Lover 📷", isPrivate: true, subscribers: 5400 },
-        { id: 2, name: "Max Payne", username: "@maxp", avatar: "https://media.giphy.com/media/xUySTxD71WmjOwi2I/giphy.gif", bio: "Gamer & Streamer 🎮", isPrivate: false, subscribers: 1200 },
-        { id: 3, name: "Elena K.", username: "@elenak", avatar: "https://media.giphy.com/media/3otPoSefCKYjsiyIxW/giphy.gif", bio: "Traveler ✈️", isPrivate: true, subscribers: 8900 },
-    ];
+    // We used to have MOCK_USERS here, but now we use ALL_USERS_DB defined lower down.
+    // However, ALL_USERS_DB is defined later in the file. To fix hoisting/scope issues without major refactor,
+    // let's just define MOCK_USERS here as a subset or reference. 
+    // Actually, let's just let search logic use ALL_USERS_DB and move the definition UP or wait until search runs.
 
-    // --- SEARCH LOGIC --- (Restored)
-
+    // BETTER FIX: We will access the global `GENEROUS_USERS` (which is now ALL_USERS_DB) inside the event listener.
+    // So we don't need a separate MOCK_USERS array anymore.
 
     const searchInput = document.getElementById('user-search-input');
     const searchResults = document.getElementById('search-results');
@@ -802,13 +801,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
+            searchResults.innerHTML = '';
             const query = e.target.value.toLowerCase();
             if (query.length < 2) {
                 searchResults.classList.add('hidden');
                 return;
             }
 
-            const filtered = MOCK_USERS.filter(u =>
+            // Use GENEROUS_USERS which now contains everyone
+            const filtered = GENEROUS_USERS.filter(u =>
                 u.name.toLowerCase().includes(query) ||
                 u.username.toLowerCase().includes(query)
             );
@@ -911,13 +912,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // const originalUpdateProfileUI = updateProfileUI; // we can't really super it in functional style easily without rewriting it.
 
     // --- GENEROUS USERS LOGIC ---
-    const GENEROUS_USERS = [
-        { id: 101, name: "Кристина W.", avatar: "https://media.giphy.com/media/3otPoSefCKYjsiyIxW/giphy.gif", donated: "2.5M ₸" },
-        { id: 102, name: "Alex B.", avatar: "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif", donated: "1.8M ₸" },
-        { id: 103, name: "Dana Life", avatar: "https://media.giphy.com/media/3o6fJdYXEWgW3TfDwt/giphy.gif", donated: "950k ₸" },
-        { id: 104, name: "Mr. Beast KZ", avatar: "https://media.giphy.com/media/xUySTxD71WmjOwi2I/giphy.gif", donated: "500k ₸" },
-        { id: 105, name: "Aigerim", avatar: "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif", donated: "320k ₸" },
+    // Combined list of all users for the rating (as requested: "all existing users")
+    // We will merge GENEROUS_USERS and MOCK_USERS and maybe add more
+    const ALL_USERS_DB = [
+        { id: 101, name: "Кристина W.", username: "@kristina", avatar: "https://media.giphy.com/media/3otPoSefCKYjsiyIxW/giphy.gif", donated: "2.5M ₸", bio: "Щедрый пользователь 🎁", isPrivate: false, subscribers: 5200 },
+        { id: 102, name: "Alex B.", username: "@alexb", avatar: "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif", donated: "1.8M ₸", bio: "Investments 📈", isPrivate: false, subscribers: 3100 },
+        { id: 103, name: "Dana Life", username: "@danalife", avatar: "https://media.giphy.com/media/3o6fJdYXEWgW3TfDwt/giphy.gif", donated: "950k ₸", bio: "Lifestyle blog ✨", isPrivate: true, subscribers: 15400 },
+        { id: 104, name: "Mr. Beast KZ", username: "@mrbeastkz", avatar: "https://media.giphy.com/media/xUySTxD71WmjOwi2I/giphy.gif", donated: "500k ₸", bio: "Charity & Fun", isPrivate: false, subscribers: 50000 },
+        { id: 105, name: "Aigerim", username: "@aika", avatar: "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif", donated: "320k ₸", bio: "Student 📚", isPrivate: true, subscribers: 800 },
+        // Previously MOCK_USERS
+        { id: 1, name: "Anna Smirnova", username: "@annas", avatar: "https://media.giphy.com/media/3o6fJdYXEWgW3TfDwt/giphy.gif", donated: "150k ₸", bio: "Photography Lover 📷", isPrivate: true, subscribers: 5400 },
+        { id: 2, name: "Max Payne", username: "@maxp", avatar: "https://media.giphy.com/media/xUySTxD71WmjOwi2I/giphy.gif", donated: "50k ₸", bio: "Gamer & Streamer 🎮", isPrivate: false, subscribers: 1200 },
+        { id: 3, name: "Elena K.", username: "@elenak", avatar: "https://media.giphy.com/media/3otPoSefCKYjsiyIxW/giphy.gif", donated: "10k ₸", bio: "Traveler ✈️", isPrivate: true, subscribers: 8900 }
     ];
+
+    // Redefine GENEROUS_USERS to alias ALL_USERS_DB for now, or just use ALL_USERS_DB in render
+    const GENEROUS_USERS = ALL_USERS_DB;
 
     function renderGenerousUsers() {
         const listContainer = document.getElementById('generous-users-list');
@@ -938,13 +948,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             // Mock visit on click
             div.addEventListener('click', () => {
-                // alert('DEBUG: Clicked user ' + user.name); // Debug click removed
-                openVisitedProfile({
-                    ...user,
-                    bio: "Щедрый пользователь 🎁",
-                    isPrivate: false,
-                    subscribers: Math.floor(Math.random() * 5000)
-                });
+                openVisitedProfile(user);
             });
             listContainer.appendChild(div);
         });
