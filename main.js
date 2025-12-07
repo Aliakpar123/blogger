@@ -45,6 +45,12 @@ document.addEventListener('DOMContentLoaded', () => {
         subscribers: 1240
     });
 
+    // MIGRATION: Force update avatar if it's the old static one or random placeholder
+    if (userProfile.avatar.includes('ui-avatars.com') || userProfile.avatar.includes('random')) {
+        userProfile.avatar = "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif";
+        localStorage.setItem('user_profile', JSON.stringify(userProfile));
+    }
+
     // ... (keeping other lines same, but replace MOCK_USERS and GENEROUS_USERS below)
 
     // ... (keeping other lines)
