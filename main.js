@@ -1099,8 +1099,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // REDEFINING renderItems slightly to use target's privacy
     function renderItems() {
-        const container = document.getElementById('wish-list-container');
-        if (!container) return;
+        let container;
+        const settingsGroup = document.querySelector('.insta-settings-group');
+
+        // Determine Container & Settings Visibility
+        if (isPublicView && visitedProfile) {
+            // Visitor Mode -> Render in Profile View
+            container = document.getElementById('guest-wish-list-container');
+            if (settingsGroup) settingsGroup.style.display = 'none'; // Hide settings for guest
+        } else {
+            // Home Mode -> Render in Home View
+            container = document.getElementById('wish-list-container');
+            // If we are in "My Profile" tab, we might want to show items too? 
+            // For now, let's keep Home View as the main list.
+            if (settingsGroup) settingsGroup.style.display = 'block'; // Show settings for me
+        }
+
+        if (!container) return; // Should not happen if HTML is correct
 
         container.innerHTML = '';
 
