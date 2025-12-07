@@ -37,36 +37,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let wishListItems = safeParse('wishlist_items', []);
 
     // ONE TIME DEFAULT ITEMS (If list is totally empty)
-    if (wishListItems.length === 0) {
-        const defaults = [
-            {
-                id: 998,
-                title: "Поездка на Бали 🌴",
-                collected: 0,
-                goal: 800000,
-                image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=800&q=80",
-                category: "Путешествия"
-            },
-            {
-                id: 996,
-                title: "iPhone 16 Pro Max 📱",
-                collected: 50000,
-                goal: 750000,
-                image: "https://images.unsplash.com/photo-1696446701796-da61225697cc?auto=format&fit=crop&w=800&q=80",
-                category: "Гаджеты"
-            },
-            {
-                id: 997,
-                title: "Dyson Airwrap 💖",
-                collected: 15000,
-                goal: 300000,
-                image: "https://images.unsplash.com/photo-1625772452859-1c03d5bf113b?auto=format&fit=crop&w=800&q=80",
-                category: "Красота"
-            }
-        ];
-        wishListItems.push(...defaults);
-        localStorage.setItem('wishlist_items', JSON.stringify(wishListItems));
-    }
+    // Removed by user request - list starts empty
+    // if (wishListItems.length === 0) { ... }
 
     // User Profile API
     let userProfile = safeParse('user_profile', {
