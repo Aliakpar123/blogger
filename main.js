@@ -47,23 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ... (keeping other lines same, but replace MOCK_USERS and GENEROUS_USERS below)
 
-    // --- SEARCH LOGIC ---
-    const MOCK_USERS = [
-        { id: 1, name: "Anna Smirnova", username: "@annas", avatar: "https://media.giphy.com/media/3o6fJdYXEWgW3TfDwt/giphy.gif", bio: "Photography Lover 📷", isPrivate: true, subscribers: 5400 },
-        { id: 2, name: "Max Payne", username: "@maxp", avatar: "https://media.giphy.com/media/xUySTxD71WmjOwi2I/giphy.gif", bio: "Gamer & Streamer 🎮", isPrivate: false, subscribers: 1200 },
-        { id: 3, name: "Elena K.", username: "@elenak", avatar: "https://media.giphy.com/media/3otPoSefCKYjsiyIxW/giphy.gif", bio: "Traveler ✈️", isPrivate: true, subscribers: 8900 },
-    ];
+    // ... (keeping other lines)
 
-    // ...
-
-    // --- GENEROUS USERS LOGIC ---
-    const GENEROUS_USERS = [
-        { id: 101, name: "Кристина W.", avatar: "https://media.giphy.com/media/3otPoSefCKYjsiyIxW/giphy.gif", donated: "2.5M ₸" },
-        { id: 102, name: "Alex B.", avatar: "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif", donated: "1.8M ₸" },
-        { id: 103, name: "Dana Life", avatar: "https://media.giphy.com/media/3o6fJdYXEWgW3TfDwt/giphy.gif", donated: "950k ₸" },
-        { id: 104, name: "Mr. Beast KZ", avatar: "https://media.giphy.com/media/xUySTxD71WmjOwi2I/giphy.gif", donated: "500k ₸" },
-        { id: 105, name: "Aigerim", avatar: "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif", donated: "320k ₸" },
-    ];
+    // Public View API
 
     // Public View API
     let isPublicView = false;
@@ -483,7 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Public View Logic
     const publicPreviewBtn = document.getElementById('public-preview-btn');
     const exitPublicViewLink = document.getElementById('exit-public-view');
-    const publicViewBanner = document.getElementById('public-view-banner');
+    // const publicViewBanner = document.getElementById('public-view-banner'); // REMOVED
 
     if (publicPreviewBtn) {
         publicPreviewBtn.addEventListener('click', () => {
