@@ -76,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Public View API
     let isPublicView = false;
     let isSubscribedMock = false;
+    let visitedProfile = null;
 
     // Elements
     const container = document.getElementById('wish-list-container');
