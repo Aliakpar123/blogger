@@ -49,6 +49,36 @@
       "bio": "Student 📚",
       "isPrivate": true,
       "subscribers": 800
+    },
+    {
+      "id": 1,
+      "name": "Anna Smirnova",
+      "username": "@annas",
+      "avatar": "https://media.giphy.com/media/3o6fJdYXEWgW3TfDwt/giphy.gif",
+      "donated": "150k ₸",
+      "bio": "Photography Lover 📷",
+      "isPrivate": true,
+      "subscribers": 5400
+    },
+    {
+      "id": 2,
+      "name": "Max Payne",
+      "username": "@maxp",
+      "avatar": "https://media.giphy.com/media/xUySTxD71WmjOwi2I/giphy.gif",
+      "donated": "5k ₸",
+      "bio": "Gamer & Streamer 🎮",
+      "isPrivate": false,
+      "subscribers": 1200
+    },
+    {
+      "id": 3,
+      "name": "Elena K.",
+      "username": "@elenak",
+      "avatar": "https://media.giphy.com/media/3otPoSefCKYjsiyIxW/giphy.gif",
+      "donated": "10k ₸",
+      "bio": "Traveler ✈️",
+      "isPrivate": true,
+      "subscribers": 8900
     }
   ],
   "wishes": {}
