@@ -184,13 +184,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const statSubscribers = document.getElementById('stat-subscribers');
         const statWishes = document.getElementById('stat-wishes');
 
-        if (profileNameEl) profileNameEl.innerText = userProfile.name;
-        if (profileBioEl) profileBioEl.innerText = userProfile.bio;
-        if (profileAvatarEl) profileAvatarEl.src = userProfile.avatar;
-        if (privateModeToggle) privateModeToggle.checked = userProfile.isPrivate;
+        // USE VISITED PROFILE IF IN "GUEST" MODE
+        const data = visitedProfile || userProfile;
 
-        if (statSubscribers) statSubscribers.innerText = formatCompactNumber(userProfile.subscribers);
-        if (statWishes) statWishes.innerText = wishListItems.length;
+        if (profileNameEl) profileNameEl.innerText = data.name;
+        if (profileBioEl) profileBioEl.innerText = data.bio || "Пользователь";
+        if (profileAvatarEl) profileAvatarEl.src = data.avatar;
+
+        // Only show actual toggle state for MY profile, for guest just show visual or hide?
+        // For simplicity, we just update the UI state to match data
+        if (privateModeToggle) {
+            privateModeToggle.checked = data.isPrivate;
+            // Disable toggle if visiting
+            privateModeToggle.disabled = !!visitedProfile;
+        }
+
+        if (statSubscribers) statSubscribers.innerText = formatCompactNumber(data.subscribers || 0);
+        if (statWishes) statWishes.innerText = wishListItems.length; // Mocking same items for now
     }
 
     // --- MODAL & PAYMENT ---
@@ -724,9 +734,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // For demo, let's show ALL items but randomized status? 
         // Or just keep same items for MVP.
 
-        // Go to Home to see items
-        document.querySelector('[data-target="home-view"]').click();
-        renderItems();
+        // Go to Profile to see their profile first
+        document.querySelector('[data-target="profile-view"]').click();
+        // renderItems(); // We don't render items on profile view immediately unless we add them there
     }
 
     function exitVisitedProfile() {
