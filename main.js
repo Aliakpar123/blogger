@@ -396,9 +396,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- CREATE WISHLIST ---
-    const confirmCreateBtn = document.getElementById('confirm-create-btn');
-    if (confirmCreateBtn) {
-        confirmCreateBtn.addEventListener('click', () => {
+    const createListBtn = document.getElementById('confirm-create-btn');
+    if (createListBtn) {
+        createListBtn.addEventListener('click', () => {
             // Check Limits
             if (wishListItems.length >= maxSlots) {
                 const limitModal = document.getElementById('limit-modal');
@@ -445,6 +445,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Go Home
             document.querySelector('[data-target="home-view"]').click();
+
+            // SYNC
+            syncUserWishes();
         });
     }
 
