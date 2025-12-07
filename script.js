@@ -85,71 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return Intl.NumberFormat('en-US', { notation: "compact", maximumFractionDigits: 1 }).format(number);
     }
 
-    function renderItems() {
-        if (!container) return;
-        container.innerHTML = '';
-
-        // PRIVACY CHECK: Public View + Private Profile + Not Subscribed
-        if (isPublicView && userProfile.isPrivate && !isSubscribedMock) {
-            const overlay = document.getElementById('locked-overlay');
-            if (overlay) overlay.classList.remove('hidden');
-            return; // Hide items
-        } else {
-            const overlay = document.getElementById('locked-overlay');
-            if (overlay) overlay.classList.add('hidden');
-        }
-
-        wishListItems.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'wish-card';
-
-            const percent = item.goal > 0 ? Math.min(100, Math.round((item.collected / item.goal) * 100)) : 0;
-
-            card.innerHTML = `
-                <div class="card-image-container">
-                    <img src="${item.image}" alt="${item.title}" class="card-image" loading="lazy">
-                    <div class="image-overlay">${item.category || 'Разное'}</div>
-                    ${!isPublicView ? `<button class="delete-icon-btn" data-id="${item.id}">✕</button>` : ''}
-                </div>
-                <div class="card-content">
-                    <h3>${item.title}</h3>
-                    <div class="progress-info">
-                        <span>Собрано ${formatCurrency(item.collected)}</span>
-                        <span>Цель ${formatCurrency(item.goal)}</span>
-                    </div>
-                    <div class="progress-bar-bg">
-                        <div class="progress-bar-fill" style="width: ${percent}%"></div>
-                    </div>
-                    <div class="card-actions">
-                        <button class="btn btn-primary pay-btn" data-id="${item.id}">Пополнить</button>
-                        <button class="btn btn-secondary details-btn">Детали</button>
-                    </div>
-                </div>
-            `;
-            container.appendChild(card);
-        });
-
-        // Re-attach listeners
-        document.querySelectorAll('.pay-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const card = e.target.closest('.wish-card');
-                const title = card.querySelector('h3').innerText;
-                const id = e.target.dataset.id;
-                openModal(title, id);
-            });
-        });
-
-        // Delete listeners (updated class)
-        document.querySelectorAll('.delete-icon-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (confirm('Точно хотите удалить это желание?')) {
-                    deleteItem(e.currentTarget.dataset.id);
-                }
-            });
-        });
-    }
+    // renderItems definition moved to prevent duplication and ensure latest logic is used.
+    // See below around line 870.
 
     function deleteItem(id) {
         wishListItems = wishListItems.filter(item => item.id != id);
@@ -906,6 +843,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="card-image-container">
                     <img src="${item.image}" alt="${item.title}" class="card-image" loading="lazy">
                     <div class="image-overlay">${item.category || 'Разное'}</div>
+                    ${!isPublicView ? `<button class="delete-icon-btn" data-id="${item.id}">✕</button>` : ''}
                 </div>
                 <div class="card-content">
                     <h3>${item.title}</h3>
@@ -925,10 +863,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 container.appendChild(card);
             });
 
+            // Re-attach listeners
             document.querySelectorAll('.pay-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    const title = e.target.closest('.wish-card').querySelector('h3').innerText;
-                    openModal(title);
+                    const card = e.target.closest('.wish-card');
+                    const title = card.querySelector('h3').innerText;
+                    const id = e.target.dataset.id;
+                    openModal(title, id);
+                });
+            });
+
+            // Delete listeners (Restored)
+            document.querySelectorAll('.delete-icon-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (confirm('Точно хотите удалить это желание?')) {
+                        deleteItem(e.currentTarget.dataset.id);
+                    }
                 });
             });
         }

@@ -5,7 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Wish List</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <script>
+        window.onerror = function (msg, url, line, col, error) {
+            // Create visible error banner
+            var div = document.createElement("div");
+            div.style.cssText = "position:fixed;top:0;left:0;width:100%;z-index:9999;background:red;color:white;padding:20px;font-family:sans-serif;word-wrap:break-word;font-size:14px;";
+            div.innerHTML = "<b>CRITICAL ERROR:</b><br>" + msg + "<br>Line: " + line + "<br>Col: " + col;
+            document.body.appendChild(div);
+            return false;
+        };
+    </script>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=5.0">
@@ -30,7 +39,7 @@
                 </div>
                 <div class="brand-text">
                     <span class="brand-merci">Merci</span> <span class="brand-divider">/</span> <span
-                        class="brand-wish">Wish list</span> <span style="font-size: 10px; opacity: 0.5;">v7.1</span>
+                        class="brand-wish">Wish list</span> <span style="font-size: 10px; opacity: 0.5;">v7.2</span>
                 </div>
             </div>
             <h1 class="header-title hidden" id="header-title"></h1>
@@ -332,7 +341,7 @@
             </button>
         </nav>
     </div>
-    <script src="script.js?v=7.1"></script>
+    <script src="script.js?v=7.2"></script>
 </body>
 
 </html>
