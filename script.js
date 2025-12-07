@@ -201,6 +201,72 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (statSubscribers) statSubscribers.innerText = formatCompactNumber(data.subscribers || 0);
         if (statWishes) statWishes.innerText = wishListItems.length; // Mocking same items for now
+
+        // --- DYNAMIC ACTIONS (Edit vs Subscribe) ---
+        const actionsContainer = document.querySelector('.insta-actions');
+        if (actionsContainer) {
+            if (visitedProfile) {
+                // Visiting someone -> Show Subscribe
+                const isSub = isSubscribedMock; // Use mock logic
+                actionsContainer.innerHTML = `
+                    <button class="btn-insta-edit ${isSub ? 'subscribed' : ''}" id="subscribe-action-btn" 
+                        style="${isSub ? 'background: #333; color: white;' : 'background: #0095f6; color: white; border: none;'}">
+                        ${isSub ? 'Вы подписаны' : 'Подписаться'}
+                    </button>
+                    <button class="btn-insta-share" id="message-action-btn">Сообщение</button>
+                `;
+
+                // Bind Subscribe Event
+                document.getElementById('subscribe-action-btn').addEventListener('click', () => {
+                    toggleSubscription(data);
+                });
+
+            } else {
+                // My Profile -> Show Edit/Share (Default)
+                actionsContainer.innerHTML = `
+                    <button class="btn-insta-edit" id="edit-profile-btn">Редактировать</button>
+                    <button class="btn-insta-share" id="share-profile-btn">Поделиться</button>
+                `;
+                // Re-bind default events if needed (though they might be lost if we overwrite innerHTML, 
+                // ideally we should use discrete elements or re-bind. For simplicity we assume re-binding or global delegation)
+                // Actually, re-binding IS needed if we overwrite logic.
+                // Let's rely on event delegation or re-bind helper? 
+                // For MVP: Re-bind Edit/Share here is good.
+                document.getElementById('edit-profile-btn').addEventListener('click', () => {
+                    // logic for edit (mock)
+                    alert('Редактирование профиля (Скоро)');
+                });
+                document.getElementById('share-profile-btn').addEventListener('click', () => {
+                    // logic for share
+                    shareProfile();
+                });
+            }
+        }
+    }
+
+    function toggleSubscription(user) {
+        isSubscribedMock = !isSubscribedMock;
+
+        // Update data
+        if (isSubscribedMock) {
+            user.subscribers = (user.subscribers || 0) + 1;
+        } else {
+            user.subscribers = Math.max(0, (user.subscribers || 0) - 1);
+        }
+
+        updateProfileUI(); // Re-render buttons and stats
+    }
+
+    function shareProfile() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'Мой Wishlist',
+                text: 'Посмотрите мой список желаний!',
+                url: window.location.href
+            });
+        } else {
+            alert('Ссылка скопирована!');
+        }
     }
 
     // --- MODAL & PAYMENT ---
@@ -702,7 +768,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function openVisitedProfile(user) {
-        // alert('DEBUG: Opening profile for ' + user.name);
+        // alert('DEBUG: Opening profile for ' + user.name); // REMOVED
         visitedProfile = user;
 
         // Enter "Public View" mode for this user
@@ -786,7 +852,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             // Mock visit on click
             div.addEventListener('click', () => {
-                // alert('DEBUG: Clicked user ' + user.name); // Debug click
+                // alert('DEBUG: Clicked user ' + user.name); // Debug click removed
                 openVisitedProfile({
                     ...user,
                     bio: "Щедрый пользователь 🎁",
