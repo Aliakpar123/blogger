@@ -97,9 +97,24 @@ document.addEventListener('DOMContentLoaded', () => {
         // USE VISITED PROFILE IF IN "GUEST" MODE
         const data = visitedProfile || userProfile;
 
-        if (profileNameEl) profileNameEl.innerText = data.name;
-        if (profileBioEl) profileBioEl.innerText = data.bio || "Пользователь";
-        if (profileAvatarEl) profileAvatarEl.src = data.avatar;
+        if (profileNameEl) {
+            // Priority: Visited Profile Name -> User Profile Name -> Telegram User -> Default
+            let nameDisplay = data.name;
+            if (visitedProfile && visitedProfile.username) {
+                // If visiting, show their name actually, request was "nickname telegram" potentially?
+                // User said: "стоит мое имя взде пусть имя пользовтеля ник телеграм тосит пусть"
+                // "my name is everywhere, let user name nickname telegram stand"
+                nameDisplay = visitedProfile.name || visitedProfile.username;
+                // Using name for now as it's cleaner, but maybe nickname as secondary?
+            } else if (!visitedProfile && window.Telegram?.WebApp?.initDataUnsafe?.user) {
+                // If my profile, try to get from Telegram
+                const tgUser = window.Telegram.WebApp.initDataUnsafe.user;
+                // Prefer username if available, else first_name
+                nameDisplay = tgUser.username ? `@${tgUser.username}` : `${tgUser.first_name} ${tgUser.last_name || ''}`.trim();
+            }
+
+            profileNameEl.innerText = nameDisplay || data.name;
+        }
 
         // Only show actual toggle state for MY profile, for guest just show visual or hide?
         // For simplicity, we just update the UI state to match data
