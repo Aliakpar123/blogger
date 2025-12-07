@@ -1260,28 +1260,83 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- SOCIAL & DEEP LINKING ---
 
+    // --- SOCIAL & DEEP LINKING ---
+
+    const shareModal = document.getElementById('share-modal');
+    const shareLinkInput = document.getElementById('share-link-input');
+    const copyLinkBtn = document.getElementById('copy-link-btn');
+    const shareTelegramBtn = document.getElementById('share-telegram-btn');
+    const closeShareModalBtn = document.querySelector('.close-share-modal');
+
+    // Close Modal Logic
+    if (closeShareModalBtn) {
+        closeShareModalBtn.addEventListener('click', () => {
+            shareModal.classList.add('hidden');
+        });
+    }
+
+    if (shareModal) {
+        shareModal.addEventListener('click', (e) => {
+            if (e.target === shareModal) shareModal.classList.add('hidden');
+        });
+    }
+
     function shareProfile() {
         try {
             const botUsername = "wishlist_bloggers_bot";
             const userId = userProfile && userProfile.id ? userProfile.id : "unknown";
             const shareUrl = `https://t.me/${botUsername}/app?startapp=user_${userId}`;
-            // Appending URL to text so it is actually sent!
-            const text = `Посмотри мой вишлист "Merci"! 🎁\n${shareUrl}`;
 
-            // 1. Try Telegram Native Share
+            // Populate Input
+            if (shareLinkInput) {
+                shareLinkInput.value = shareUrl;
+            }
+
+            // Show Modal
+            if (shareModal) {
+                shareModal.classList.remove('hidden');
+            }
+
+        } catch (e) {
+            console.error("Share modal failed", e);
+            alert("Ошибка при открытии меню 'Поделиться'");
+        }
+    }
+
+    // Copy Link Action
+    if (copyLinkBtn) {
+        copyLinkBtn.addEventListener('click', () => {
+            const link = shareLinkInput.value;
+            if (link) {
+                navigator.clipboard.writeText(link).then(() => {
+                    alert('Ссылка скопирована! 📋');
+                }).catch(err => {
+                    console.error('Failed to copy', err);
+                    // Fallback using select
+                    shareLinkInput.select();
+                    document.execCommand('copy');
+                    alert('Ссылка скопирована! 📋');
+                });
+            }
+        });
+    }
+
+    // Telegram Share Action
+    if (shareTelegramBtn) {
+        shareTelegramBtn.addEventListener('click', () => {
+            const link = shareLinkInput.value;
+            const text = `Посмотри мой вишлист "Merci"! 🎁\n${link}`;
+
             if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.switchInlineQuery) {
-                // Use switchInlineQuery to share to chat
                 window.Telegram.WebApp.switchInlineQuery(text, ['users', 'groups', 'channels']);
             } else {
-                // Fallback for web or old versions
-                const safeUrl = encodeURIComponent(shareUrl);
+                const safeUrl = encodeURIComponent(link);
                 const safeText = encodeURIComponent(text);
                 window.open(`https://t.me/share/url?url=${safeUrl}&text=${safeText}`, '_blank');
             }
-        } catch (e) {
-            console.error("Share failed", e);
-            alert("Ошибка при попытке поделиться. Попробуйте скриншот.");
-        }
+            // Close modal after action
+            // shareModal.classList.add('hidden'); 
+        });
     }
 
     async function checkDeepLink() {

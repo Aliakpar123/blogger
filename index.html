@@ -43,7 +43,7 @@
                 </div>
                 <div class="brand-text">
                     <span class="brand-merci">Merci</span> <span class="brand-divider">/</span> <span
-                        class="brand-wish">Wish list</span> <span style="font-size: 10px; opacity: 0.5;">v9.9.44</span>
+                        class="brand-wish">Wish list</span> <span style="font-size: 10px; opacity: 0.5;">v9.9.45</span>
                 </div>
             </div>
             <h1 class="header-title hidden" id="header-title"></h1>
@@ -285,6 +285,24 @@
             </div>
         </div>
 
+        <!-- Share Modal -->
+        <div id="share-modal" class="modal-overlay hidden">
+            <div class="modal-content">
+                <button class="close-modal close-share-modal">&times;</button>
+                <h3>Поделиться вишлистом 🎁</h3>
+                <p>Отправь эту ссылку друзьям, чтобы они увидели твои желания!</p>
+
+                <div class="share-link-wrapper">
+                    <input type="text" id="share-link-input" readonly value="...">
+                    <button id="copy-link-btn" class="btn-icon">📋</button>
+                </div>
+
+                <button id="share-telegram-btn" class="btn btn-primary full-width" style="margin-top: 15px;">
+                    ✈️ Отправить в Telegram
+                </button>
+            </div>
+        </div>
+
         <!-- Bottom Navigation -->
         <nav class="bottom-nav">
             <button class="nav-item active" data-target="home-view">
@@ -346,7 +364,7 @@
             </button>
         </nav>
     </div>
-    <script src="main.js?v=9.9.44"></script>
+    <script src="main.js?v=9.9.45"></script>
 </body>
 
 </html>
