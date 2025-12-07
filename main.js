@@ -1187,12 +1187,89 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- TASKS LOGIC ---
+
+    const TASKS_DB = [
+        { id: 't1', title: 'Подписаться на канал', reward: 3, link: 'https://t.me/durov', type: 'link', icon: '📢' },
+        { id: 't2', title: 'Пригласить друга', reward: 5, link: 'https://t.me/share/url?url=https://t.me/your_bot_link', type: 'share', icon: '✉️' },
+        { id: 't3', title: 'Вступить в чат', reward: 2, link: 'https://t.me/telegram', type: 'link', icon: '💬' }
+    ];
+
+    let completedTasks = safeParse('completed_tasks', []);
+
+    function renderTasks() {
+        const container = document.getElementById('tasks-list');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        TASKS_DB.forEach(task => {
+            const isDone = completedTasks.includes(task.id);
+
+            const taskEl = document.createElement('div');
+            taskEl.className = 'task-card';
+            if (isDone) taskEl.classList.add('done');
+
+            taskEl.innerHTML = `
+                <div class="task-icon">${task.icon}</div>
+                <div class="task-info">
+                    <h4>${task.title}</h4>
+                    <p class="task-desc">${isDone ? 'Выполнено ✅' : `Получи +${task.reward} слота`}</p>
+                </div>
+                ${isDone
+                    ? '<button class="btn btn-sm btn-secondary" disabled>Готово</button>'
+                    : `<button class="btn btn-sm btn-primary task-btn" data-id="${task.id}">Выполнить</button>`
+                }
+            `;
+
+            if (!isDone) {
+                const btn = taskEl.querySelector('.task-btn');
+                btn.onclick = () => handleTaskClick(task, btn);
+            }
+
+            container.appendChild(taskEl);
+        });
+    }
+
+    function handleTaskClick(task, btn) {
+        // 1. Open Link
+        if (task.link) {
+            window.open(task.link, '_blank');
+        }
+
+        // 2. Change button to "Check"
+        btn.innerText = "Проверить";
+        btn.onclick = () => verifyTask(task, btn);
+    }
+
+    function verifyTask(task, btn) {
+        btn.innerText = "⏳";
+        btn.disabled = true;
+
+        // Simulate API check
+        setTimeout(() => {
+            // Success
+            if (!completedTasks.includes(task.id)) {
+                completedTasks.push(task.id);
+                localStorage.setItem('completed_tasks', JSON.stringify(completedTasks));
+
+                // Award Logic
+                maxSlots += task.reward;
+                saveState(); // Saves new maxSlots
+
+                alert(`Задание выполнено! Вы получили +${task.reward} слота 🎉`);
+                renderTasks(); // Re-render to show DONE state
+            }
+        }, 1500);
+    }
+
     // INITIAL RENDER
     try {
         updateSlotsUI();
         updateProfileUI();
         renderGenerousUsers();
         renderItems();
+        renderTasks(); // Init Tasks
     } catch (e) {
         alert("Render Error: " + e.message);
         console.error(e);

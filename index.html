@@ -43,7 +43,7 @@
                 </div>
                 <div class="brand-text">
                     <span class="brand-merci">Merci</span> <span class="brand-divider">/</span> <span
-                        class="brand-wish">Wish list</span> <span style="font-size: 10px; opacity: 0.5;">v9.9.29</span>
+                        class="brand-wish">Wish list</span> <span style="font-size: 10px; opacity: 0.5;">v9.9.30</span>
                 </div>
             </div>
             <h1 class="header-title hidden" id="header-title"></h1>
@@ -160,14 +160,29 @@
             </div>
         </div>
 
-        <!-- USERS VIEW (Redesigned) -->
-        <div id="profile-view" class="content-area hidden">
-            <!-- Generous Users List -->
+        <!-- PROFILE VIEW (Users/Rating) -->
+        <div id="profile-view" class="view-section hidden">
             <div class="section-header" style="margin-top: 0;">
                 <h3>Щедрые пользователи 🏆</h3>
             </div>
             <div id="generous-users-list" class="users-list">
                 <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- TASKS VIEW -->
+        <div id="tasks-view" class="view-section hidden">
+            <div class="profile-header">
+                <div class="ph-avatar-container">
+                    <div class="ph-avatar-ring"></div>
+                    <img src="https://cdn-icons-png.flaticon.com/512/9417/9417652.png" alt="Tasks" class="ph-avatar">
+                </div>
+                <h2 class="ph-name">Задания</h2>
+                <p class="ph-bio">Выполняй задания и получай слоты 🎁</p>
+            </div>
+
+            <div class="tasks-container" id="tasks-list">
+                <!-- Tasks will be rendered here -->
             </div>
         </div>
 
@@ -360,7 +375,7 @@
             </button>
         </nav>
     </div>
-    <script src="main.js?v=9.9.29"></script>
+    <script src="main.js?v=9.9.30"></script>
 </body>
 
 </html>
