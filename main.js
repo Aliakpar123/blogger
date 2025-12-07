@@ -973,9 +973,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // FETCH WISHES FROM SERVER
         try {
-            // Show loading state?
+            // Show loading state
             const container = document.getElementById('wish-list-container');
             if (container) container.innerHTML = '<div style="text-align:center; padding:20px; color: grey;">Загрузка желаний... ⏳</div>';
+
+            // IF VISITING SELF (Preview Mode) -> Load Local Data
+            if (user && userProfile && user.id === userProfile.id) {
+                wishListItems = safeParse('wishlist_items', []);
+                // Add a small delay to simulate load/render properly
+                setTimeout(renderItems, 300);
+                return;
+            }
 
             const fetchedWishes = await apiFetch(`/wishes/${user.id}`);
             if (fetchedWishes && Array.isArray(fetchedWishes)) {
@@ -1394,24 +1402,32 @@ document.addEventListener('DOMContentLoaded', () => {
         if (startParam && startParam.startsWith('user_')) {
             const hostUserId = startParam.replace('user_', '');
 
-            // Don't open own profile as "visited"
-            if (hostUserId == userProfile.id) return;
+            // Don't open own profile as "visited" -> ENABLED FOR TESTING/SHARING PREVIEW
+            // if (hostUserId == userProfile.id) return;
 
             console.log("Deep Link Detected:", hostUserId);
 
             // 1. Check Fixed Mocks first
-            let foundUser = FIXED_MOCKS.find(u => u.id == hostUserId); // Need to make FIXED_MOCKS accessible or move this logic
+            let foundUser = FIXED_MOCKS.find(u => u.id == hostUserId);
 
-            // 2. If not found, fetch from server
+            // 2. If not found, fetch from server 
+            // OR check if it IS the current user (self-visit)
             if (!foundUser) {
-                const allUsers = await apiFetch('/users');
-                if (allUsers) {
-                    foundUser = allUsers.find(u => u.id == hostUserId);
+                if (userProfile && userProfile.id == hostUserId) {
+                    foundUser = userProfile;
+                } else {
+                    const allUsers = await apiFetch('/users');
+                    if (allUsers) {
+                        foundUser = allUsers.find(u => u.id == hostUserId);
+                    }
                 }
             }
 
             // 3. Open if found
             if (foundUser) {
+                // If it is ME, treating as visited to preview public view?
+                // Or maybe just ensure correct Mode?
+                // Let's open logic
                 openVisitedProfile(foundUser);
             } else {
                 console.log("Deep link user not found");
