@@ -1176,7 +1176,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const TASKS_DB = [
         { id: 't1', title: 'Подписаться на канал', reward: 3, link: 'https://t.me/durov', type: 'link', icon: '📢' },
-        { id: 't2', title: 'Пригласить друга', reward: 5, link: 'https://t.me/share/url?url=https://t.me/your_bot_link', type: 'share', icon: '✉️' },
+        { id: 't2', title: 'Пригласить друга', reward: 5, link: null, type: 'invite', icon: '🤝' },
         { id: 't3', title: 'Вступить в чат', reward: 2, link: 'https://t.me/telegram', type: 'link', icon: '💬' }
     ];
 
@@ -1187,13 +1187,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!container) return;
 
         container.innerHTML = '';
+        const userCompleted = completedTasks; // simple array of IDs
 
         TASKS_DB.forEach(task => {
-            const isDone = completedTasks.includes(task.id);
+            const isDone = userCompleted.includes(task.id);
 
             const taskEl = document.createElement('div');
             taskEl.className = 'task-card';
-            if (isDone) taskEl.classList.add('done');
+            if (isDone) taskEl.style.opacity = '0.6';
 
             taskEl.innerHTML = `
                 <div class="task-icon">${task.icon}</div>
