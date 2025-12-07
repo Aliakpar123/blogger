@@ -496,15 +496,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Method C: Regex Fallback (Search in raw HTML)
                 if (!price) {
                     // Look for "price": 12345 or "price": "12345"
-                    const jsonMatch = htmlContent.match(/"price"\s*:\s*"?(\d+)"?/);
+                    // Also look for "price":12345
+                    const jsonMatch = htmlContent.match(/"price"\s*:\s*"?(\d+)"?/i);
                     if (jsonMatch && jsonMatch[1]) {
                         price = parseInt(jsonMatch[1]);
                     } else {
-                        // Look for 12 345 ₸ pattern common in Kaspi
-                        const textMatch = htmlContent.match(/(\d[\d\s]*)\s?₸/);
+                        // Look for 12 345 ₸ pattern common in Kaspi (Russian & Kazakh)
+                        // Matches: 123 456 ₸, 12 345 T, etc.
+                        const textMatch = htmlContent.match(/(\d{1,3}(?:\s\d{3})*)\s?[₸T]/);
                         if (textMatch && textMatch[1]) {
                             price = parseInt(textMatch[1].replace(/\s/g, ''));
                         }
+                    }
+                }
+
+                // Method D: Last Resort - Look for any big number followed by T or ₸ inside a price-like class
+                if (!price) {
+                    // Sometimes classes are like "price_123" or similar obfuscation
+                    // We just search for the first reasonable price-like string in the body text
+                    const bodyText = doc.body.innerText;
+                    const looseMatch = bodyText.match(/(\d{1,3}(?:\s\d{3})*)\s?[₸T]/);
+                    if (looseMatch && looseMatch[1]) {
+                        const potentialPrice = parseInt(looseMatch[1].replace(/\s/g, ''));
+                        // Sanity check: Price usually > 100
+                        if (potentialPrice > 100) price = potentialPrice;
                     }
                 }
 

@@ -699,9 +699,10 @@ body {
 }
 
 .preview-image-upload img {
-    width: 100%;
+    width: auto;
     height: 100%;
-    object-fit: cover;
+    max-width: 100%;
+    object-fit: contain;
 }
 
 .upload-btn-overlay {
