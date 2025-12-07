@@ -1748,8 +1748,13 @@ input:checked+.slider:before {
 }
 
 #search-results.hidden {
-    display: none;
+    display: none !important;
     opacity: 0;
+}
+
+/* GLOBAL UTILITY - CRITICAL FIX */
+.hidden {
+    display: none !important;
 }
 
 @keyframes fadeInSlide {
