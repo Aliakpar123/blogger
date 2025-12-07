@@ -7,10 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
     style.href = `style.css?v=${Date.now()}`;
     document.head.appendChild(style);
 
-    window.onerror = function (msg, url, line, col, error) {
-        alert("Error: " + msg + "\nLine: " + line);
-    };
-
     // Initialize Telegram
     if (window.Telegram?.WebApp) {
         window.Telegram.WebApp.ready();
