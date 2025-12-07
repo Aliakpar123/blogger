@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // alert("VERSION 5.0 LOADED ✅"); // Uncomment if needed for hard check
+    // alert("VERSION 8.0 LOADED - SYNTAX OK ✅"); 
+    console.log("SCRIPT STARTED");
 
     // === DEBUGGING FORCE REFRESH ===
     const style = document.createElement('link');
