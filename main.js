@@ -1372,9 +1372,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Connect Share Button
-    const shareBtn = document.getElementById('main-share-btn'); // Ensure this ID exists in HTML or Profile
+    // Connect Share Button
+    const shareBtn = document.getElementById('share-profile-btn');
     if (shareBtn) {
         shareBtn.addEventListener('click', shareProfile);
+    } else {
+        console.error("Share button ID 'share-profile-btn' not found!");
     }
     // If button doesn't exist yet, we might need to add it to Profile render
 
