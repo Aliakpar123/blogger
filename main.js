@@ -1261,21 +1261,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- SOCIAL & DEEP LINKING ---
 
     function shareProfile() {
-        const botUsername = "wishlist_bloggers_bot"; // Replace with actual bot username if known
-        const userId = userProfile.id || "123";
-        const shareUrl = `https://t.me/${botUsername}/app?startapp=user_${userId}`;
-        const text = `Посмотри мой вишлист "Merci"! 🎁`;
+        try {
+            const botUsername = "wishlist_bloggers_bot";
+            const userId = userProfile && userProfile.id ? userProfile.id : "unknown";
+            const text = `Посмотри мой вишлист "Merci"! 🎁`;
+            const shareUrl = `https://t.me/${botUsername}/app?startapp=user_${userId}`;
 
-        // 1. Try Telegram Native Share
-        if (window.Telegram?.WebApp) {
-            // Use switchInlineQuery to share to chat (THE REQUESTED OPTIONS)
-            window.Telegram.WebApp.switchInlineQuery(text, ['users', 'groups', 'channels']);
-
-            // OR use standard openTelegramLink for external share
-            // window.Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`);
-        } else {
-            // Fallback for web
-            window.open(`https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`, '_blank');
+            // 1. Try Telegram Native Share
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.switchInlineQuery) {
+                // Use switchInlineQuery to share to chat
+                window.Telegram.WebApp.switchInlineQuery(text, ['users', 'groups', 'channels']);
+            } else {
+                // Fallback for web or old versions
+                const safeUrl = encodeURIComponent(shareUrl);
+                const safeText = encodeURIComponent(text);
+                window.open(`https://t.me/share/url?url=${safeUrl}&text=${safeText}`, '_blank');
+            }
+        } catch (e) {
+            console.error("Share failed", e);
+            alert("Ошибка при попытке поделиться. Попробуйте скриншот.");
         }
     }
 
