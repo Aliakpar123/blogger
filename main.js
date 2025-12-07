@@ -689,53 +689,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 { id: 3, name: "Elena K.", username: "@elenak", avatar: "https://media.giphy.com/media/3otPoSefCKYjsiyIxW/giphy.gif", bio: "Traveler ✈️", isPrivate: true, subscribers: 8900 },
             ];
 
-            // ... (lines 648-774 skipped in target to keep simple match if possible, but they are too far apart. I will do separate replaces if needed. Let's try to match just the arrays if the first one fails)
-
-            // Actually, I'll do separate calls to be safe.
-            // This call will fail because I put multiple unrelated blocks in ReplacementContent without matching TargetContent precisely including the gap.
-            // I should use `multi_replace_file_content` OR separate calls.
-            // I already sent a tool call above, which was risky because it spanned lines 39 to ~780+ which is HUGE.
-            // The previous tool call will almost certainly fail or replace the WHOLE content in between with nothing if I matched start/end.
-            // WAIT. My TargetContent in previous step was only the User Profile part:
-            /*
-            // User Profile API
-            let userProfile = safeParse('user_profile', {
-                name: "Ali Akbar",
-                bio: "Digital Creator & Blogger 📸",
-                avatar: "https://ui-avatars.com/api/?name=Ali+Akbar&background=random&color=fff",
-                isPrivate: false,
-                subscribers: 1240
-            });
-            */
-            // But I provided replacement content that INCLUDED "MOCK_USERS" way down.
-            // The `replace_file_content` tool REPLACES `TargetContent` with `ReplacementContent`.
-            // So if I only matched the top part, I would be inserting the bottom part right there, DUPLICATING it and messing up the file structure.
-            // I MUST ABORT OR CORRECT THIS.
-            // I will assume the previous tool call might execute as is, which would be bad (inserting mock users at the top).
-            // actually, I did not execute it yet technically in "thought", but I did output the tool call.
-            // I should issue a NEW tool call to correct it if I can, but I can't "undo" a sent tool call in the same turn usually.
-            // However, since I am generating the response, I can just output the correct tool calls now in sequence.
-            // The previous `replace_file_content` only targeted lines 39-46 roughly.
-            // If I replace that with code that includes `MOCK_USERS` arrays... the file will have `MOCK_USERS` defined twice (once at top, once at bottom).
-            // AND I will have deleted the lines in between? NO. `replace_file_content` replaces specific block.
-            // So I will just have `MOCK_USERS` defined at the top too. The bottom one remains.
-            // That's messy but not fatal JS usually, unless `const` redeclaration throws error.
-            // `const MOCK_USERS` redeclaration WILL throw error.
-
-            // I must split this into 3 separate replaces: Profile, Search Users, Generous Users.
-            // AND I should not use the huge block from the previous thought trace if I can avoid it.
-
-            // RE-PLANNING:
-            // I will issue 3 separate `replace_file_content` calls.
-            // 1. User Profile Avatar
-            // 2. Mock Users Avatars
-            // 3. Generous Users Avatars
-
-            // Since I cannot "take back" the tool call I visualized in thought, I just have to hope the system hasn't executed it. 
-            // Wait, I am the model. I haven't output the JSON yet in the final response block.
-            // Accessing `default_api`...
-
-            // OK, I will emit correct multiple calls now.
+            // --- SEARCH LOGIC --- (Restored)
 
 
             const searchInput = document.getElementById('user-search-input');
@@ -902,10 +856,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // REDEFINING renderItems slightly to use target's privacy
             function renderItems() {
                 const container = document.getElementById('wish-list-container');
-                if (!container) {
-                    console.error("Container #wish-list-container not found!");
-                    return;
-                }
+                if (!container) return;
+
                 container.innerHTML = '';
 
                 const target = visitedProfile || userProfile;
@@ -915,7 +867,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     const overlay = document.getElementById('locked-overlay');
                     if (overlay) {
                         overlay.classList.remove('hidden');
-                        // Update text
                         overlay.querySelector('h3').textContent = `Профиль ${target.name} закрыт`;
                     }
                     return;
@@ -930,9 +881,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     const percent = item.goal > 0 ? Math.min(100, Math.round((item.collected / item.goal) * 100)) : 0;
 
+                    // Escape template literals potentially? No, just use standard backticks
                     card.innerHTML = `
                 <div class="card-image-container">
-                    <img src="${item.image}" alt="${item.title}" class="card-image" loading="lazy">
+                    <img src="${item.image}" alt="Item" class="card-image" loading="lazy">
                     <div class="image-overlay">${item.category || 'Разное'}</div>
                     ${!isPublicView ? `<button class="delete-icon-btn" data-id="${item.id}">✕</button>` : ''}
                 </div>
@@ -955,26 +907,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 // Re-attach listeners
-                document.querySelectorAll('.pay-btn').forEach(btn => {
+                container.querySelectorAll('.pay-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
-                        const card = e.target.closest('.wish-card');
-                        const title = card.querySelector('h3').innerText;
                         const id = e.target.dataset.id;
-                        openModal(title, id);
+                        const item = wishListItems.find(i => i.id == id);
+                        if (item) openModal(item.title, item.id);
                     });
                 });
 
-                // Delete listeners (Restored)
-                document.querySelectorAll('.delete-icon-btn').forEach(btn => {
+                // Delete listeners
+                container.querySelectorAll('.delete-icon-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        if (confirm('Точно хотите удалить это желание?')) {
-                            deleteItem(e.currentTarget.dataset.id);
+                        // Use simple confirm
+                        if (confirm('Удалить желание?')) {
+                            const id = e.currentTarget.dataset.id;
+                            if (typeof deleteItem === 'function') {
+                                deleteItem(id);
+                            } else {
+                                // Fallback if deleteItem missing
+                                wishListItems = wishListItems.filter(i => i.id != id);
+                                localStorage.setItem('wishlist_items', JSON.stringify(wishListItems));
+                                renderItems();
+                            }
                         }
                     });
                 });
-            } // End renderItems
+            }
 
             // INITIAL RENDER
             try {
