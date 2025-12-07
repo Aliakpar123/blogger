@@ -987,7 +987,6 @@ document.addEventListener('DOMContentLoaded', () => {
             card.innerHTML = `
                 <div class="card-image-container">
                     <img src="${item.image}" alt="Item" class="card-image" loading="lazy">
-                    <div class="image-overlay">${item.category || 'Разное'}</div>
                     ${!isPublicView ? `<button class="delete-icon-btn" data-id="${item.id}">✕</button>` : ''}
                 </div>
                 <div class="card-content">
