@@ -5,7 +5,7 @@ echo "========================================"
 
 # Add all files
 git add .
-git commit -m "Force Update v5.5"
+git commit -m "Update $(date)"
 
 # Show remote
 echo "Checking connection..."
