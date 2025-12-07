@@ -814,7 +814,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // REDEFINING renderItems slightly to use target's privacy
         function renderItems() {
-            if (!container) return;
+            const container = document.getElementById('wish-list-container');
+            if (!container) {
+                console.error("Container #wish-list-container not found!");
+                return;
+            }
             container.innerHTML = '';
 
             const target = visitedProfile || userProfile;
@@ -886,10 +890,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // INITIAL RENDER
-        updateSlotsUI();
-        updateProfileUI(); // Call the new version
-        renderGenerousUsers(); // NEW
-        renderItems();     // Call the new version
+        try {
+            updateSlotsUI();
+            updateProfileUI();
+            renderGenerousUsers();
+            renderItems();
+        } catch (e) {
+            alert("Render Error: " + e.message);
+            console.error(e);
+        }
 
         // Tab switching fix for nav (ensure default active)
         document.querySelector('.nav-item.active')?.click();
