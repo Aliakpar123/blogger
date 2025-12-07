@@ -1282,24 +1282,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function shareProfile() {
+        console.log("SHARE BUTTON CLICKED");
+        // alert("Share Clicked!"); // Debug
+
         try {
+            // Re-select elements here to be 100% sure they exist
+            const sModal = document.getElementById('share-modal');
+            const sInput = document.getElementById('share-link-input');
+
             const botUsername = "wishlist_bloggers_bot";
             const userId = userProfile && userProfile.id ? userProfile.id : "unknown";
             const shareUrl = `https://t.me/${botUsername}/app?startapp=user_${userId}`;
 
             // Populate Input
-            if (shareLinkInput) {
-                shareLinkInput.value = shareUrl;
+            if (sInput) {
+                sInput.value = shareUrl;
+            } else {
+                console.error("Share input not found");
             }
 
             // Show Modal
-            if (shareModal) {
-                shareModal.classList.remove('hidden');
+            if (sModal) {
+                sModal.classList.remove('hidden');
+            } else {
+                console.error("Share modal not found");
+                alert("Ошибка: окно 'Поделиться' не найдено");
             }
 
         } catch (e) {
             console.error("Share modal failed", e);
-            alert("Ошибка при открытии меню 'Поделиться'");
+            alert("Ошибка при открытии меню 'Поделиться': " + e.message);
         }
     }
 
