@@ -641,52 +641,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- CONFIRM CREATE LOGIC (RESTORED/ADDED) ---
-    const confirmCreateBtn = document.getElementById('confirm-create-btn');
-    if (confirmCreateBtn) {
-        confirmCreateBtn.addEventListener('click', () => {
-            const titleInput = document.getElementById('new-item-title');
-            const priceInput = document.getElementById('new-item-price');
-            const imgPreview = document.getElementById('new-item-image');
-            const kaspiLinkInput = document.getElementById('kaspi-link');
-
-            if (!titleInput.value) {
-                alert('Введите название');
-                return;
-            }
-
-            const newItem = {
-                id: Date.now(),
-                title: titleInput.value,
-                price: parseInt(priceInput.value) || 0,
-                goal: parseInt(priceInput.value) || 0,
-                collected: 0,
-                image: imgPreview ? imgPreview.src : 'https://placehold.co/600x400',
-                link: kaspiLinkInput ? kaspiLinkInput.value : '#'
-            };
-
-            wishListItems.push(newItem);
-            localStorage.setItem('wishlist_items', JSON.stringify(wishListItems));
-
-            // Reset Forms
-            titleInput.value = '';
-            priceInput.value = '';
-            if (kaspiLinkInput) kaspiLinkInput.value = '';
-
-            // Reset View
-            document.querySelector('.create-step-1').classList.remove('hidden');
-            document.getElementById('create-step-2').classList.add('hidden');
-
-            renderItems();
-
-            // Go Home
-            document.querySelector('[data-target="home-view"]').click();
-
-            // SYNC TO SERVER
-            syncUserWishes();
-        });
-    }
-
     // --- PROFILE ACTIONS ---
     const editProfileBtn = document.getElementById('edit-profile-btn');
     if (editProfileBtn) {
