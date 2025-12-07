@@ -44,22 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     ]);
 
-    // --- TEST: FORCE ADD COMPLETED ITEM (v5.5) ---
-    // This ensures you see the green button immediately
-    if (!wishListItems.find(i => i.id === 999)) {
-        wishListItems.unshift({
-            id: 999,
-            title: "Тест: Уже Исполнено ✅",
-            collected: 5000,
-            goal: 5000,
-            image: "https://images.unsplash.com/photo-1461800919507-79b16743b257?auto=format&fit=crop&w=800&q=80",
-            category: "Тест"
-        });
-        // We do not saveState() immediately to avoid polluting storage permanently if not desired, 
-        // but for this user request we want to persist it so they see it.
-        localStorage.setItem('wishlist_items', JSON.stringify(wishListItems));
-    }
-
     // User Profile API
     let userProfile = safeParse('user_profile', {
         name: "Ali Akbar",
