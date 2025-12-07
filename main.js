@@ -1043,8 +1043,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
         listContainer.innerHTML = '';
 
-        // Use Server DB if available, else empty (or fallback if we kept mock)
-        const usersToRender = ALL_USERS_DB.length > 0 ? ALL_USERS_DB : [];
+        // 1. Start with fetched DB or fallback mocks
+        let usersToRender = (ALL_USERS_DB && ALL_USERS_DB.length > 0) ? [...ALL_USERS_DB] : [
+            // Fallback Mocks if DB is empty
+            { id: 101, name: "Кристина W.", username: "@kristina", avatar: "https://media.giphy.com/media/3otPoSefCKYjsiyIxW/giphy.gif", donated: "2.5M ₸", bio: "Щедрый пользователь 🎁", isPrivate: false, subscribers: 5200 },
+            { id: 102, name: "Alex B.", username: "@alexb", avatar: "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif", donated: "1.8M ₸", bio: "Investments 📈", isPrivate: false, subscribers: 3100 },
+            { id: 103, name: "Dana Life", username: "@danalife", avatar: "https://media.giphy.com/media/3o6fJdYXEWgW3TfDwt/giphy.gif", donated: "950k ₸", bio: "Lifestyle blog ✨", isPrivate: true, subscribers: 15400 },
+            { id: 104, name: "Mr. Beast KZ", username: "@mrbeastkz", avatar: "https://media.giphy.com/media/xUySTxD71WmjOwi2I/giphy.gif", donated: "500k ₸", bio: "Charity & Fun", isPrivate: false, subscribers: 50000 },
+            { id: 105, name: "Aigerim", username: "@aika", avatar: "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif", donated: "320k ₸", bio: "Student 📚", isPrivate: true, subscribers: 800 }
+        ];
+
+        // 2. FORCE MERGE current user if they are not already in the list
+        if (userProfile && userProfile.id) {
+            const exists = usersToRender.some(u => u.id == userProfile.id);
+            if (!exists) {
+                // Add to the bottom or top? Let's add to bottom for now
+                usersToRender.push({
+                    ...userProfile,
+                    isSelf: true
+                });
+            }
+        }
 
         usersToRender.forEach((user, index) => {
             const div = document.createElement('div');
