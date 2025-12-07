@@ -253,21 +253,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         <button class="btn-insta-share" id="share-profile-btn">Поделиться</button>
                     `;
                     const editBtn = document.getElementById('edit-profile-btn');
-                    if (editBtn) editBtn.addEventListener('click', () => {
-                        // Re-bind edit logic (defined globally later, or prompt here)
-                        // We can trigger the global global listener if we make it a function or just re-implement
-                        const newName = prompt("Имя:", userProfile.name);
-                        if (newName) {
-                            userProfile.name = newName;
-                            // ... save and update logic is usually here or assumed
-                            localStorage.setItem('user_profile', JSON.stringify(userProfile));
-                            updateProfileUI();
-                        }
-                    });
-
-                    const shareBtn = document.getElementById('share-profile-btn');
-                    if (shareBtn) {
-                        shareBtn.addEventListener('click', shareProfile);
+                    if (editBtn) {
+                        editBtn.addEventListener('click', () => {
+                            const newName = prompt("Имя:", userProfile.name);
+                            if (newName) {
+                                userProfile.name = newName;
+                                localStorage.setItem('user_profile', JSON.stringify(userProfile));
+                                updateProfileUI();
+                            }
+                        });
                     }
                 }
             }
@@ -1403,11 +1397,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Connect Share Button
     // Connect Share Button
-    const shareBtn = document.getElementById('share-profile-btn');
-    if (shareBtn) {
-        shareBtn.addEventListener('click', shareProfile);
-    } else {
-        console.error("Share button ID 'share-profile-btn' not found!");
+    // --- GLOBAL EVENT DELEGATION (Fix for dynamic buttons) ---
+    document.body.addEventListener('click', (e) => {
+        // Share Button (Profile View)
+        if (e.target.id === 'share-profile-btn' || e.target.closest('#share-profile-btn')) {
+            e.preventDefault();
+            console.log('Global Delegate: Share Profile Clicked');
+            shareProfile();
+        }
+
+        // Share Button (Home View)
+        if (e.target.id === 'main-share-btn' || e.target.closest('#main-share-btn')) {
+            e.preventDefault();
+            console.log('Global Delegate: Main Share Clicked');
+            shareProfile();
+        }
+    });
+
+    // Check if buttons exist statically (just in case)
+    const staticShareBtn = document.getElementById('share-profile-btn');
+    if (staticShareBtn) {
+        // staticShareBtn.addEventListener('click', shareProfile); // Delegation handles it
     }
     // If button doesn't exist yet, we might need to add it to Profile render
 
