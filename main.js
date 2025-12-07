@@ -1040,14 +1040,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
         listContainer.innerHTML = '';
 
-        // MERGE STRATEGY:
-        // 1. Start with Fixed Mocks
-        let finalUserList = [...FIXED_MOCKS];
+        // DEFINE MOCKS LOCALLY TO BE 100% SURE
+        const LOCAL_MOCKS = [
+            { id: 101, name: "Кристина W.", username: "@kristina", avatar: "https://media.giphy.com/media/3otPoSefCKYjsiyIxW/giphy.gif", donated: "2.5M ₸", bio: "Щедрый пользователь 🎁", isPrivate: false, subscribers: 5200 },
+            { id: 102, name: "Alex B.", username: "@alexb", avatar: "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif", donated: "1.8M ₸", bio: "Investments 📈", isPrivate: false, subscribers: 3100 },
+            { id: 103, name: "Dana Life", username: "@danalife", avatar: "https://media.giphy.com/media/3o6fJdYXEWgW3TfDwt/giphy.gif", donated: "950k ₸", bio: "Lifestyle blog ✨", isPrivate: true, subscribers: 15400 },
+            { id: 104, name: "Mr. Beast KZ", username: "@mrbeastkz", avatar: "https://media.giphy.com/media/xUySTxD71WmjOwi2I/giphy.gif", donated: "500k ₸", bio: "Charity & Fun", isPrivate: false, subscribers: 50000 },
+            { id: 105, name: "Aigerim", username: "@aika", avatar: "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif", donated: "320k ₸", bio: "Student 📚", isPrivate: true, subscribers: 800 },
+            { id: 1, name: "Anna Smirnova", username: "@annas", avatar: "https://media.giphy.com/media/3o6fJdYXEWgW3TfDwt/giphy.gif", donated: "150k ₸", bio: "Photography Lover 📷", isPrivate: true, subscribers: 5400 },
+            { id: 2, name: "Max Payne", username: "@maxp", avatar: "https://media.giphy.com/media/xUySTxD71WmjOwi2I/giphy.gif", donated: "5k ₸", bio: "Gamer & Streamer 🎮", isPrivate: false, subscribers: 1200 },
+            { id: 3, name: "Elena K.", username: "@elenak", avatar: "https://media.giphy.com/media/3otPoSefCKYjsiyIxW/giphy.gif", donated: "10k ₸", bio: "Traveler ✈️", isPrivate: true, subscribers: 8900 }
+        ];
+
+        // 1. Start with Local Mocks
+        let finalUserList = [...LOCAL_MOCKS];
 
         // 2. Add Server Users (avoid duplicates based on ID)
-        if (serverUsers.length > 0) {
+        if (serverUsers && serverUsers.length > 0) {
             serverUsers.forEach(sUser => {
-                // If this user ID is not in fixed mocks, add them
                 const isFixed = finalUserList.some(m => m.id == sUser.id);
                 if (!isFixed) {
                     finalUserList.push(sUser);
@@ -1064,10 +1074,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     isSelf: true
                 });
             } else {
-                // Mark existing as self for styling if needed
                 finalUserList = finalUserList.map(u => u.id == userProfile.id ? { ...u, isSelf: true } : u);
             }
         }
+
+        console.log("Rendering users count:", finalUserList.length);
 
         finalUserList.forEach((user, index) => {
             const div = document.createElement('div');
