@@ -963,14 +963,27 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 103, name: "Dana Life", username: "@danalife", avatar: "https://media.giphy.com/media/3o6fJdYXEWgW3TfDwt/giphy.gif", donated: "950k ₸", bio: "Lifestyle blog ✨", isPrivate: true, subscribers: 0 },
         { id: 104, name: "Mr. Beast KZ", username: "@mrbeastkz", avatar: "https://media.giphy.com/media/xUySTxD71WmjOwi2I/giphy.gif", donated: "500k ₸", bio: "Charity & Fun", isPrivate: false, subscribers: 0 },
         { id: 105, name: "Aigerim", username: "@aika", avatar: "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif", donated: "320k ₸", bio: "Student 📚", isPrivate: true, subscribers: 0 },
-        // Previously MOCK_USERS
+        // Restored users ("Who downloaded / new users")
         { id: 1, name: "Anna Smirnova", username: "@annas", avatar: "https://media.giphy.com/media/3o6fJdYXEWgW3TfDwt/giphy.gif", donated: "150k ₸", bio: "Photography Lover 📷", isPrivate: true, subscribers: 0 },
         { id: 2, name: "Max Payne", username: "@maxp", avatar: "https://media.giphy.com/media/xUySTxD71WmjOwi2I/giphy.gif", donated: "5k ₸", bio: "Gamer & Streamer 🎮", isPrivate: false, subscribers: 0 },
         { id: 3, name: "Elena K.", username: "@elenak", avatar: "https://media.giphy.com/media/3otPoSefCKYjsiyIxW/giphy.gif", donated: "10k ₸", bio: "Traveler ✈️", isPrivate: true, subscribers: 0 }
     ];
 
-    // Redefine GENEROUS_USERS to alias ALL_USERS_DB for now, or just use ALL_USERS_DB in render
-    const GENEROUS_USERS = ALL_USERS_DB;
+    // Merge Current User into the "Community" list if not already there
+    // We treat this list as "Everyone" now
+    const GENEROUS_USERS = [...ALL_USERS_DB];
+
+    // Add current user to the top or bottom? 
+    // "Who downloaded" -> Maybe just add them to the list to show participation
+    if (userProfile) {
+        // Check if already in DB by some ID? No, just add locally
+        GENEROUS_USERS.push({
+            ...userProfile,
+            id: 999, // self
+            donated: "0 ₸", // default
+            isSelf: true
+        });
+    }
 
     function renderGenerousUsers() {
         const listContainer = document.getElementById('generous-users-list');
