@@ -455,10 +455,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     'https://placehold.co/600x400';
 
                 // 3. Price (Complex, classes change often)
-                // Try searching for JSON-LD script which is most reliable if present
                 let price = 0;
 
-                // Method A: JSON-LD
+                // Method A: JSON-LD (Most reliable if present)
                 const scripts = doc.querySelectorAll('script[type="application/ld+json"]');
                 for (let s of scripts) {
                     try {
@@ -470,12 +469,43 @@ document.addEventListener('DOMContentLoaded', () => {
                     } catch (e) { }
                 }
 
-                // Method B: Common classes if Method A failed
+                // Method B: CSS Selectors (Desktop & Mobile)
                 if (!price) {
-                    const priceText = doc.querySelector('.item__price-once')?.innerText ||
-                        doc.querySelector('.item__price-value')?.innerText ||
-                        '0';
-                    price = parseInt(priceText.replace(/\D/g, '')) || 0;
+                    const priceSelectors = [
+                        '.item__price-once',       // Desktop old
+                        '.item__price-value',      // Desktop new
+                        '.item__price',            // Generic
+                        '.p-price__text',          // Mobile
+                        '.product-price',          // Generic Mobile
+                        '.current-price',          // Generic
+                        '.price'                   // Very generic
+                    ];
+
+                    for (let selector of priceSelectors) {
+                        const el = doc.querySelector(selector);
+                        if (el) {
+                            const val = parseInt(el.innerText.replace(/\D/g, ''));
+                            if (val > 0) {
+                                price = val;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // Method C: Regex Fallback (Search in raw HTML)
+                if (!price) {
+                    // Look for "price": 12345 or "price": "12345"
+                    const jsonMatch = htmlContent.match(/"price"\s*:\s*"?(\d+)"?/);
+                    if (jsonMatch && jsonMatch[1]) {
+                        price = parseInt(jsonMatch[1]);
+                    } else {
+                        // Look for 12 345 ₸ pattern common in Kaspi
+                        const textMatch = htmlContent.match(/(\d[\d\s]*)\s?₸/);
+                        if (textMatch && textMatch[1]) {
+                            price = parseInt(textMatch[1].replace(/\s/g, ''));
+                        }
+                    }
                 }
 
                 document.querySelector('.create-step-1').classList.add('hidden');
