@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // alert("VERSION 8.0 LOADED - SYNTAX OK ✅"); 
-    console.log("SCRIPT STARTED");
+    // alert("VERSION 9.9.75 LOADED ✅"); 
+    console.log("SCRIPT STARTED v9.9.75");
 
     // === DEBUGGING FORCE REFRESH ===
     const style = document.createElement('link');
