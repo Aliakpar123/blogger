@@ -1424,19 +1424,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- GLOBAL EVENT DELEGATION (Fix for dynamic buttons) ---
     document.body.addEventListener('click', (e) => {
         // Share Button (Removed by user request)
-        /*
-        if (e.target.id === 'share-profile-btn' || e.target.closest('#share-profile-btn')) {
-            e.preventDefault();
-            alert('Debug: Button Clicked!'); // Uncommented for user feedback
-            shareProfile();
-        }
-        
         // Share Button (Home View)
         if (e.target.id === 'main-share-btn' || e.target.closest('#main-share-btn')) {
             e.preventDefault();
             shareProfile();
         }
-        */
     });
 
     // Check if buttons exist statically (just in case)
