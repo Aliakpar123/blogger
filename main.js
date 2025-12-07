@@ -274,7 +274,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     // My Profile -> Show Edit/Share (Default)
                     actionsContainer.innerHTML = `
                         <button class="btn-insta-edit" id="edit-profile-btn">Редактировать</button>
-                        <button class="btn-insta-share" id="share-profile-btn">Поделиться</button>
                     `;
                     const editBtn = document.getElementById('edit-profile-btn');
                     if (editBtn) {
@@ -1424,18 +1423,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Connect Share Button
     // --- GLOBAL EVENT DELEGATION (Fix for dynamic buttons) ---
     document.body.addEventListener('click', (e) => {
-        // Share Button (Profile View)
+        // Share Button (Removed by user request)
+        /*
         if (e.target.id === 'share-profile-btn' || e.target.closest('#share-profile-btn')) {
             e.preventDefault();
             alert('Debug: Button Clicked!'); // Uncommented for user feedback
             shareProfile();
         }
-
+        
         // Share Button (Home View)
         if (e.target.id === 'main-share-btn' || e.target.closest('#main-share-btn')) {
             e.preventDefault();
             shareProfile();
         }
+        */
     });
 
     // Check if buttons exist statically (just in case)
