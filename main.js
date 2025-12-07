@@ -36,6 +36,19 @@ document.addEventListener('DOMContentLoaded', () => {
     let maxSlots = parseInt(localStorage.getItem('max_slots')) || DEFAULT_SLOTS;
     let wishListItems = safeParse('wishlist_items', []);
 
+    // ONE TIME DEFAULT ITEM (If list is totally empty)
+    if (wishListItems.length === 0) {
+        wishListItems.push({
+            id: 999,
+            title: "Пример: Новый Макбук 💻",
+            collected: 15000,
+            goal: 500000,
+            image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca4?auto=format&fit=crop&w=800&q=80",
+            category: "Гаджеты"
+        });
+        localStorage.setItem('wishlist_items', JSON.stringify(wishListItems));
+    }
+
     // User Profile API
     let userProfile = safeParse('user_profile', {
         name: "Ali Akbar",
@@ -547,6 +560,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
                     }
                 });
+            }
+
+            // Main Share Button Logic
+            const mainShareBtn = document.getElementById('main-share-btn');
+            if (mainShareBtn) {
+                mainShareBtn.addEventListener('click', shareProfile);
             }
 
 
