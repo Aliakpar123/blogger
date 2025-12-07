@@ -863,19 +863,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- OVERRIDE/UPDATE FUNCTIONS ---
 
-    // REDEFINING updateProfileUI for Community View
-    function updateProfileUI() {
-        const target = visitedProfile || userProfile; // View visited or Self
-
-        // Elements for new design
-        const profileNameEl = document.getElementById('profile-name');
-        const profileBioEl = document.getElementById('profile-bio');
-        const profileAvatarEl = document.getElementById('profile-avatar');
-
-        if (profileNameEl) profileNameEl.innerText = target.name;
-        if (profileBioEl) profileBioEl.innerText = target.bio;
-        if (profileAvatarEl) profileAvatarEl.src = target.avatar;
-    }
+    // updateProfileUI functionality is handled by the main function definition above.
+    // Duplicate removed.
 
     // REDEFINING renderItems slightly to use target's privacy
     function renderItems() {
