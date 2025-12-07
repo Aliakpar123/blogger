@@ -2018,3 +2018,91 @@ input:checked+.slider:before {
     max-width: 250px;
     line-height: 1.4;
 }
+
+/* --- SHARE MODAL STYLES --- */
+#share-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+}
+
+#share-modal.hidden {
+    display: none;
+}
+
+.share-modal-content {
+    background: #1c1f26;
+    border-radius: 20px;
+    padding: 25px 20px;
+    width: 90%;
+    max-width: 320px;
+    text-align: center;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.share-header-modal {
+    margin-bottom: 20px;
+}
+
+.share-header-modal h3 {
+    font-size: 18px;
+    margin-bottom: 5px;
+    color: #fff;
+}
+
+.share-header-modal p {
+    font-size: 13px;
+    color: #888;
+}
+
+.share-link-wrapper {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 8px 12px;
+    margin-bottom: 15px;
+}
+
+#share-link-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 13px;
+    outline: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.close-share-modal {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 20px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-share-modal:hover {
+    color: #fff;
+}
