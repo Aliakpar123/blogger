@@ -91,12 +91,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // Removed by user request - list starts empty
     // if (wishListItems.length === 0) { ... }
 
-    // User Profile API
-    // MIGRATION: Force update avatar if it's the old static one or random placeholder
-    // if (userProfile.avatar.includes('ui-avatars.com') || userProfile.avatar.includes('random')) {
-    //     userProfile.avatar = "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif";
-    //     localStorage.setItem('user_profile', JSON.stringify(userProfile));
-    // }
+    // User Profile API...
+
+    // --- MOVED FIXED_MOCKS HERE FOR GLOBAL ACCESS ---
+    const FIXED_MOCKS = [
+        { id: 101, name: "Кристина W.", username: "@kristina", avatar: FESTIVE_AVATARS.elf[0], donated: "2.5M ₸", bio: "Щедрый пользователь 🎁", isPrivate: false, subscribers: 5200 },
+        { id: 102, name: "Alex B.", username: "@alexb", avatar: FESTIVE_AVATARS.santa[0], donated: "1.8M ₸", bio: "Investments 📈", isPrivate: false, subscribers: 3100 },
+        { id: 103, name: "Dana Life", username: "@danalife", avatar: FESTIVE_AVATARS.elf[1], donated: "950k ₸", bio: "Lifestyle blog ✨", isPrivate: true, subscribers: 15400 },
+        { id: 104, name: "Mr. Beast KZ", username: "@mrbeastkz", avatar: FESTIVE_AVATARS.santa[1], donated: "500k ₸", bio: "Charity & Fun", isPrivate: false, subscribers: 50000 },
+        { id: 105, name: "Aigerim", username: "@aika", avatar: FESTIVE_AVATARS.elf[2], donated: "320k ₸", bio: "Student 📚", isPrivate: true, subscribers: 800 },
+        { id: 1, name: "Anna Smirnova", username: "@annas", avatar: FESTIVE_AVATARS.santa[0], donated: "150k ₸", bio: "Photography Lover 📷", isPrivate: true, subscribers: 5400 },
+        { id: 2, name: "Max Payne", username: "@maxp", avatar: FESTIVE_AVATARS.elf[1], donated: "5k ₸", bio: "Gamer & Streamer 🎮", isPrivate: false, subscribers: 1200 },
+        { id: 3, name: "Elena K.", username: "@elenak", avatar: FESTIVE_AVATARS.santa[1], donated: "10k ₸", bio: "Traveler ✈️", isPrivate: true, subscribers: 8900 }
+    ];
 
     // ... (keeping other lines same, but replace MOCK_USERS and GENEROUS_USERS below)
 
@@ -1032,16 +1039,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- GENEROUS USERS LOGIC ---
 
     // 1. Fixed "Community" Mocks (Always visible)
+    // MOVED TO TOP SCOPE
+    /*
     const FIXED_MOCKS = [
-        { id: 101, name: "Кристина W.", username: "@kristina", avatar: FESTIVE_AVATARS.elf[0], donated: "2.5M ₸", bio: "Щедрый пользователь 🎁", isPrivate: false, subscribers: 5200 },
-        { id: 102, name: "Alex B.", username: "@alexb", avatar: FESTIVE_AVATARS.santa[0], donated: "1.8M ₸", bio: "Investments 📈", isPrivate: false, subscribers: 3100 },
-        { id: 103, name: "Dana Life", username: "@danalife", avatar: FESTIVE_AVATARS.elf[1], donated: "950k ₸", bio: "Lifestyle blog ✨", isPrivate: true, subscribers: 15400 },
-        { id: 104, name: "Mr. Beast KZ", username: "@mrbeastkz", avatar: FESTIVE_AVATARS.santa[1], donated: "500k ₸", bio: "Charity & Fun", isPrivate: false, subscribers: 50000 },
-        { id: 105, name: "Aigerim", username: "@aika", avatar: FESTIVE_AVATARS.elf[2], donated: "320k ₸", bio: "Student 📚", isPrivate: true, subscribers: 800 },
-        { id: 1, name: "Anna Smirnova", username: "@annas", avatar: FESTIVE_AVATARS.santa[0], donated: "150k ₸", bio: "Photography Lover 📷", isPrivate: true, subscribers: 5400 },
-        { id: 2, name: "Max Payne", username: "@maxp", avatar: FESTIVE_AVATARS.elf[1], donated: "5k ₸", bio: "Gamer & Streamer 🎮", isPrivate: false, subscribers: 1200 },
-        { id: 3, name: "Elena K.", username: "@elenak", avatar: FESTIVE_AVATARS.santa[1], donated: "10k ₸", bio: "Traveler ✈️", isPrivate: true, subscribers: 8900 }
+        ...
     ];
+    */
 
     // 2. Dynamic Users from Server
     let serverUsers = [];
