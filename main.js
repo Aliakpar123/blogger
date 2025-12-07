@@ -276,17 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderItems(); // Re-render items (to unlock if needed)
     }
 
-    function shareProfile() {
-        if (navigator.share) {
-            navigator.share({
-                title: 'Мой Wishlist',
-                text: 'Посмотрите мой список желаний!',
-                url: window.location.href
-            });
-        } else {
-            alert('Ссылка скопирована!');
-        }
-    }
+
 
     // --- MODAL & PAYMENT ---
     function openModal(itemTitle, itemId) {
