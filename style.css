@@ -317,6 +317,27 @@ body {
     animation: shimmer 2s infinite;
 }
 
+.public-view-banner {
+    position: fixed;
+    top: 60px;
+    /* Below header */
+    left: 0;
+    width: 100%;
+    background: #FF9A9E;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    z-index: 100;
+    font-size: 14px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.public-view-banner a {
+    color: white;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
 @keyframes shimmer {
     100% {
         transform: translateX(100%);

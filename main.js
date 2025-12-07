@@ -750,7 +750,10 @@ document.addEventListener('DOMContentLoaded', () => {
         visitedProfile = null;
         isPublicView = false;
 
-        document.getElementById('public-view-banner').classList.add('hidden');
+        isPublicView = false;
+
+        const banner = document.getElementById('public-view-banner');
+        if (banner) banner.classList.add('hidden');
 
         // Restore Create Button (FAB)
         const fab = document.querySelector('.fab-wrapper');
