@@ -6,16 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Wish List</title>
     <script>
-        window.onerror = function (msg, url, line, col, error) {
-            document.body.innerHTML = `
-                <div style="background:black;color:red;padding:20px;font-family:monospace;height:100vh;">
-                    <h1>CRITICAL ERROR</h1>
-                    <p>${msg}</p>
-                    <p>Line: ${line}, Col: ${col}</p>
-                    <p>${error ? error.stack : ''}</p>
-                    <button onclick="location.reload()" style="padding:10px;margin-top:20px;">RELOAD</button>
-                </div>
-            `;
+        window.onerror = function (msg, url, lineNo, columnNo, error) {
+            document.body.innerHTML = '<div style="background:black;color:red;padding:20px;font-family:monospace;height:100vh;"><h1>CRITICAL ERROR</h1><p>' + msg + '</p><p>Line: ' + lineNo + '</p><button onclick="location.reload()" style="padding:10px;margin-top:20px;">RELOAD</button></div>';
             return false;
         };
     </script>
@@ -43,7 +35,7 @@
                 </div>
                 <div class="brand-text">
                     <span class="brand-merci">Merci</span> <span class="brand-divider">/</span> <span
-                        class="brand-wish">Wish list</span> <span style="font-size: 10px; opacity: 0.5;">v9.9.72</span>
+                        class="brand-wish">Wish list</span> <span style="font-size: 10px; opacity: 0.5;">v9.9.74</span>
                 </div>
             </div>
             <h1 class="header-title hidden" id="header-title"></h1>
@@ -368,7 +360,7 @@
         </button>
     </nav>
     </div>
-    <script src="main.js?v=9.9.72"></script>
+    <script src="main.js?v=9.9.74"></script>
 </body>
 
 </html>
