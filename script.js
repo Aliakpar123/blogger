@@ -717,8 +717,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('user-search-input');
     const searchResults = document.getElementById('search-results');
 
-    // State for viewing other profiles
-    let visitedProfile = null; // If set, we are viewing this user
+    // State for viewing other profiles (Duplicate removed)
+    // visitedProfile is declared at top
 
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
