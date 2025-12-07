@@ -455,7 +455,9 @@ document.addEventListener('DOMContentLoaded', () => {
             isPublicView = true;
             isSubscribedMock = false;
 
-            publicViewBanner.classList.remove('hidden');
+            isSubscribedMock = false;
+
+            // publicViewBanner.classList.remove('hidden'); // REMOVED
             document.querySelector('[data-target="home-view"]').click();
             renderItems();
         });
@@ -465,7 +467,7 @@ document.addEventListener('DOMContentLoaded', () => {
         exitPublicViewLink.addEventListener('click', (e) => {
             e.preventDefault();
             isPublicView = false;
-            publicViewBanner.classList.add('hidden');
+            // publicViewBanner.classList.add('hidden'); // REMOVED
             renderItems();
             document.querySelector('[data-target="profile-view"]').click();
         });
@@ -704,18 +706,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // We need updateProfileUI to accept data OR read from visitedProfile
         updateProfileUI(); // Will now read visitedProfile
 
-        // Show Banner
-        const banner = document.getElementById('public-view-banner');
-        if (banner) {
-            banner.querySelector('p').innerHTML = `В гостях у <b>${user.name}</b>. <a href="#" id="exit-visited-btn">Вернуться</a>`;
-            banner.classList.remove('hidden');
-
-            // Re-bind exit button for this case
-            document.getElementById('exit-visited-btn').onclick = (e) => {
-                e.preventDefault();
-                exitVisitedProfile();
-            };
-        }
+        // Show Banner - REMOVED BY REQUEST
+        // const banner = document.getElementById('public-view-banner');
 
         // Hide Create Button (FAB) in Guest Mode
         const fab = document.querySelector('.fab-wrapper');
@@ -744,8 +736,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         isPublicView = false;
 
-        const banner = document.getElementById('public-view-banner');
-        if (banner) banner.classList.add('hidden');
+        isPublicView = false;
+
+        // Banner hidden logic removed
 
         // Restore Create Button (FAB)
         const fab = document.querySelector('.fab-wrapper');
