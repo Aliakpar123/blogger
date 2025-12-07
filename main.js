@@ -1443,9 +1443,46 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Check if buttons exist statically (just in case)
-    const staticShareBtn = document.getElementById('share-profile-btn');
-    if (staticShareBtn) {
-        // staticShareBtn.addEventListener('click', shareProfile); // Delegation handles it
+    // --- SECRET ADMIN TRIGGER ---
+    let adminClickCount = 0;
+    let adminClickTimeout;
+    const headerInfo = document.getElementById('header-user-info');
+
+    if (headerInfo) {
+        headerInfo.addEventListener('click', () => {
+            adminClickCount++;
+
+            clearTimeout(adminClickTimeout);
+            adminClickTimeout = setTimeout(() => {
+                adminClickCount = 0;
+            }, 1000); // Reset if not fast enough
+
+            if (adminClickCount >= 5) {
+                // Admin Action
+
+                // Calculate total users (Fixed + Server + Self)
+                // We reuse logic roughly from renderGenerousUsers or just take what we know
+                // Ideally we should have a global 'totalUsersCount' or re-calculate
+                let total = 0;
+                total += FIXED_MOCKS.length;
+                if (serverUsers) total += serverUsers.length; // Might double count if overlap not handled, but essentially valid estimate
+                // Actually let's just use the length of the rendered list if possible, or recalculate safely
+
+                // Re-calculate robustly matches renderGenerousUsers logic:
+                let list = [...FIXED_MOCKS];
+                if (serverUsers) {
+                    serverUsers.forEach(u => {
+                        if (!list.some(m => m.id == u.id)) list.push(u);
+                    });
+                }
+                if (userProfile && !list.some(u => u.id == userProfile.id)) {
+                    list.push(userProfile);
+                }
+
+                alert(`👑 ADMIN INFO 👑\n\nВсего пользователей: ${list.length}\n(Включая моки и вас)`);
+                adminClickCount = 0;
+            }
+        });
     }
     // If button doesn't exist yet, we might need to add it to Profile render
 
