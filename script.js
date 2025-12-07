@@ -787,6 +787,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
             }
 
+            // Hide Create Button (FAB) in Guest Mode
+            const fab = document.querySelector('.fab-wrapper');
+            if (fab) fab.style.display = 'none';
+
             // Show their wishlist (Mocking different wishlists for demo)
             // We will just clear current list or show random subset? 
             // For demo, let's show ALL items but randomized status? 
@@ -809,6 +813,10 @@ document.addEventListener('DOMContentLoaded', () => {
             isPublicView = false;
 
             document.getElementById('public-view-banner').classList.add('hidden');
+
+            // Restore Create Button (FAB)
+            const fab = document.querySelector('.fab-wrapper');
+            if (fab) fab.style.display = 'flex';
 
             // Restore My Profile UI
             updateProfileUI();
