@@ -116,8 +116,29 @@ document.addEventListener('DOMContentLoaded', () => {
         if (profileNameEl) {
             // Priority: Visited Profile Name -> User Profile Name -> Telegram User -> Default
             let nameDisplay = data.name;
-            if (visitedProfile && visitedProfile.username) {
-                nameDisplay = visitedProfile.name || visitedProfile.username;
+            if (visitedProfile) {
+                // If it's a visited profile, prefer username if available, else name
+                nameDisplay = visitedProfile.username || visitedProfile.name;
+            } else {
+                // My profile: prefer username if set (from Telegram)
+                if (data.username && !data.name.startsWith('@')) {
+                    // If we have a username but name is "Ali Akbar", maybe show username?
+                    // User asked: "сделай так что бы отраался телеграм ник"
+                    nameDisplay = data.username;
+                } else {
+                    nameDisplay = data.name;
+                }
+            }
+
+            // Ensure it starts with @ if it looks like a username
+            if (nameDisplay && !nameDisplay.startsWith('@') && /^[a-zA-Z0-9_]+$/.test(nameDisplay)) {
+                // heuristic: if single word latin, might be nick. But names can be too. 
+                // Let's just trust the data source.
+            }
+
+            // Fallback
+            if (!nameDisplay && window.Telegram?.WebApp?.initDataUnsafe?.user?.username) {
+                nameDisplay = '@' + window.Telegram.WebApp.initDataUnsafe.user.username;
             }
 
             profileNameEl.innerText = nameDisplay || 'Пользователь';
@@ -781,6 +802,28 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.Telegram?.WebApp) {
         window.Telegram.WebApp.expand();
         window.Telegram.WebApp.setHeaderColor('#0f1115');
+
+        // Fetch Telegram User Data
+        const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
+        if (tgUser) {
+            // Update userProfile with real Telegram data
+            // User requested "telegram nick" -> username
+            // If no username, use first_name + last_name
+            let tgName = tgUser.username ? '@' + tgUser.username : tgUser.first_name;
+
+            userProfile.name = tgName;
+            if (tgUser.username) userProfile.username = '@' + tgUser.username;
+
+            // Only update logic, don't overwrite if user already edited it? 
+            // Actually, user asked to "reflect my telegram nick", so we force it or ensure it's default.
+
+            // NOTE: We only update if it's the default "Ali Akbar" to avoid overwriting custom changes?
+            // "сделай так что бы отраался телеграм ник свой у каждого" -> Implies for everyone.
+            // Let's just update the name in the object.
+
+            // Save to localStorage so it persists
+            localStorage.setItem('user_profile', JSON.stringify(userProfile));
+        }
     }
 
     // --- SEARCH LOGIC ---
