@@ -615,7 +615,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (targetId === 'user-profile-view') headerTitle.textContent = 'Профиль';
         if (targetId === 'tasks-view') headerTitle.textContent = 'Задания';
 
-        // Force re-render of profile UI when entering that view
         if (targetId === 'user-profile-view') {
             updateProfileUI();
         }
