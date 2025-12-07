@@ -799,8 +799,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // Or just keep same items for MVP.
 
         // Go to Profile to see their profile first
-        document.querySelector('[data-target="user-profile-view"]').click();
-        // renderItems(); // We don't render items on profile view immediately unless we add them there
+        // Go to Profile to see their profile first
+        const profileTab = document.querySelector('[data-target="user-profile-view"]');
+        if (profileTab) {
+            profileTab.click();
+            // Force update UI AFTER tab switch to ensure it renders correctly
+            setTimeout(() => {
+                updateProfileUI();
+            }, 50);
+        }
     }
 
     function exitVisitedProfile() {
