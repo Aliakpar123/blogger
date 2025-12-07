@@ -55,24 +55,48 @@ document.addEventListener('DOMContentLoaded', () => {
     let maxSlots = parseInt(localStorage.getItem('max_slots')) || DEFAULT_SLOTS;
     let wishListItems = safeParse('wishlist_items', []);
 
+    const FESTIVE_AVATARS = {
+        elf: [
+            "https://media.giphy.com/media/3otPoSefCKYjsiyIxW/giphy.gif", // Will Ferrell Elf
+            "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif", // Dancing Elf
+            "https://media.giphy.com/media/xUySTxD71WmjOwi2I/giphy.gif" // Elf Cheering
+        ],
+        santa: [
+            "https://media.giphy.com/media/l1AvyLF0kdgZEhLZS/giphy.gif", // Santa Waving
+            "https://media.giphy.com/media/3o6fJdYXEWgW3TfDwt/giphy.gif", // Santa Dancing
+            "https://media.giphy.com/media/4Tbi3JylIFpQQ/giphy.gif" // Bad Santa
+        ]
+    };
+
+    let userProfile = safeParse('user_profile', {
+        id: 'u_' + Date.now(),
+        name: 'Guest',
+        username: '@guest',
+        avatar: FESTIVE_AVATARS.santa[0], // Default temp
+        subscribers: 0,
+        isPrivate: false
+    });
+
+    // MIGRATION: Force update avatar to random Festive one if generic/old
+    // We check if it is included in our new list, if not -> randomize (optional, or just randomize specific unwanted ones)
+    const allFestive = [...FESTIVE_AVATARS.elf, ...FESTIVE_AVATARS.santa];
+    // If avatar is "ui-avatars" or "random" or simply we want to refresh everyone to festive:
+    if (userProfile.avatar.includes('ui-avatars.com') || !allFestive.includes(userProfile.avatar)) {
+        const randomAv = allFestive[Math.floor(Math.random() * allFestive.length)];
+        userProfile.avatar = randomAv;
+        localStorage.setItem('user_profile', JSON.stringify(userProfile));
+    }
+
     // ONE TIME DEFAULT ITEMS (If list is totally empty)
     // Removed by user request - list starts empty
     // if (wishListItems.length === 0) { ... }
 
     // User Profile API
-    let userProfile = safeParse('user_profile', {
-        name: "Ali Akbar",
-        bio: "Digital Creator & Blogger 📸",
-        avatar: "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif", // Buddy the Elf
-        isPrivate: false,
-        subscribers: 0 // Reset to 0 as requested ("factually appearing")
-    });
-
     // MIGRATION: Force update avatar if it's the old static one or random placeholder
-    if (userProfile.avatar.includes('ui-avatars.com') || userProfile.avatar.includes('random')) {
-        userProfile.avatar = "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif";
-        localStorage.setItem('user_profile', JSON.stringify(userProfile));
-    }
+    // if (userProfile.avatar.includes('ui-avatars.com') || userProfile.avatar.includes('random')) {
+    //     userProfile.avatar = "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif";
+    //     localStorage.setItem('user_profile', JSON.stringify(userProfile));
+    // }
 
     // ... (keeping other lines same, but replace MOCK_USERS and GENEROUS_USERS below)
 
@@ -1002,14 +1026,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 1. Fixed "Community" Mocks (Always visible)
     const FIXED_MOCKS = [
-        { id: 101, name: "Кристина W.", username: "@kristina", avatar: "https://media.giphy.com/media/3otPoSefCKYjsiyIxW/giphy.gif", donated: "2.5M ₸", bio: "Щедрый пользователь 🎁", isPrivate: false, subscribers: 5200 },
-        { id: 102, name: "Alex B.", username: "@alexb", avatar: "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif", donated: "1.8M ₸", bio: "Investments 📈", isPrivate: false, subscribers: 3100 },
-        { id: 103, name: "Dana Life", username: "@danalife", avatar: "https://media.giphy.com/media/3o6fJdYXEWgW3TfDwt/giphy.gif", donated: "950k ₸", bio: "Lifestyle blog ✨", isPrivate: true, subscribers: 15400 },
-        { id: 104, name: "Mr. Beast KZ", username: "@mrbeastkz", avatar: "https://media.giphy.com/media/xUySTxD71WmjOwi2I/giphy.gif", donated: "500k ₸", bio: "Charity & Fun", isPrivate: false, subscribers: 50000 },
-        { id: 105, name: "Aigerim", username: "@aika", avatar: "https://media.giphy.com/media/l2YWs1NexTst9YmFG/giphy.gif", donated: "320k ₸", bio: "Student 📚", isPrivate: true, subscribers: 800 },
-        { id: 1, name: "Anna Smirnova", username: "@annas", avatar: "https://media.giphy.com/media/3o6fJdYXEWgW3TfDwt/giphy.gif", donated: "150k ₸", bio: "Photography Lover 📷", isPrivate: true, subscribers: 5400 },
-        { id: 2, name: "Max Payne", username: "@maxp", avatar: "https://media.giphy.com/media/xUySTxD71WmjOwi2I/giphy.gif", donated: "5k ₸", bio: "Gamer & Streamer 🎮", isPrivate: false, subscribers: 1200 },
-        { id: 3, name: "Elena K.", username: "@elenak", avatar: "https://media.giphy.com/media/3otPoSefCKYjsiyIxW/giphy.gif", donated: "10k ₸", bio: "Traveler ✈️", isPrivate: true, subscribers: 8900 }
+        { id: 101, name: "Кристина W.", username: "@kristina", avatar: FESTIVE_AVATARS.elf[0], donated: "2.5M ₸", bio: "Щедрый пользователь 🎁", isPrivate: false, subscribers: 5200 },
+        { id: 102, name: "Alex B.", username: "@alexb", avatar: FESTIVE_AVATARS.santa[0], donated: "1.8M ₸", bio: "Investments 📈", isPrivate: false, subscribers: 3100 },
+        { id: 103, name: "Dana Life", username: "@danalife", avatar: FESTIVE_AVATARS.elf[1], donated: "950k ₸", bio: "Lifestyle blog ✨", isPrivate: true, subscribers: 15400 },
+        { id: 104, name: "Mr. Beast KZ", username: "@mrbeastkz", avatar: FESTIVE_AVATARS.santa[1], donated: "500k ₸", bio: "Charity & Fun", isPrivate: false, subscribers: 50000 },
+        { id: 105, name: "Aigerim", username: "@aika", avatar: FESTIVE_AVATARS.elf[2], donated: "320k ₸", bio: "Student 📚", isPrivate: true, subscribers: 800 },
+        { id: 1, name: "Anna Smirnova", username: "@annas", avatar: FESTIVE_AVATARS.santa[0], donated: "150k ₸", bio: "Photography Lover 📷", isPrivate: true, subscribers: 5400 },
+        { id: 2, name: "Max Payne", username: "@maxp", avatar: FESTIVE_AVATARS.elf[1], donated: "5k ₸", bio: "Gamer & Streamer 🎮", isPrivate: false, subscribers: 1200 },
+        { id: 3, name: "Elena K.", username: "@elenak", avatar: FESTIVE_AVATARS.santa[1], donated: "10k ₸", bio: "Traveler ✈️", isPrivate: true, subscribers: 8900 }
     ];
 
     // 2. Dynamic Users from Server
