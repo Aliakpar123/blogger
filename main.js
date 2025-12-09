@@ -530,6 +530,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const inviteBtn = document.getElementById('invite-btn');
     // ... invite logic skipped for brevity, standard ...
 
+    // Subscriptions Modal Logic
+    const subBtn = document.getElementById('subscriptions-btn');
+    const subModal = document.getElementById('subs-modal');
+    const closeSubBtn = document.getElementById('close-subs-modal');
+
+    if (subBtn && subModal) {
+        subBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent navigation/other clicks
+            subModal.classList.remove('hidden');
+        });
+
+        if (closeSubBtn) {
+            closeSubBtn.addEventListener('click', () => {
+                subModal.classList.add('hidden');
+            });
+        }
+
+        subModal.addEventListener('click', (e) => {
+            if (e.target === subModal) {
+                subModal.classList.add('hidden');
+            }
+        });
+    }
+
     // Share Button - REMOVED BY USER REQUEST
     // const mainShareBtn = ...;
     // Navigation

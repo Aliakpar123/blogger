@@ -78,52 +78,62 @@
                 <button class="cat-pill" data-cat="Разное">Разное ✨</button>
             </div>
 
-            <!-- Shops Carousel -->
-            <div class="shops-carousel-container">
-                <!-- Meloman/Marwin (First) -->
-                <div class="shop-item">
-                    <img src="logos/meloman.svg" class="shop-logo-img" alt="Meloman">
-                    <div class="shop-logo default-fallback hidden" style="background: #2a2a2a; color: white;">M</div>
-                    <span>Meloman</span>
-                </div>
-
-                <!-- Subscriptions (Generic/1Fit style) -->
-                <div class="shop-item">
-                    <div class="shop-logo sub-gradient">
-                        <span style="font-size: 24px;">🎫</span>
+            <!-- Shops Section (White Background) -->
+            <div class="shops-section-wrapper">
+                <div class="shops-carousel-container">
+                    <!-- Subscriptions (First) -->
+                    <div class="shop-card" id="subscriptions-btn"
+                        style="background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);">
+                        <span class="shop-card-icon">🎫</span>
+                        <span class="shop-card-title">Абонементы</span>
                     </div>
-                    <span>Абонементы</span>
-                </div>
 
-                <!-- Zebra Coffee -->
-                <div class="shop-item">
-                    <img src="logos/zebra.svg" class="shop-logo-img" alt="Zebra">
-                    <span>Zebra Coffee</span>
-                </div>
+                    <!-- Meloman -->
+                    <div class="shop-card" style="background: #ffffff; border: 1px solid #eee;">
+                        <img src="logos/meloman.svg" class="shop-card-img" alt="Meloman">
+                        <!-- Text removed, logo is enough or overlay? User screenshot shows text inside usually. I'll add text overlay. -->
+                        <div class="shop-card-overlay">
+                            <span class="shop-card-title dark-text">Meloman</span>
+                        </div>
+                    </div>
 
-                <!-- Gold Apple -->
-                <div class="shop-item">
-                    <img src="logos/goldapple.svg" class="shop-logo-img" alt="Gold Apple">
-                    <span>Золотое Яблоко</span>
-                </div>
 
-                <!-- Kaspi.kz -->
-                <div class="shop-item">
-                    <img src="logos/kaspi.svg" class="shop-logo-img" alt="Kaspi">
-                    <span>Kaspi.kz</span>
-                </div>
+                    <!-- Zebra -->
+                    <div class="shop-card" style="background: #ffffff; border: 1px solid #eee;">
+                        <img src="logos/zebra.svg" class="shop-card-img" alt="Zebra">
+                        <div class="shop-card-overlay">
+                            <span class="shop-card-title dark-text">Zebra</span>
+                        </div>
+                    </div>
 
-                <!-- Technodom -->
-                <div class="shop-item">
-                    <img src="logos/technodom.svg" class="shop-logo-img" alt="Technodom">
-                    <div class="shop-logo default-fallback hidden" style="background: #ff6600; color: white;">T</div>
-                    <span>Technodom</span>
-                </div>
+                    <!-- Gold Apple -->
+                    <div class="shop-card" style="background: #8CBD3E;">
+                        <img src="logos/goldapple.svg" class="shop-card-img"
+                            style="transform: scale(0.7); object-fit: contain;" alt="Gold Apple">
+                        <span class="shop-card-title">Зол. Яблоко</span>
+                    </div>
 
-                <!-- 1Fit (Popular) -->
-                <div class="shop-item">
-                    <img src="logos/1fit.svg" class="shop-logo-img" alt="1Fit">
-                    <span>1Fit</span>
+                    <!-- Kaspi -->
+                    <div class="shop-card" style="background: #f14635;">
+                        <img src="logos/kaspi.svg" class="shop-card-img"
+                            style="transform: scale(0.6); object-fit: contain;" alt="Kaspi">
+                        <span class="shop-card-title">Kaspi.kz</span>
+                    </div>
+
+                    <!-- Technodom -->
+                    <div class="shop-card" style="background: #ff6600;">
+                        <img src="logos/technodom.svg" class="shop-card-img"
+                            style="transform: scale(0.8); object-fit: contain;" alt="Technodom">
+                        <span class="shop-card-title">Technodom</span>
+                    </div>
+
+                    <!-- 1Fit -->
+                    <div class="shop-card" style="background: #29fd53;">
+                        <img src="logos/1fit.svg" class="shop-card-img"
+                            style="transform: scale(0.8); object-fit: contain;" alt="1Fit">
+                        <span class="shop-card-title"
+                            style="color: black !important; text-shadow: none !important;">1Fit</span>
+                    </div>
                 </div>
             </div>
 
@@ -131,7 +141,7 @@
 
 
             <!-- MAIN CONTENT (WISH LIST) -->
-            <div id="wish-list-container" class="grid-container">
+            <div id="wish-list-container" class="grid-container" style="margin-top: 20px;">
                 <!-- Items will be injected here -->
             </div>
         </main>
