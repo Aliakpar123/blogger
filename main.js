@@ -586,6 +586,22 @@ document.addEventListener('DOMContentLoaded', () => {
     navItems.forEach(nav => {
         nav.addEventListener('click', (e) => {
             const target = e.currentTarget.dataset.target;
+
+            // If clicking Profile tab explicitly, reset to OWN profile
+            if (target === 'user-profile-view') {
+                visitedProfile = null;
+                isPublicView = false;
+                // Also reset mock subscription if any
+                isSubscribedMock = false;
+                // Force re-render of items to show own items
+                renderItems();
+            }
+
+            // If clicking Home tab, maybe also reset? 
+            // Usually Home is "My Registry" OR "Guest Registry". 
+            // If user wants to "exit" guest mode, they usually click Profile or a specific "Exit" button.
+            // Let's stick to fixing Profile tab as requested.
+
             if (target) navigateTo(target);
         });
     });
