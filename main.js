@@ -347,7 +347,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 collected: 0,
                 goal: parseInt(priceInput.value) || 0,
                 image: imageInput.src,
-                category: categoryInput ? categoryInput.value : "Разное" // NEW
+                category: categoryInput ? categoryInput.value : "Разное",
+                isPrivate: document.getElementById('new-item-visibility')?.value === 'private' // NEW
             };
 
             wishListItems.unshift(newItem);
@@ -727,7 +728,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('locked-overlay').classList.add('hidden');
                 guestContainer.style.display = 'grid';
 
-                wishListItems.forEach(item => {
+                // Filter out private items for public preview
+                wishListItems.filter(item => !item.isPrivate).forEach(item => {
                     const card = createCard(item, true);
                     guestContainer.appendChild(card);
                 });
@@ -745,7 +747,9 @@ document.addEventListener('DOMContentLoaded', () => {
         div.innerHTML = `
             <div class="card-image-container">
                 <img src="${item.image}" class="card-image" onerror="this.src='https://placehold.co/600x400?text=No+Image'">
-                <div class="image-overlay">${item.category || 'Общее'}</div>
+                <div class="image-overlay">
+                    ${item.isPrivate ? '🔒 ' : ''}${item.category || 'Общее'}
+                </div>
                 ${!isReadOnly ? `<button class="delete-icon-btn" data-id="${item.id}">×</button>` : ''}
             </div>
             <div class="card-content">
