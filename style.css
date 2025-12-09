@@ -2572,3 +2572,38 @@ input:checked+.slider:before {
     flex-direction: column;
     justify-content: flex-end;
 }
+
+/* Instagram-style Borders for Shops */
+/* New Wrapper Class for Ring */
+.shop-logo-wrapper {
+    width: 68px;
+    height: 68px;
+    padding: 3px; /* The gap */
+    border-radius: 50%;
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Override for Subscriptions (First item) */
+#subscriptions-btn .shop-logo-wrapper {
+    background: linear-gradient(90deg, #00c6ff, #0072ff); /* Blue Custom Ring */
+    /* Or maybe Gold? User said 'упор другим цветом'. Keep clear contrast. */
+}
+
+/* Ensure the image sits inside correctly */
+.shop-logo-img, .shop-logo.sub-gradient, .shop-logo.default-fallback {
+    width: 62px !important; /* wrapper - padding*2 */
+    height: 62px !important;
+    border: 2px solid #000; /* Gap color (black theme) */
+    border-radius: 50%;
+    background: #fff;
+    object-fit: cover;
+    box-sizing: border-box; /* Include border in size */
+}
+
+/* Adjust generic logo classes */
+.shop-logo.sub-gradient {
+    border: 2px solid #000;
+}
