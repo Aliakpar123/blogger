@@ -2212,3 +2212,10 @@ input:checked+.slider:before {
     50% { left: 100%; }
     100% { left: 100%; }
 }
+
+/* Task Check Button */
+.task-btn.check {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); /* Pink/Red gradient for Check */
+    color: white;
+    border: 1px solid rgba(255,255,255,0.2);
+}

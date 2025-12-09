@@ -903,6 +903,91 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // TASKS SYSTEM
+    const TASKS = [
+        {
+            id: 't_tg',
+            title: 'Подписаться на канал Wish List',
+            reward: '+1 слот',
+            icon: '📢',
+            link: 'https://t.me/wishlist_channel_placeholder',
+            completed: false
+        },
+        {
+            id: 't_inst',
+            title: 'Подписаться на Instagram Wish List',
+            reward: '+1 слот',
+            icon: '📸',
+            link: 'https://instagram.com/wishlist_placeholder',
+            completed: false
+        }
+    ];
+
+    function renderTasks() {
+        const container = document.getElementById('tasks-list');
+        if (!container) return;
+        container.innerHTML = '';
+
+        TASKS.forEach(task => {
+            const isCompleted = localStorage.getItem('task_' + task.id) === 'true';
+            const isPending = localStorage.getItem('task_pending_' + task.id) === 'true'; // New state
+
+            const div = document.createElement('div');
+            div.className = 'task-card';
+            if (isCompleted) div.classList.add('completed');
+
+            let btnText = 'Выполнить';
+            let btnClass = '';
+            if (isCompleted) {
+                btnText = 'Выполнено';
+                btnClass = 'done';
+            } else if (isPending) {
+                btnText = 'Проверить';
+                btnClass = 'check'; // Yellow/Blue style
+            }
+
+            div.innerHTML = `
+                <div class="task-icon">${task.icon}</div>
+                <div class="task-info">
+                    <div class="task-title">${task.title}</div>
+                    <div class="task-reward">${task.reward}</div>
+                </div>
+                <button class="task-btn ${btnClass}">
+                    ${btnText}
+                </button>
+            `;
+
+            const btn = div.querySelector('.task-btn');
+            if (!isCompleted) {
+                btn.addEventListener('click', () => {
+                    if (!isPending) {
+                        // Step 1: Execute -> Open Link
+                        window.open(task.link, '_blank');
+                        // Set Pending State
+                        localStorage.setItem('task_pending_' + task.id, 'true');
+                        renderTasks(); // Re-render to show "Check"
+                    } else {
+                        // Step 2: Check -> Verify
+                        // Simulate verification (or just instant success for now)
+                        btn.textContent = 'Проверяю...';
+                        setTimeout(() => {
+                            localStorage.removeItem('task_pending_' + task.id);
+                            localStorage.setItem('task_' + task.id, 'true');
+
+                            maxSlots++;
+                            localStorage.setItem('max_slots', maxSlots);
+                            updateSlotsUI();
+                            renderTasks();
+                            alert(`Вы получили ${task.reward}!`);
+                        }, 1500); // Short delay for "checking" feel
+                    }
+                });
+            }
+
+            container.appendChild(div);
+        });
+    }
+
     // Initial Render calls
     updateSlotsUI();
     updateProfileUI();
