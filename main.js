@@ -828,11 +828,40 @@ document.addEventListener('DOMContentLoaded', () => {
         const listContainer = document.getElementById('generous-users-list');
         if (!listContainer) return;
         listContainer.innerHTML = '';
-        FIXED_MOCKS.forEach((user, index) => {
+
+        // Add Current User to the list dynamically so they feel "part of it"
+        const currentUserEntry = {
+            ...userProfile,
+            donated: "0 ₸", // Default for now
+            isCurrentUser: true
+        };
+
+        // Combine and Sort (Mock sorting logic)
+        // We just randomly insert user or put at top for visibility
+        // Let's put user as "You" at index 0 or similar
+        const allUsers = [currentUserEntry, ...FIXED_MOCKS];
+
+        allUsers.forEach((user, index) => {
             const div = document.createElement('div');
             div.className = 'user-card-item';
-            div.innerHTML = `<span class="uc-rank">${index + 1}</span><img src="${user.avatar}" class="uc-avatar"><div class="uc-info"><span class="uc-name">${user.name}</span><span class="uc-donated">Подарил: ${user.donated}</span></div>`;
+            // Highlight current user
+            if (user.isCurrentUser) div.style.background = 'rgba(78, 140, 255, 0.1)';
+
+            div.innerHTML = `
+                <span class="uc-rank">${index + 1}</span>
+                <img src="${user.avatar}" class="uc-avatar">
+                <div class="uc-info">
+                    <span class="uc-name">${user.isCurrentUser ? (user.name + ' (Вы)') : user.name}</span>
+                    <span class="uc-donated">Подарил: ${user.donated}</span>
+                </div>
+            `;
             div.addEventListener('click', () => {
+                // If clicking self
+                if (user.isCurrentUser) {
+                    document.querySelector('.nav-item.active')?.click(); // Go to home/profile
+                    return;
+                }
+
                 visitedProfile = user;
                 isPublicView = true;
                 updateProfileUI();
