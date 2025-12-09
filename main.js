@@ -896,7 +896,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 isPublicView = true;
                 updateProfileUI();
                 renderItems();
-                document.querySelector('[data-target="user-profile-view"]').click();
+                // Call navigateTo directly to bypass the "Reset" logic in the nav click listener
+                navigateTo('user-profile-view');
             });
             listContainer.appendChild(div);
         });
