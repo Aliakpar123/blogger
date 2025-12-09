@@ -523,6 +523,161 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Render Items
+    function renderItems() {
+        const listContainer = document.getElementById('wish-list-container');
+        const guestContainer = document.getElementById('guest-wish-list-container');
+
+        // Decide which container to render to based on view
+        // If we are in public view (visiting someone), we render to guest container (in user-profile-view usually)
+        // BUT wait, existing logic tries to switch views. 
+        // Let's stick to standard behavior:
+
+        // 1. Home View Render
+        if (listContainer) {
+            listContainer.innerHTML = '';
+
+            // If in public view, we might want to hide Home or show "Guest Mode" on Home.
+            // But per navigation logic, 'home-view' is hidden when 'user-profile-view' is active.
+            // So we just render Home items from `wishListItems` always, unless we want to support "Preview" mode on Home.
+
+            // Logic: Render User's Own Items
+            if (!isPublicView) {
+                // Render Items
+                wishListItems.forEach(item => {
+                    const card = createCard(item, false); // false = not read only (can pay/delete)
+                    listContainer.appendChild(card);
+                });
+
+                // Render "Add New" Button if slots available
+                if (wishListItems.length < maxSlots) {
+                    const addBtn = document.createElement('div');
+                    addBtn.className = 'wish-card empty-state';
+                    addBtn.style.cursor = 'pointer';
+                    addBtn.style.display = 'flex';
+                    addBtn.style.flexDirection = 'column';
+                    addBtn.style.justifyContent = 'center';
+                    addBtn.style.alignItems = 'center';
+                    addBtn.style.minHeight = '200px';
+                    addBtn.innerHTML = `
+                        <div style="margin-bottom: 15px; width: 60px; height: 60px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                        </div>
+                        <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 5px;">Добавить желание</h3>
+                        <p style="font-size: 13px; color: #888;">Доступно слотов: ${maxSlots - wishListItems.length}</p>
+                    `;
+                    addBtn.addEventListener('click', () => {
+                        document.querySelector('[data-target="create-view"]').click();
+                    });
+                    listContainer.appendChild(addBtn);
+                }
+            } else {
+                // Public View on Home Tab? Usually we redirect to profile-view for public.
+                // If we are here, maybe we just show nothing or a message.
+                // But let's check basic logic.
+            }
+        }
+
+        // 2. Guest/Public View Render (in Profile Tab)
+        // If isPublicView is true, we should render items into the Guest Container
+        if (guestContainer && isPublicView) {
+            guestContainer.innerHTML = '';
+
+            // If visiting a mock profile
+            if (visitedProfile) {
+                // GENERATE MOCK ITEMS based on user rank maybe?
+                // For now, just fixed mocks or empty
+                if (visitedProfile.isPrivate && !isSubscribedMock) {
+                    // Private & Not Subscribed logic handled by locking overlay in HTML usually, or we show nothing
+                    document.getElementById('locked-overlay').classList.remove('hidden');
+                    guestContainer.style.display = 'none';
+                } else {
+                    document.getElementById('locked-overlay').classList.add('hidden');
+                    guestContainer.style.display = 'grid'; // or block
+
+                    // Mock Items for Guest
+                    const mockItems = [
+                        { id: 901, title: "MacBook Pro", collected: 500000, goal: 1000000, image: "https://placehold.co/600x400?text=MacBook", category: "Tech" },
+                        { id: 902, title: "Coffee Machine", collected: 20000, goal: 50000, image: "https://placehold.co/600x400?text=Coffee", category: "Home" }
+                    ];
+
+                    mockItems.forEach(item => {
+                        const card = createCard(item, true); // true = read only (can pay, cannot delete)
+                        guestContainer.appendChild(card);
+                    });
+                }
+            } else {
+                // Previewing OWN profile as Guest
+                document.getElementById('locked-overlay').classList.add('hidden');
+                guestContainer.style.display = 'grid';
+
+                wishListItems.forEach(item => {
+                    const card = createCard(item, true);
+                    guestContainer.appendChild(card);
+                });
+            }
+        }
+    }
+
+    // Helper: Create Card HTML
+    function createCard(item, isReadOnly) {
+        const div = document.createElement('div');
+        div.className = 'wish-card';
+
+        const percent = Math.min(100, Math.floor((item.collected / item.goal) * 100));
+
+        div.innerHTML = `
+            <div class="card-image-container">
+                <img src="${item.image}" class="card-image" onerror="this.src='https://placehold.co/600x400?text=No+Image'">
+                <div class="image-overlay">${item.category || 'Общее'}</div>
+                ${!isReadOnly ? `<button class="delete-icon-btn" data-id="${item.id}">×</button>` : ''}
+            </div>
+            <div class="card-content">
+                <h3>${item.title}</h3>
+                <div class="progress-info">
+                    <span>Собрано: ${formatCompactNumber(item.collected)}</span>
+                    <span>${percent}%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" style="width: ${percent}%"></div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn btn-primary pay-btn" data-id="${item.id}">Пополнить</button>
+                    ${!isReadOnly ? `<button class="btn btn-secondary share-btn-item" data-id="${item.id}">Поделиться</button>` : ''}
+                </div>
+            </div>
+        `;
+
+        // Event Listeners
+        const payBtn = div.querySelector('.pay-btn');
+        if (payBtn) payBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openModal(item.title, item.id);
+        });
+
+        if (!isReadOnly) {
+            const delBtn = div.querySelector('.delete-icon-btn');
+            if (delBtn) delBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (confirm('Удалить это желание?')) {
+                    deleteItem(item.id);
+                }
+            });
+
+            const shareBtn = div.querySelector('.share-btn-item');
+            if (shareBtn) shareBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Just dummy share
+                alert(`Ссылка скопирована: https://kaspi.kz/pay/user?w=${item.id}`);
+            });
+        }
+
+        return div;
+    }
+
     // Server Users Logic - Using Mocks Only for Stability
     function renderGenerousUsers() {
         const listContainer = document.getElementById('generous-users-list');

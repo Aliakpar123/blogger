@@ -1,4 +1,4 @@
-
+аа
 import re
 
 filename = 'main.js'
@@ -37,3 +37,4 @@ if stack:
         print(f"  {item[0]} from line {item[1]} col {item[2]}")
 else:
     print("Syntax Balanced OK")
+ад
