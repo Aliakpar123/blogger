@@ -764,9 +764,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="card-actions">
                     <button class="btn btn-primary pay-btn" data-id="${item.id}">Пополнить</button>
                     ${!isReadOnly ? `
-                        <button class="btn btn-secondary toggle-privacy-btn" data-id="${item.id}" style="font-size: 12px; padding: 8px 12px;">
-                            ${item.isPrivate ? '🔒 Скрыто' : '🌍 Для всех'}
-                        </button>
+                        <div class="privacy-toggle-container" title="Переключить видимость">
+                            <label class="privacy-switch">
+                                <input type="checkbox" class="privacy-checkbox" data-id="${item.id}" ${!item.isPrivate ? 'checked' : ''}>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
                     ` : ''}
                 </div>
             </div>
@@ -788,13 +791,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            const toggleBtn = div.querySelector('.toggle-privacy-btn');
-            if (toggleBtn) toggleBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                item.isPrivate = !item.isPrivate;
-                saveState();
-                renderItems();
-            });
+            const toggleInput = div.querySelector('.privacy-checkbox');
+            // Prevent click propagation on the label/input so it doesn't trigger card click (if any)
+            if (toggleInput) {
+                toggleInput.addEventListener('click', (e) => e.stopPropagation());
+                toggleInput.addEventListener('change', (e) => {
+                    // Checked = Public (!isPrivate)
+                    // Unchecked = Private (isPrivate)
+                    item.isPrivate = !e.target.checked;
+                    saveState();
+                    // We don't re-render entire list to avoid jitter, just update the lock indicator if we want?
+                    // But renderItems() updates the lock icon in the overlay.
+                    // Let's re-render for consistency.
+                    renderItems();
+                });
+            }
         }
 
         return div;

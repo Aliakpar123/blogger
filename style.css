@@ -2106,3 +2106,67 @@ input:checked+.slider:before {
 .close-share-modal:hover {
     color: #fff;
 }
+/* Privacy Toggle Switch */
+.privacy-toggle-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.privacy-switch {
+    position: relative;
+    display: inline-block;
+    width: 64px;
+    height: 32px;
+}
+
+.privacy-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #2a2d35; /* Dark for Private */
+    transition: .4s;
+    border-radius: 34px;
+    border: 1px solid rgba(255,255,255,0.1);
+    overflow: hidden;
+}
+
+.slider:before {
+    position: absolute;
+    height: 24px;
+    width: 24px;
+    left: 4px;
+    bottom: 3px;
+    background-color: white; 
+    transition: .4s;
+    border-radius: 50%;
+    z-index: 2;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    
+    /* Icon inside knob */
+    content: "🔒";
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #333;
+}
+
+input:checked + .slider {
+    background-color: #4e8cff; /* Public Blue */
+}
+
+input:checked + .slider:before {
+    transform: translateX(32px);
+    content: "🌍";
+    color: #4e8cff;
+}
