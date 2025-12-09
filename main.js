@@ -665,8 +665,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     addBtn.style.alignItems = 'center';
                     addBtn.style.minHeight = '200px';
                     addBtn.innerHTML = `
-                        <div style="margin-bottom: 15px; width: 60px; height: 60px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <div style="margin-bottom: 15px; width: 80px; height: 80px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <!-- Gift Outline -->
                                 <rect x="3" y="8" width="18" height="4" rx="1"></rect>
                                 <path d="M12 8v13"></path>
