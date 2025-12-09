@@ -351,11 +351,95 @@ document.addEventListener('DOMContentLoaded', () => {
     if (parseBtn && kaspiInput) {
         kaspiInput.addEventListener('input', (e) => parseBtn.disabled = e.target.value.length < 5);
         parseBtn.addEventListener('click', async () => {
-            alert("Kaspi Parser: Feature disabled temporarily for stability.");
-            // Manual fallback
-            document.querySelector('.create-step-1').classList.add('hidden');
-            document.getElementById('create-step-2').classList.remove('hidden');
-            document.getElementById('new-item-image').src = 'https://placehold.co/600x400?text=Foto';
+            const url = kaspiInput.value;
+            if (!url.includes('kaspi.kz')) {
+                alert('Нужна ссылка на Kaspi.kz');
+                return;
+            }
+
+            parseBtn.textContent = 'Загрузка...';
+            parseBtn.disabled = true;
+
+            try {
+                let htmlContent = null;
+                const isShortLink = url.includes('l.kaspi.kz');
+
+                // 1. CorsProxy
+                if (isShortLink) {
+                    try {
+                        let proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+                        let response = await fetch(proxyUrl);
+                        htmlContent = await response.text();
+                    } catch (e) {
+                        console.warn("CorsProxy failed for short link", e);
+                    }
+                }
+
+                // 2. AllOrigins
+                if (!htmlContent) {
+                    try {
+                        let proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+                        let response = await fetch(proxyUrl);
+                        let data = await response.json();
+                        htmlContent = data.contents;
+                    } catch (e) {
+                        console.warn("AllOrigins failed", e);
+                    }
+                }
+
+                // 3. Retry CorsProxy
+                if (!htmlContent && !isShortLink) {
+                    try {
+                        let proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+                        let response = await fetch(proxyUrl);
+                        htmlContent = await response.text();
+                    } catch (e) { console.warn("CorsProxy retry failed", e); }
+                }
+
+                if (!htmlContent || htmlContent.length < 500) throw new Error('No content');
+
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlContent, 'text/html');
+
+                let title = doc.querySelector('meta[property="og:title"]')?.content || doc.querySelector('h1')?.innerText || 'Товар';
+                title = title.replace(/\|.+$/, '').trim();
+
+                let image = doc.querySelector('meta[property="og:image"]')?.content || 'https://placehold.co/600x400?text=Foto';
+
+                let price = 0;
+                // Try JSON-LD
+                const scripts = doc.querySelectorAll('script[type="application/ld+json"]');
+                for (let s of scripts) {
+                    try {
+                        const json = JSON.parse(s.innerText);
+                        if (json.offers && json.offers.price) { price = parseInt(json.offers.price); break; }
+                    } catch (e) { }
+                }
+
+                // Fallback Regex
+                if (!price) {
+                    const match = htmlContent.match(/(\d{1,3}(?:\s\d{3})*)\s?[₸T]/);
+                    if (match && match[1]) price = parseInt(match[1].replace(/\s/g, ''));
+                }
+
+                document.querySelector('.create-step-1').classList.add('hidden');
+                document.getElementById('create-step-2').classList.remove('hidden');
+                document.getElementById('new-item-title').value = title;
+                document.getElementById('new-item-price').value = price || "";
+                document.getElementById('new-item-image').src = image;
+
+            } catch (e) {
+                console.error("Parsing error:", e);
+                const manual = confirm("Не удалось загрузить данные автоматически. Заполнить вручную?");
+                if (manual) {
+                    document.querySelector('.create-step-1').classList.add('hidden');
+                    document.getElementById('create-step-2').classList.remove('hidden');
+                    document.getElementById('new-item-image').src = 'https://placehold.co/600x400?text=Foto';
+                }
+            } finally {
+                parseBtn.textContent = 'Далее';
+                parseBtn.disabled = false;
+            }
         });
     }
 
