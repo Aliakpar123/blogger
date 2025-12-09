@@ -587,14 +587,18 @@ document.addEventListener('DOMContentLoaded', () => {
         nav.addEventListener('click', (e) => {
             const target = e.currentTarget.dataset.target;
 
-            // If clicking Profile tab explicitly, reset to OWN profile
-            if (target === 'user-profile-view') {
+            // "Return Immediately" / Reset Logic
+            // Applied to Profile tab AND Rating tab (profile-view) as requested
+            if (target === 'user-profile-view' || target === 'profile-view') {
                 visitedProfile = null;
                 isPublicView = false;
-                // Also reset mock subscription if any
                 isSubscribedMock = false;
-                // Force re-render of items to show own items
-                renderItems();
+
+                // Force immediate UI update to ensure we exit "Guest Mode"
+                if (target === 'user-profile-view') {
+                    updateProfileUI(); // Reset header/bio to self
+                    renderItems();     // Reset wishes to self
+                }
             }
 
             // If clicking Home tab, maybe also reset? 
