@@ -2291,3 +2291,58 @@ input:checked+.slider:before {
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
+/* Shops Carousel */
+.shops-carousel-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 16px;
+    padding: 10px 4px 20px 4px; /* Bottom padding for shadow clipping */
+    margin-bottom: 10px;
+    scrollbar-width: none; /* Hide scrollbar Firefox */
+}
+
+.shops-carousel-container::-webkit-scrollbar {
+    display: none; /* Hide scrollbar Chrome/Safari */
+}
+
+.shop-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 70px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.shop-item:active {
+    transform: scale(0.95);
+}
+
+.shop-logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    border: 2px solid rgba(255,255,255,0.05);
+}
+
+.shop-logo.sub-gradient {
+    background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+    color: white;
+}
+
+.shop-item span {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-align: center;
+    max-width: 80px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
