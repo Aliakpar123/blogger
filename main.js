@@ -763,7 +763,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="card-actions">
                     <button class="btn btn-primary pay-btn" data-id="${item.id}">Пополнить</button>
-                    ${!isReadOnly ? `<button class="btn btn-secondary share-btn-item" data-id="${item.id}">Поделиться</button>` : ''}
+                    ${!isReadOnly ? `
+                        <button class="btn btn-secondary toggle-privacy-btn" data-id="${item.id}" style="font-size: 12px; padding: 8px 12px;">
+                            ${item.isPrivate ? '🔒 Скрыто' : '🌍 Для всех'}
+                        </button>
+                    ` : ''}
                 </div>
             </div>
         `;
@@ -784,11 +788,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            const shareBtn = div.querySelector('.share-btn-item');
-            if (shareBtn) shareBtn.addEventListener('click', (e) => {
+            const toggleBtn = div.querySelector('.toggle-privacy-btn');
+            if (toggleBtn) toggleBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                // Just dummy share
-                alert(`Ссылка скопирована: https://kaspi.kz/pay/user?w=${item.id}`);
+                item.isPrivate = !item.isPrivate;
+                saveState();
+                renderItems();
             });
         }
 
