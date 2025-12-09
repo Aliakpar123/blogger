@@ -907,7 +907,11 @@ document.addEventListener('DOMContentLoaded', () => {
     updateSlotsUI();
     updateProfileUI();
     renderGenerousUsers();
+    updateSlotsUI();
+    updateProfileUI();
+    renderGenerousUsers();
     renderItems();
+    renderTasks();
 
     document.querySelector('.nav-item.active')?.click();
 
