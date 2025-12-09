@@ -3,6 +3,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // alert("✅ SYSTEM ONLINE v9.9.80"); 
     console.log("SCRIPT STARTED v9.9.80");
 
+    // Initialize Vercel Speed Insights
+    try {
+        const { injectSpeedInsights } = require('@vercel/speed-insights');
+        injectSpeedInsights();
+        console.log("Vercel Speed Insights initialized");
+    } catch (e) {
+        console.warn("Speed Insights not available:", e.message);
+    }
+
     // Initialize Telegram
     if (window.Telegram?.WebApp) {
         window.Telegram.WebApp.ready();
