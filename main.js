@@ -674,7 +674,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.9 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"></path>
                                 
                                 <!-- Proportional Blue Plus in Center -->
-                                <circle cx="12" cy="15" r="4.5" fill="white" stroke="none"></circle> 
                                 <path d="M12 12.5v5 M9.5 15h5" stroke="#4e8cff" stroke-width="2.5" stroke-linecap="round"></path>
                             </svg>
                         </div>
