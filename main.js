@@ -552,7 +552,15 @@ document.addEventListener('DOMContentLoaded', () => {
             else view.classList.add('hidden');
         });
 
-        const isMainTab = ['home-view', 'profile-view', 'user-profile-view', 'tasks-view'].includes(targetId);
+        // Logic to determine if we are on a top-level tab or a sub-view
+        let isMainTab = ['home-view', 'profile-view', 'tasks-view'].includes(targetId);
+
+        // "Profile" tab logic: 
+        // If it's MY profile (visitedProfile is null) -> Main Tab (No Back Button)
+        // If it's GUEST profile (visitedProfile is set) -> Sub View (Show Back Button)
+        if (targetId === 'user-profile-view' && !visitedProfile) {
+            isMainTab = true;
+        }
 
         if (isMainTab) {
             headerBackBtn.classList.add('hidden');
@@ -577,7 +585,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (targetId === 'home-view' && visitedProfile) headerTitle.innerHTML = `В гостях: ${visitedProfile.name}`;
         if (targetId === 'create-view') headerTitle.textContent = 'Создать';
         if (targetId === 'profile-view') headerTitle.textContent = 'Рейтинг';
-        if (targetId === 'user-profile-view') headerTitle.textContent = 'Профиль';
+        if (targetId === 'user-profile-view') {
+            headerTitle.textContent = visitedProfile ? visitedProfile.name : 'Профиль';
+        }
         if (targetId === 'tasks-view') headerTitle.textContent = 'Задания';
 
         if (targetId === 'user-profile-view') updateProfileUI();
