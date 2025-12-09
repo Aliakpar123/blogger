@@ -1,6 +1,2 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
-  <rect width="500" height="500" fill="#8CBD3E"/> <!-- Apple Green -->
-  <circle cx="250" cy="250" r="150" fill="white"/>
-  <path d="M250 150 Q300 100 350 150 Q350 250 250 350 Q150 250 150 150 Q200 100 250 150" fill="#8CBD3E"/> 
-  <rect x="240" y="80" width="20" height="60" fill="white" transform="rotate(15 250 110)"/>
-</svg>
+<?xml version="1.0" encoding="UTF-8"?>
+<Error><Code>AccessDenied</Code><Message>Access Denied</Message></Error>
