@@ -2346,3 +2346,19 @@ input:checked+.slider:before {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+/* Shop Logo Image */
+.shop-logo-img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    background: #fff; /* White bg for logos with transparency */
+}
+
+/* Fallback hidden by default */
+.shop-logo.default-fallback {
+    display: none;
+}
