@@ -105,6 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isPublicView = false;
     let isSubscribedMock = false;
     let visitedProfile = null;
+    let currentCategory = 'Все'; // NEW: Category State
 
     // Elements
     const container = document.getElementById('wish-list-container');
@@ -131,6 +132,20 @@ document.addEventListener('DOMContentLoaded', () => {
     async function syncUserProfile() {
         // DISABLED
     }
+
+    // Category Logic
+    const catPills = document.querySelectorAll('.cat-pill');
+    catPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            // Update UI
+            catPills.forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+
+            // Update State
+            currentCategory = pill.dataset.cat;
+            renderItems();
+        });
+    });
 
     function updateSlotsUI() {
         const counter = document.getElementById('slots-counter');
@@ -324,6 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const titleInput = document.getElementById('new-item-title');
             const priceInput = document.getElementById('new-item-price');
             const imageInput = document.getElementById('new-item-image');
+            const categoryInput = document.getElementById('new-item-category'); // NEW
 
             const newItem = {
                 id: Date.now(),
@@ -331,7 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 collected: 0,
                 goal: parseInt(priceInput.value) || 0,
                 image: imageInput.src,
-                category: "Разное"
+                category: categoryInput ? categoryInput.value : "Разное" // NEW
             };
 
             wishListItems.unshift(newItem);
@@ -627,9 +643,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Logic: Render User's Own Items
             if (!isPublicView) {
+                // NEW: Filter by Category
+                const filteredItems = currentCategory === 'Все'
+                    ? wishListItems
+                    : wishListItems.filter(item => item.category === currentCategory);
+
                 // Render Items
-                wishListItems.forEach(item => {
-                    const card = createCard(item, false); // false = not read only (can pay/delete)
+                filteredItems.forEach(item => {
+                    const card = createCard(item, false); // false = not read only
                     listContainer.appendChild(card);
                 });
 
