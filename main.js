@@ -666,12 +666,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     addBtn.style.minHeight = '200px';
                     addBtn.innerHTML = `
                         <div style="margin-bottom: 15px; width: 60px; height: 60px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="20 12 20 22 4 22 4 12"></polyline>
                                 <rect x="2" y="7" width="20" height="5"></rect>
                                 <line x1="12" y1="22" x2="12" y2="7"></line>
                                 <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
                                 <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
+                                <!-- Blue Plus Badge -->
+                                <circle cx="18" cy="18" r="5" fill="white" stroke="none"></circle>
+                                <path d="M18 15v6 M15 18h6" stroke="#4e8cff" stroke-width="3"></path>
                             </svg>
                         </div>
                         <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 5px;">Добавить желание</h3>
