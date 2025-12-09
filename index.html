@@ -7,6 +7,7 @@
     <title>Wish List</title>
     <script>
         window.onerror = function (msg, url, lineNo, columnNo, error) {
+            if (msg.includes('speed-insights') || msg.includes('Script error')) return false;
             alert("🔥 CRITICAL ERROR 🔥\n" + msg + "\nLine: " + lineNo);
             return false;
         };
