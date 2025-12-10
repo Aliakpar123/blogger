@@ -46,6 +46,26 @@ app.get('/api/users', (req, res) => {
     res.json(users);
 });
 
+// GET /api/users/:id - Get specific user
+app.get('/api/users/:id', (req, res) => {
+    const db = readDB();
+    const user = db.users.find(u => u.id == req.params.id);
+    if (user) {
+        res.json({
+            id: user.id,
+            name: user.name,
+            username: user.username,
+            avatar: user.avatar,
+            bio: user.bio,
+            donated: user.donated || '0 ₸',
+            subscribers: user.subscribers || 0,
+            isPrivate: user.isPrivate
+        });
+    } else {
+        res.status(404).json({ error: "User not found" });
+    }
+});
+
 // POST /api/users - Register or Update User
 app.post('/api/users', (req, res) => {
     const userData = req.body;

@@ -19,11 +19,26 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             window.Telegram.WebApp.setHeaderColor('#0f1115');
         } catch (e) { }
+
+        // CHECK START PARAM
+        const startParam = window.Telegram.WebApp.initDataUnsafe?.start_param;
+        if (startParam && startParam.startsWith('u_')) {
+            console.log("Loading shared profile:", startParam);
+            // We need to wait for functions to be defined, but they are hoisting or we call a init func
+            // Since this block is at top, we defer it slightly
+            setTimeout(() => {
+                if (typeof loadSharedProfile === 'function') {
+                    loadSharedProfile(startParam);
+                }
+            }, 500);
+        }
     }
 
     // === CONFIGURATION ===
-    const API_URL = 'http://localhost:3000/api'; // Local backend
+    const API_URL = 'https://blogger-aliakpar123s-projects.vercel.app/api'; // Production URL
+    // const API_URL = 'http://localhost:3000/api'; // Local for dev
     const KASPI_PAY_LINK = 'https://kaspi.kz/pay/YOUR_MERCHANT_NAME';
+    const BOT_USERNAME = 'MerciWishListBot'; // Replace with real bot username
 
     // === API HELPERS ===
     async function apiFetch(endpoint, options = {}) {
@@ -131,15 +146,58 @@ document.addEventListener('DOMContentLoaded', () => {
         // Server Sync Disabled
     }
 
-    // Debounce helper to prevent flooding server
-    let debounceTimer;
-    function syncUserWishes() {
-        // DISABLED
+    // Sync Data to Server
+    async function syncData() {
+        if (!userProfile.id) return;
+
+        // 1. Sync Profile
+        await apiFetch('/users', {
+            method: 'POST',
+            body: JSON.stringify(userProfile)
+        });
+
+        // 2. Sync Wishes
+        await apiFetch('/wishes', {
+            method: 'POST',
+            body: JSON.stringify({
+                userId: userProfile.id,
+                wishes: wishListItems
+            })
+        });
     }
 
-    // Sync User Profile to Server on Load
-    async function syncUserProfile() {
-        // DISABLED
+    // Load Shared Profile
+    async function loadSharedProfile(userId) {
+        try {
+            // Fetch User
+            const user = await apiFetch(`/users/${userId}`);
+            if (!user) throw new Error("User not found");
+
+            // Fetch Wishes
+            const wishes = await apiFetch(`/wishes/${userId}`);
+
+            // Set State
+            visitedProfile = user;
+            // Hack: Temporarily overwrite wishlistItems to render guest view, 
+            // OR better: use a separate variable or passing logic. 
+            // Current `renderItems` uses `wishListItems` for guest view if `isPublicView` is true 
+            // BUT `renderItems` actually expects `wishListItems` to be the LOCAL user's items 
+            // and it uses `mockItems` for guest. 
+            // We need to PATCH `renderItems` to use fetched wishes.
+
+            // Let's store fetched wishes in a global var
+            window.guestWishes = wishes || [];
+
+            isPublicView = true;
+            updateProfileUI();
+
+            // Navigate to profile/guest view
+            document.querySelector('[data-target="user-profile-view"]').click();
+
+        } catch (e) {
+            console.error(e);
+            alert("Не удалось загрузить профиль");
+        }
     }
 
     // Category Logic
@@ -701,6 +759,52 @@ document.addEventListener('DOMContentLoaded', () => {
         if (listContainer) {
             listContainer.innerHTML = '';
 
+            // Share Button (Only in 'All' category and not public view)
+            if (!isPublicView && currentCategory === 'Все') {
+                const shareContainer = document.createElement('div');
+                shareContainer.className = 'share-container';
+                shareContainer.innerHTML = `
+                    <button class="share-wishlist-btn" id="share-wishlist-action">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="18" cy="5" r="3"></circle>
+                            <circle cx="6" cy="12" r="3"></circle>
+                            <circle cx="18" cy="19" r="3"></circle>
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                        </svg>
+                        Поделиться желаниями
+                    </button>
+                `;
+                listContainer.appendChild(shareContainer);
+
+                setTimeout(() => {
+                    document.getElementById('share-wishlist-action')?.addEventListener('click', async () => {
+                        const btn = document.getElementById('share-wishlist-action');
+                        const originalText = btn.innerHTML;
+                        btn.innerText = 'Создаем ссылку...';
+
+                        // 1. Sync
+                        await syncData();
+
+                        // 2. Generate Link
+                        const startParam = userProfile.id; // e.g., u_12345678
+                        const shareUrl = `https://t.me/${BOT_USERNAME}/app?startapp=${startParam}`;
+                        const text = `Мой вишлист! ✨\nПодари мне что-нибудь: ${shareUrl}`;
+
+                        // 3. Open Telegram Share
+                        const tgShareUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`;
+
+                        if (window.Telegram?.WebApp?.openTelegramLink) {
+                            window.Telegram.WebApp.openTelegramLink(tgShareUrl);
+                        } else {
+                            window.open(tgShareUrl, '_blank');
+                        }
+
+                        btn.innerHTML = originalText;
+                    });
+                }, 0);
+            }
+
             // If in public view, we might want to hide Home or show "Guest Mode" on Home.
             // But per navigation logic, 'home-view' is hidden when 'user-profile-view' is active.
             // So we just render Home items from `wishListItems` always, unless we want to support "Preview" mode on Home.
@@ -786,13 +890,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         guestContainer.appendChild(card);
                     });
                 }
-            } else {
-                // Previewing OWN profile as Guest
+                // Previewing OWN profile OR Real Guest Profile
                 document.getElementById('locked-overlay').classList.add('hidden');
                 guestContainer.style.display = 'grid';
 
-                // Filter out private items for public preview
-                wishListItems.filter(item => !item.isPrivate).forEach(item => {
+                // Use fetched guest wishes if available, otherwise own items
+                const sourceItems = window.guestWishes || wishListItems;
+
+                sourceItems.filter(item => !item.isPrivate).forEach(item => {
                     const card = createCard(item, true);
                     guestContainer.appendChild(card);
                 });
