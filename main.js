@@ -1063,12 +1063,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch(`https://jsonblob.com/api/jsonBlob/${LEADERBOARD_UUID}?t=${Date.now()}`);
             if (res.ok) {
                 const data = await res.json();
-                if (Array.isArray(data) && data.length > 0) {
+                if (Array.isArray(data)) {
                     remoteUsers = data;
                 }
+            } else {
+                throw new Error(`Server err: ${res.status}`);
             }
         } catch (e) {
-            console.warn("Could not fetch remote users, using mocks");
+            console.warn("Could not fetch remote users", e);
+            listContainer.innerHTML = `<div style="text-align:center; padding:20px; color:#ff6b6b; font-size:12px;">Ошибка связи: ${e.message}<br>Попробуйте позже</div>`;
+            return; // Stop rendering
         }
 
         // Define Mocks (Fallback)
@@ -1083,7 +1087,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (remoteUsers.length > 0) {
             displayList = remoteUsers.filter(u => u.id != userProfile.id);
         } else {
-            displayList = fallbackMocks;
+            // Empy list case
+            // If strictly no mocks, and remote failed or empty
         }
 
         // Add Current User
