@@ -689,6 +689,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (targetId === 'tasks-view') headerTitle.textContent = 'Задания';
 
         if (targetId === 'user-profile-view') updateProfileUI();
+        if (targetId === 'profile-view') renderGenerousUsers();
     }
 
     navItems.forEach(nav => {
