@@ -3,14 +3,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // alert("✅ SYSTEM ONLINE v9.9.80"); 
     console.log("SCRIPT STARTED v9.9.80");
 
-    // Initialize Vercel Speed Insights
-    try {
-        const { injectSpeedInsights } = require('@vercel/speed-insights');
-        injectSpeedInsights();
-        console.log("Vercel Speed Insights initialized");
-    } catch (e) {
-        console.warn("Speed Insights not available:", e.message);
+    // Initialize Vercel Speed Insights check
+    // (Loaded via module in index.html, so we just log if it's there or not)
+    if (window.speedInsights) {
+        console.log("Vercel Speed Insights active");
     }
+
+    // Global Error Handler for Mobile Debugging
+    window.onerror = function (msg, url, lineNo, columnNo, error) {
+        if (msg.includes('Script error')) return false;
+        // alert(`RCVD ERROR: ${msg} @ ${lineNo}`); // Uncomment for extreme debugging
+        console.error(msg, error);
+        return false;
+    };
 
     // Initialize Telegram
     if (window.Telegram?.WebApp) {
@@ -22,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // CHECK START PARAM
         const startParam = window.Telegram.WebApp.initDataUnsafe?.start_param;
-        if (startParam && startParam.startsWith('u_')) {
+        if (startParam && (startParam.startsWith('u_') || startParam.startsWith('blob_'))) {
             console.log("Loading shared profile:", startParam);
             // We need to wait for functions to be defined, but they are hoisting or we call a init func
             // Since this block is at top, we defer it slightly
@@ -38,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const API_URL = 'https://blogger-aliakpar123s-projects.vercel.app/api'; // Production URL
     // const API_URL = 'http://localhost:3000/api'; // Local for dev
     const KASPI_PAY_LINK = 'https://kaspi.kz/pay/YOUR_MERCHANT_NAME';
-    const BOT_USERNAME = 'MerciWishListBot'; // Replace with real bot username
+    const BOT_USERNAME = 'wishlist_bloggers_bot'; // Real bot username
 
     // === API HELPERS ===
     async function apiFetch(endpoint, options = {}) {
@@ -146,46 +151,55 @@ document.addEventListener('DOMContentLoaded', () => {
         // Server Sync Disabled
     }
 
-    // Sync Data to Server
-    async function syncData() {
-        if (!userProfile.id) return;
-
-        // 1. Sync Profile
-        await apiFetch('/users', {
-            method: 'POST',
-            body: JSON.stringify(userProfile)
-        });
-
-        // 2. Sync Wishes
-        await apiFetch('/wishes', {
-            method: 'POST',
-            body: JSON.stringify({
-                userId: userProfile.id,
+    // Sync Data to Server (Replaced by JsonBlob for Sharing)
+    async function saveToCloud() {
+        try {
+            const payload = {
+                user: userProfile,
                 wishes: wishListItems
-            })
-        });
+            };
+
+            const res = await fetch('https://jsonblob.com/api/jsonBlob', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) throw new Error('Save Failed');
+
+            // Location Header contains the URL /api/jsonBlob/<UUID>
+            const location = res.headers.get('Location');
+            // Extract UUID
+            const uuid = location.split('/').pop();
+            return uuid;
+        } catch (e) {
+            console.error(e);
+            return null;
+        }
     }
 
     // Load Shared Profile
-    async function loadSharedProfile(userId) {
+    async function loadSharedProfile(startParam) {
         try {
-            // Fetch User
-            const user = await apiFetch(`/users/${userId}`);
-            if (!user) throw new Error("User not found");
+            let uuid = startParam;
+            if (startParam.startsWith('blob_')) {
+                uuid = startParam.replace('blob_', '');
+            } else if (startParam.startsWith('u_')) {
+                // Old format fallback, likely fail on Vercel
+                // alert("Старая ссылка недоступна");
+                return;
+            }
 
-            // Fetch Wishes
-            const wishes = await apiFetch(`/wishes/${userId}`);
+            // Fetch from JsonBlob
+            const res = await fetch(`https://jsonblob.com/api/jsonBlob/${uuid}`);
+            if (!res.ok) throw new Error("Profile not found");
+
+            const data = await res.json();
+            const user = data.user;
+            const wishes = data.wishes;
 
             // Set State
             visitedProfile = user;
-            // Hack: Temporarily overwrite wishlistItems to render guest view, 
-            // OR better: use a separate variable or passing logic. 
-            // Current `renderItems` uses `wishListItems` for guest view if `isPublicView` is true 
-            // BUT `renderItems` actually expects `wishListItems` to be the LOCAL user's items 
-            // and it uses `mockItems` for guest. 
-            // We need to PATCH `renderItems` to use fetched wishes.
-
-            // Let's store fetched wishes in a global var
             window.guestWishes = wishes || [];
 
             isPublicView = true;
@@ -196,7 +210,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (e) {
             console.error(e);
-            alert("Не удалось загрузить профиль");
+            let uuidDebug = startParam;
+            if (startParam && startParam.startsWith('blob_')) uuidDebug = startParam.replace('blob_', '');
+            alert(`Ошибка загрузки (Debug): ${uuidDebug}\n${e.message}`);
         }
     }
 
@@ -746,162 +762,145 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Render Items
+    // Render Items
     function renderItems() {
-        const listContainer = document.getElementById('wish-list-container');
-        const guestContainer = document.getElementById('guest-wish-list-container');
+        try {
+            const listContainer = document.getElementById('wish-list-container');
+            const guestContainer = document.getElementById('guest-wish-list-container');
 
-        // Decide which container to render to based on view
-        // If we are in public view (visiting someone), we render to guest container (in user-profile-view usually)
-        // BUT wait, existing logic tries to switch views. 
-        // Let's stick to standard behavior:
+            // 1. Home View Render
+            if (listContainer) {
+                listContainer.innerHTML = '';
 
-        // 1. Home View Render
-        if (listContainer) {
-            listContainer.innerHTML = '';
-
-            // Share Button (Only in 'All' category and not public view)
-            if (!isPublicView && currentCategory === 'Все') {
-                const shareContainer = document.createElement('div');
-                shareContainer.className = 'share-container';
-                shareContainer.innerHTML = `
-                    <button class="share-wishlist-btn" id="share-wishlist-action">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="18" cy="5" r="3"></circle>
-                            <circle cx="6" cy="12" r="3"></circle>
-                            <circle cx="18" cy="19" r="3"></circle>
-                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-                        </svg>
-                        Поделиться желаниями
-                    </button>
-                `;
-                listContainer.appendChild(shareContainer);
-
-                setTimeout(() => {
-                    document.getElementById('share-wishlist-action')?.addEventListener('click', async () => {
-                        const btn = document.getElementById('share-wishlist-action');
-                        const originalText = btn.innerHTML;
-                        btn.innerText = 'Создаем ссылку...';
-
-                        // 1. Sync
-                        await syncData();
-
-                        // 2. Generate Link
-                        const startParam = userProfile.id; // e.g., u_12345678
-                        const shareUrl = `https://t.me/${BOT_USERNAME}/app?startapp=${startParam}`;
-                        const text = `Мой вишлист! ✨\nПодари мне что-нибудь: ${shareUrl}`;
-
-                        // 3. Open Telegram Share
-                        const tgShareUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`;
-
-                        if (window.Telegram?.WebApp?.openTelegramLink) {
-                            window.Telegram.WebApp.openTelegramLink(tgShareUrl);
-                        } else {
-                            window.open(tgShareUrl, '_blank');
-                        }
-
-                        btn.innerHTML = originalText;
-                    });
-                }, 0);
-            }
-
-            // If in public view, we might want to hide Home or show "Guest Mode" on Home.
-            // But per navigation logic, 'home-view' is hidden when 'user-profile-view' is active.
-            // So we just render Home items from `wishListItems` always, unless we want to support "Preview" mode on Home.
-
-            // Logic: Render User's Own Items
-            if (!isPublicView) {
-                // NEW: Filter by Category
-                const filteredItems = currentCategory === 'Все'
-                    ? wishListItems
-                    : wishListItems.filter(item => item.category === currentCategory);
-
-                // Render Items
-                filteredItems.forEach(item => {
-                    const card = createCard(item, false); // false = not read only
-                    listContainer.appendChild(card);
-                });
-
-                // Render "Add New" Button if slots available
-                if (wishListItems.length < maxSlots) {
-                    const addBtn = document.createElement('div');
-                    addBtn.className = 'wish-card empty-state';
-                    addBtn.style.cursor = 'pointer';
-                    addBtn.style.display = 'flex';
-                    addBtn.style.flexDirection = 'column';
-                    addBtn.style.justifyContent = 'center';
-                    addBtn.style.alignItems = 'center';
-                    addBtn.style.minHeight = '200px';
-                    addBtn.innerHTML = `
-                        <div style="margin-bottom: 15px; width: 80px; height: 80px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                <!-- Gift Outline (Dimmed) -->
-                                <g stroke="rgba(255,255,255,0.3)" stroke-width="2">
-                                    <rect x="3" y="8" width="18" height="4" rx="1"></rect>
-                                    <path d="M12 8v13"></path>
-                                    <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"></path>
-                                    <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.9 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"></path>
-                                </g>
-                                
-                                <!-- Bright Neon Plus -->
-                                <path d="M12 11v7 M8.5 14.5h7" stroke="#00f2fe" stroke-width="3"></path>
+                // Share Button (Only in 'All' category and not public view)
+                if (!isPublicView && currentCategory === 'Все') {
+                    const shareContainer = document.createElement('div');
+                    shareContainer.className = 'share-container';
+                    shareContainer.innerHTML = `
+                        <button class="share-wishlist-btn" id="share-wishlist-action">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="18" cy="5" r="3"></circle>
+                                <circle cx="6" cy="12" r="3"></circle>
+                                <circle cx="18" cy="19" r="3"></circle>
+                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
                             </svg>
-                        </div>
-                        <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 5px;">Добавить желание</h3>
-                        <p style="font-size: 13px; color: #888;">Доступно слотов: ${maxSlots - wishListItems.length}</p>
+                            Поделиться желаниями
+                        </button>
                     `;
-                    addBtn.addEventListener('click', () => {
-                        document.querySelector('[data-target="create-view"]').click();
-                    });
-                    listContainer.appendChild(addBtn);
+                    listContainer.appendChild(shareContainer);
+
+                    setTimeout(() => {
+                        document.getElementById('share-wishlist-action')?.addEventListener('click', async () => {
+                            const btn = document.getElementById('share-wishlist-action');
+                            const originalText = btn.innerHTML;
+                            btn.innerText = 'Создаем ссылку...';
+
+                            // 1. Sync to JsonBlob
+                            const uuid = await saveToCloud();
+
+                            if (!uuid) {
+                                alert("Ошибка сохранения. Попробуйте позже.");
+                                btn.innerHTML = originalText;
+                                return;
+                            }
+
+                            // 2. Generate Link
+                            const startParam = `blob_${uuid}`;
+                            const shareUrl = `https://t.me/${BOT_USERNAME}/app?startapp=${startParam}`;
+                            const text = `Мой вишлист! ✨\nПодари мне что-нибудь: ${shareUrl}`;
+
+                            // 3. Open Telegram Share
+                            const tgShareUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`;
+
+                            if (window.Telegram?.WebApp?.openTelegramLink) {
+                                window.Telegram.WebApp.openTelegramLink(tgShareUrl);
+                            } else {
+                                window.open(tgShareUrl, '_blank');
+                            }
+
+                            btn.innerHTML = originalText;
+                        });
+                    }, 0);
                 }
-            } else {
-                // Public View on Home Tab? Usually we redirect to profile-view for public.
-                // If we are here, maybe we just show nothing or a message.
-                // But let's check basic logic.
-            }
-        }
 
-        // 2. Guest/Public View Render (in Profile Tab)
-        // If isPublicView is true, we should render items into the Guest Container
-        if (guestContainer && isPublicView) {
-            guestContainer.innerHTML = '';
+                // Logic: Render User's Own Items
+                if (!isPublicView) {
+                    // Filter by Category
+                    const filteredItems = currentCategory === 'Все'
+                        ? wishListItems
+                        : wishListItems.filter(item => item.category === currentCategory);
 
-            // If visiting a mock profile
-            if (visitedProfile) {
-                // GENERATE MOCK ITEMS based on user rank maybe?
-                // For now, just fixed mocks or empty
-                if (visitedProfile.isPrivate && !isSubscribedMock) {
-                    // Private & Not Subscribed logic handled by locking overlay in HTML usually, or we show nothing
-                    document.getElementById('locked-overlay').classList.remove('hidden');
-                    guestContainer.style.display = 'none';
-                } else {
-                    document.getElementById('locked-overlay').classList.add('hidden');
-                    guestContainer.style.display = 'grid'; // or block
-
-                    // Mock Items for Guest
-                    const mockItems = [
-                        { id: 901, title: "MacBook Pro", collected: 500000, goal: 1000000, image: "https://placehold.co/600x400?text=MacBook", category: "Tech" },
-                        { id: 902, title: "Coffee Machine", collected: 20000, goal: 50000, image: "https://placehold.co/600x400?text=Coffee", category: "Home" }
-                    ];
-
-                    mockItems.forEach(item => {
-                        const card = createCard(item, true); // true = read only (can pay, cannot delete)
-                        guestContainer.appendChild(card);
+                    // Render Items
+                    filteredItems.forEach(item => {
+                        const card = createCard(item, false);
+                        listContainer.appendChild(card);
                     });
+
+                    // Render "Add New" Button
+                    if (wishListItems.length < maxSlots) {
+                        const addBtn = document.createElement('div');
+                        addBtn.className = 'wish-card empty-state';
+                        addBtn.style.cursor = 'pointer';
+                        addBtn.style.display = 'flex';
+                        addBtn.style.flexDirection = 'column';
+                        addBtn.style.justifyContent = 'center';
+                        addBtn.style.alignItems = 'center';
+                        addBtn.style.minHeight = '200px';
+                        addBtn.innerHTML = `
+                            <div style="margin-bottom: 15px; width: 80px; height: 80px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <g stroke="rgba(255,255,255,0.3)" stroke-width="2">
+                                        <rect x="3" y="8" width="18" height="4" rx="1"></rect>
+                                        <path d="M12 8v13"></path>
+                                        <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"></path>
+                                        <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.9 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"></path>
+                                    </g>
+                                    <path d="M12 11v7 M8.5 14.5h7" stroke="#00f2fe" stroke-width="3"></path>
+                                </svg>
+                            </div>
+                            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 5px;">Добавить желание</h3>
+                            <p style="font-size: 13px; color: #888;">Доступно слотов: ${maxSlots - wishListItems.length}</p>
+                        `;
+                        addBtn.addEventListener('click', () => {
+                            document.querySelector('[data-target="create-view"]').click();
+                        });
+                        listContainer.appendChild(addBtn);
+                    }
                 }
-                // Previewing OWN profile OR Real Guest Profile
-                document.getElementById('locked-overlay').classList.add('hidden');
-                guestContainer.style.display = 'grid';
-
-                // Use fetched guest wishes if available, otherwise own items
-                const sourceItems = window.guestWishes || wishListItems;
-
-                sourceItems.filter(item => !item.isPrivate).forEach(item => {
-                    const card = createCard(item, true);
-                    guestContainer.appendChild(card);
-                });
             }
+
+            // 2. Guest/Public View Render
+            if (guestContainer && isPublicView) {
+                guestContainer.innerHTML = '';
+                if (visitedProfile) {
+                    // Check Private
+                    if (visitedProfile.isPrivate && !isSubscribedMock) {
+                        document.getElementById('locked-overlay').classList.remove('hidden');
+                        guestContainer.style.display = 'none';
+                    } else {
+                        document.getElementById('locked-overlay').classList.add('hidden');
+                        guestContainer.style.display = 'grid';
+
+                        // Render Guest Items
+                        const sourceItems = window.guestWishes || wishListItems;
+                        // Filter out private items if not subscribed? Usually private items are hidden unless "My" view.
+                        // Assuming Guest View only shows Public items.
+                        sourceItems.filter(item => !item.isPrivate).forEach(item => {
+                            const card = createCard(item, true);
+                            guestContainer.appendChild(card);
+                        });
+
+                        // If empty
+                        if (sourceItems.filter(item => !item.isPrivate).length === 0) {
+                            guestContainer.innerHTML = '<p style="text-align:center; opacity:0.6; padding:20px; grid-column: 1/-1;">Список желаний пуст</p>';
+                        }
+                    }
+                }
+            }
+        } catch (e) {
+            console.error("Critical Render Error:", e);
+            alert("Ошибка отображения: " + e.message);
         }
     }
 
