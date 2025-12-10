@@ -102,6 +102,28 @@ document.addEventListener('DOMContentLoaded', () => {
         isPrivate: false
     });
 
+    // AUTO-UPDATE FROM TELEGRAM
+    if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
+        const tgUser = window.Telegram.WebApp.initDataUnsafe.user;
+        const tgName = tgUser.first_name + (tgUser.last_name ? ' ' + tgUser.last_name : '');
+        const tgUsername = tgUser.username ? '@' + tgUser.username : ('@' + tgUser.first_name);
+
+        // Update profile with real data
+        userProfile.name = tgName;
+        userProfile.username = tgUsername;
+        // Optimization: Use stable ID from Telegram if possible, but be careful of old localstorage
+        // We appended u_ to make it string-safe. 
+        // If we change ID now, we lose old wishes? 
+        // User cares about leaderboard names now. Let's keep logic simple: Update NAMES.
+        // ID change is risky for existing wishes unless we migrate. 
+        // Let's stick to updating names for now to solve the immediate "Who is who" visual issue.
+
+        // Actually, for robust sync, we SHOULD use tgUser.id as ID.
+        // But let's just do names first as requested.
+
+        localStorage.setItem('user_profile', JSON.stringify(userProfile));
+    }
+
     // MIGRATION: Force update avatar to random Festive one if generic/old
     const allFestive = [...FESTIVE_AVATARS.elf, ...FESTIVE_AVATARS.santa];
     if (userProfile.avatar.includes('ui-avatars.com') || !allFestive.includes(userProfile.avatar)) {
