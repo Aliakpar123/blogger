@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // const API_URL = 'http://localhost:3000/api'; // Local for dev
     const KASPI_PAY_LINK = 'https://kaspi.kz/pay/YOUR_MERCHANT_NAME';
     const BOT_USERNAME = 'wishlist_bloggers_bot'; // Real bot username
+    const LEADERBOARD_UUID = '019b0851-d0bd-7943-9e47-56b0277b1aee'; // Persistent Leaderboard
 
     // === API HELPERS ===
     async function apiFetch(endpoint, options = {}) {
@@ -178,15 +179,35 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // NEW: Background Sync for Leaderboard
-    // We register the user in the main server so they appear in the global list
+    // NEW: Background Sync for Leaderboard (Persistent via JsonBlob)
     async function syncUserWithServer() {
         try {
-            await apiFetch('/users', {
-                method: 'POST',
-                body: JSON.stringify(userProfile)
+            // 1. Get current list
+            const res = await fetch(`https://jsonblob.com/api/jsonBlob/${LEADERBOARD_UUID}`);
+            let users = [];
+            if (res.ok) {
+                users = await res.json();
+            }
+
+            // 2. Update/Add current user
+            // Remove old entry if exists (by ID)
+            users = users.filter(u => u.id != userProfile.id);
+
+            // Add self
+            users.push({
+                ...userProfile,
+                donated: userProfile.donated || '0 ₸',
+                // Ensure no undefined values
+                subscribers: userProfile.subscribers || 0
             });
-            console.log("User synced with leaderboard");
+
+            // 3. Save back (Simple overwrite, race conditions accepted for prototype)
+            await fetch(`https://jsonblob.com/api/jsonBlob/${LEADERBOARD_UUID}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(users)
+            });
+            console.log("User synced with persistent leaderboard");
         } catch (e) {
             console.warn("Leaderboard sync failed:", e);
         }
@@ -1010,10 +1031,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let remoteUsers = [];
         try {
-            // Try fetching real users
-            const res = await apiFetch('/users');
-            if (res && Array.isArray(res) && res.length > 0) {
-                remoteUsers = res;
+            // Try fetching real users from Persistent Blob
+            const res = await fetch(`https://jsonblob.com/api/jsonBlob/${LEADERBOARD_UUID}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (Array.isArray(data) && data.length > 0) {
+                    remoteUsers = data;
+                }
             }
         } catch (e) {
             console.warn("Could not fetch remote users, using mocks");
