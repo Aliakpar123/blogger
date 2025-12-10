@@ -178,6 +178,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // NEW: Background Sync for Leaderboard
+    // We register the user in the main server so they appear in the global list
+    async function syncUserWithServer() {
+        try {
+            await apiFetch('/users', {
+                method: 'POST',
+                body: JSON.stringify(userProfile)
+            });
+            console.log("User synced with leaderboard");
+        } catch (e) {
+            console.warn("Leaderboard sync failed:", e);
+        }
+    }
+
     // Load Shared Profile
     async function loadSharedProfile(startParam) {
         try {
@@ -560,6 +574,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 userProfile.name = newName;
                 localStorage.setItem('user_profile', JSON.stringify(userProfile));
                 updateProfileUI();
+                syncUserWithServer(); // Sync changes
             }
         });
     }
@@ -1159,11 +1174,11 @@ document.addEventListener('DOMContentLoaded', () => {
     updateSlotsUI();
     updateProfileUI();
     renderGenerousUsers();
-    updateSlotsUI();
-    updateProfileUI();
-    renderGenerousUsers();
     renderItems();
     renderTasks();
+
+    // Request initial sync to appear in leaderboard
+    syncUserWithServer();
 
     document.querySelector('.nav-item.active')?.click();
 
