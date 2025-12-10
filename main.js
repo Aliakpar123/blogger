@@ -201,41 +201,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // NEW: Background Sync for Leaderboard (Persistent via JsonBlob)
+    // NEW: Background Sync for Leaderboard (Persistent via Vercel Proxy)
     async function syncUserWithServer() {
         try {
-            // 1. Get current list (Cache Busted)
-            const res = await fetch(`https://jsonblob.com/api/jsonBlob/${LEADERBOARD_UUID}?t=${Date.now()}`);
-            let users = [];
-            if (res.ok) {
-                users = await res.json();
-            }
-
-            console.log("Downloaded Users:", users);
-
-            // 2. Add/Update current user using a Map for deduplication
-            const userMap = new Map();
-            users.forEach(u => userMap.set(String(u.id), u));
-
-            // Overwrite self
-            userMap.set(String(userProfile.id), {
-                ...userProfile,
-                donated: userProfile.donated || '0 ₸',
-                subscribers: userProfile.subscribers || 0,
-                lastSeen: Date.now() // Track activity
+            await apiFetch('/users', {
+                method: 'POST',
+                body: JSON.stringify(userProfile)
             });
-
-            // Convert back to array
-            const newUsers = Array.from(userMap.values());
-            console.log("Saving Users:", newUsers);
-
-            // 3. Save back
-            await fetch(`https://jsonblob.com/api/jsonBlob/${LEADERBOARD_UUID}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(newUsers)
-            });
-            console.log("User synced with persistent leaderboard");
+            console.log("User synced with persistent leaderboard (Proxy)");
         } catch (e) {
             console.warn("Leaderboard sync failed:", e);
         }
@@ -1059,15 +1032,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let remoteUsers = [];
         try {
-            // Try fetching real users from Persistent Blob (Cache Busted)
-            const res = await fetch(`https://jsonblob.com/api/jsonBlob/${LEADERBOARD_UUID}?t=${Date.now()}`);
-            if (res.ok) {
-                const data = await res.json();
-                if (Array.isArray(data)) {
-                    remoteUsers = data;
-                }
+            // Try fetching real users from Proxy API
+            const res = await apiFetch('/users');
+            if (res && Array.isArray(res)) {
+                remoteUsers = res;
             } else {
-                throw new Error(`Server err: ${res.status}`);
+                // If apiFetch returns null or error is caught inside it, it logs it
+                // We can check if it returned null to explicitly show error if needed
+                if (res === null) throw new Error("API Unreachable");
             }
         } catch (e) {
             console.warn("Could not fetch remote users", e);
@@ -1088,7 +1060,6 @@ document.addEventListener('DOMContentLoaded', () => {
             displayList = remoteUsers.filter(u => u.id != userProfile.id);
         } else {
             // Empy list case
-            // If strictly no mocks, and remote failed or empty
         }
 
         // Add Current User
