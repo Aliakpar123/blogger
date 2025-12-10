@@ -983,24 +983,64 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Server Users Logic - Using Mocks Only for Stability
-    function renderGenerousUsers() {
+    // Server Users Logic
+    async function renderGenerousUsers() {
         const listContainer = document.getElementById('generous-users-list');
         if (!listContainer) return;
-        listContainer.innerHTML = '';
 
-        // Add Current User to the list dynamically so they feel "part of it"
+        // Show loading state if empty
+        if (listContainer.children.length === 0) {
+            listContainer.innerHTML = '<div style="text-align:center; padding:20px; color:#666;">Загрузка...</div>';
+        }
+
+        let remoteUsers = [];
+        try {
+            // Try fetching real users
+            const res = await apiFetch('/users');
+            if (res && Array.isArray(res) && res.length > 0) {
+                remoteUsers = res;
+            }
+        } catch (e) {
+            console.warn("Could not fetch remote users, using mocks");
+        }
+
+        // Define Mocks (Fallback)
+        // We use them if remoteUsers is empty OR if we just want to fill up the list
+        // Strategy: showing REAL users + Mocks to make it feel alive
+        const fallbackMocks = FIXED_MOCKS; // Use global const
+
+        // Combine
+        // Filter out current user from remote strings to avoid duplication if using ID check
+        let displayList = [];
+
+        if (remoteUsers.length > 0) {
+            displayList = remoteUsers.filter(u => u.id != userProfile.id);
+        } else {
+            displayList = fallbackMocks;
+        }
+
+        // Add Current User
         const currentUserEntry = {
             ...userProfile,
-            donated: "0 ₸", // Default for now
+            donated: userProfile.donated || "0 ₸",
             isCurrentUser: true
         };
 
-        // Combine and Sort (Mock sorting logic)
-        // We just randomly insert user or put at top for visibility
-        // Let's put user as "You" at index 0 or similar
-        const allUsers = [currentUserEntry, ...FIXED_MOCKS];
+        // Final List: Current User + Others
+        const finalUsers = [currentUserEntry, ...displayList];
 
-        allUsers.forEach((user, index) => {
+        // Unique IDs only
+        const uniqueUsers = [];
+        const seenIds = new Set();
+        for (const u of finalUsers) {
+            if (!seenIds.has(u.id)) {
+                seenIds.add(u.id);
+                uniqueUsers.push(u);
+            }
+        }
+
+        listContainer.innerHTML = '';
+        uniqueUsers.forEach((user, index) => {
             const div = document.createElement('div');
             div.className = 'user-card-item';
             // Highlight current user
@@ -1008,24 +1048,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
             div.innerHTML = `
                 <span class="uc-rank">${index + 1}</span>
-                <img src="${user.avatar}" class="uc-avatar">
+                <img src="${user.avatar || 'https://placehold.co/100'}" class="uc-avatar" onerror="this.src='https://placehold.co/100'">
                 <div class="uc-info">
                     <span class="uc-name">${user.isCurrentUser ? (user.name + ' (Вы)') : user.name}</span>
-                    <span class="uc-donated">Подарил: ${user.donated}</span>
+                    <span class="uc-donated">Подарил: ${user.donated || '0 ₸'}</span>
                 </div>
             `;
             div.addEventListener('click', () => {
                 // If clicking self
                 if (user.isCurrentUser) {
-                    document.querySelector('.nav-item.active')?.click(); // Go to home/profile
+                    document.querySelector('.nav-item.active')?.click();
                     return;
                 }
-
                 visitedProfile = user;
                 isPublicView = true;
                 updateProfileUI();
                 renderItems();
-                // Call navigateTo directly to bypass the "Reset" logic in the nav click listener
                 navigateTo('user-profile-view');
             });
             listContainer.appendChild(div);
