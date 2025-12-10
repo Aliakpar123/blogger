@@ -1005,9 +1005,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Define Mocks (Fallback)
-        // We use them if remoteUsers is empty OR if we just want to fill up the list
-        // Strategy: showing REAL users + Mocks to make it feel alive
-        const fallbackMocks = FIXED_MOCKS; // Use global const
+        // User requested to REMOVE all non-existent users.
+        // So fallback is empty.
+        const fallbackMocks = [];
 
         // Combine
         // Filter out current user from remote strings to avoid duplication if using ID check
