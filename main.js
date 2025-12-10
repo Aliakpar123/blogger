@@ -189,23 +189,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 users = await res.json();
             }
 
-            // 2. Update/Add current user
-            // Remove old entry if exists (by ID)
-            users = users.filter(u => u.id != userProfile.id);
+            console.log("Downloaded Users:", users);
 
-            // Add self
-            users.push({
+            // 2. Add/Update current user using a Map for deduplication
+            const userMap = new Map();
+            users.forEach(u => userMap.set(String(u.id), u));
+
+            // Overwrite self
+            userMap.set(String(userProfile.id), {
                 ...userProfile,
                 donated: userProfile.donated || '0 ₸',
-                // Ensure no undefined values
-                subscribers: userProfile.subscribers || 0
+                subscribers: userProfile.subscribers || 0,
+                lastSeen: Date.now() // Track activity
             });
 
-            // 3. Save back (Simple overwrite, race conditions accepted for prototype)
+            // Convert back to array
+            const newUsers = Array.from(userMap.values());
+            console.log("Saving Users:", newUsers);
+
+            // 3. Save back
             await fetch(`https://jsonblob.com/api/jsonBlob/${LEADERBOARD_UUID}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(users)
+                body: JSON.stringify(newUsers)
             });
             console.log("User synced with persistent leaderboard");
         } catch (e) {
