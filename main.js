@@ -182,8 +182,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // NEW: Background Sync for Leaderboard (Persistent via JsonBlob)
     async function syncUserWithServer() {
         try {
-            // 1. Get current list
-            const res = await fetch(`https://jsonblob.com/api/jsonBlob/${LEADERBOARD_UUID}`);
+            // 1. Get current list (Cache Busted)
+            const res = await fetch(`https://jsonblob.com/api/jsonBlob/${LEADERBOARD_UUID}?t=${Date.now()}`);
             let users = [];
             if (res.ok) {
                 users = await res.json();
@@ -1031,8 +1031,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let remoteUsers = [];
         try {
-            // Try fetching real users from Persistent Blob
-            const res = await fetch(`https://jsonblob.com/api/jsonBlob/${LEADERBOARD_UUID}`);
+            // Try fetching real users from Persistent Blob (Cache Busted)
+            const res = await fetch(`https://jsonblob.com/api/jsonBlob/${LEADERBOARD_UUID}?t=${Date.now()}`);
             if (res.ok) {
                 const data = await res.json();
                 if (Array.isArray(data) && data.length > 0) {
