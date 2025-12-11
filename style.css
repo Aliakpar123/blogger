@@ -2654,3 +2654,167 @@ input:checked+.slider:before {
     padding: 0 16px;
     margin-top: 10px;
 }
+
+/* SANTA THEME */
+#santa-view {
+    padding: 20px;
+    text-align: center;
+    min-height: 80vh;
+    background: linear-gradient(180deg, rgba(20,20,30,0.5) 0%, rgba(200, 30, 30, 0.1) 100%);
+    border-radius: 20px;
+}
+
+.santa-header h2 {
+    font-size: 28px;
+    margin-bottom: 5px;
+    background: linear-gradient(90deg, #ff4d4d, #ffffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.santa-header p {
+    color: #aaa;
+    margin-bottom: 30px;
+}
+
+.santa-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 16px;
+    transition: transform 0.2s;
+}
+
+.santa-card:active {
+    transform: scale(0.98);
+}
+
+.santa-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+}
+
+.santa-divider {
+    color: #666;
+    margin: 16px 0;
+    position: relative;
+    font-size: 14px;
+}
+
+/* BUTTONS */
+.btn-christmas {
+    background: linear-gradient(90deg, #d4145a, #fbb03b);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    width: 100%;
+    margin-top: 15px;
+    cursor: pointer;
+}
+
+.btn-christmas-outline {
+    background: transparent;
+    border: 1px solid #d4145a;
+    color: #d4145a;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+/* LOBBY */
+.lobby-code-box {
+    background: #2a2a2a;
+    padding: 10px 20px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin: 15px 0;
+    font-family: monospace;
+    font-size: 18px;
+    color: #fbb03b;
+    border: 1px dashed #555;
+}
+
+.participants-list {
+    margin: 20px 0;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.participant-item {
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.03);
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+}
+
+.participant-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 12px;
+    object-fit: cover;
+}
+
+/* REVEAL */
+.santa-reveal-card {
+    margin-top: 40px;
+}
+
+.reveal-box {
+    margin-top: 20px;
+    position: relative;
+    width: 100%;
+    min-height: 250px;
+}
+
+.secret-cover {
+    background: repeating-linear-gradient(
+      45deg,
+      #d4145a,
+      #d4145a 10px,
+      #b00b46 10px,
+      #b00b46 20px
+    );
+    border-radius: 16px;
+    width: 100%;
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(212, 20, 90, 0.4);
+    transition: transform 0.5s;
+}
+
+.secret-cover:active {
+    transform: scale(0.95);
+}
+
+.target-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid #fbb03b;
+    margin-bottom: 15px;
+}
+
+.join-input-group {
+    display: flex;
+    margin-top: 15px;
+}
+
+.join-input-group input {
+    flex: 1;
+}
