@@ -135,16 +135,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- MOVED FIXED_MOCKS HERE FOR GLOBAL ACCESS ---
     // --- MOVED FIXED_MOCKS HERE FOR GLOBAL ACCESS ---
     const FIXED_MOCKS = []; // Removed defaults to rely on real server data
-    { id: 4, name: "Dmitry K.", username: "@dimak", avatar: FESTIVE_AVATARS.elf[0], donated: "0 ₸", bio: "Developer 💻", isPrivate: false, subscribers: 5021 },
-    { id: 5, name: "Olga V.", username: "@olgav", avatar: FESTIVE_AVATARS.santa[1], donated: "2M ₸", bio: "Art & Design 🎨", isPrivate: true, subscribers: 10500 },
-    { id: 6, name: "Sergey P.", username: "@sergeyp", avatar: FESTIVE_AVATARS.elf[2], donated: "1.2M ₸", bio: "Crypto Enthusiast 🪙", isPrivate: false, subscribers: 8900 },
-    { id: 7, name: "Maria L.", username: "@marial", avatar: FESTIVE_AVATARS.santa[0], donated: "750k ₸", bio: "Food Blogger 🍩", isPrivate: false, subscribers: 12000 },
-    { id: 8, name: "Ivan T.", username: "@ivant", avatar: FESTIVE_AVATARS.elf[1], donated: "300k ₸", bio: "Sports & Fitness 🏋️", isPrivate: true, subscribers: 4500 },
-    { id: 9, name: "Natalia R.", username: "@nataliar", avatar: FESTIVE_AVATARS.santa[2], donated: "100k ₸", bio: "Music is Life 🎵", isPrivate: false, subscribers: 2100 },
-    { id: 10, name: "Timur S.", username: "@timurs", avatar: FESTIVE_AVATARS.elf[0], donated: "50k ₸", bio: "Tech Reviewer 📱", isPrivate: false, subscribers: 6700 },
-    { id: 11, name: "Zuhra A.", username: "@zuhraa", avatar: FESTIVE_AVATARS.santa[1], donated: "3.5M ₸", bio: "Philanthropist ❤️", isPrivate: true, subscribers: 25000 },
-    { id: 12, name: "Kairat N.", username: "@kairatn", avatar: FESTIVE_AVATARS.elf[2], donated: "1.5M ₸", bio: "Business & Startups 🚀", isPrivate: false, subscribers: 15000 }
-    ];
 
     // Public View API
     let isPublicView = false;
