@@ -410,9 +410,9 @@ document.addEventListener('DOMContentLoaded', () => {
         paymentModal.classList.remove('hidden');
         amountInput.value = '';
 
-        if (mode === 'donate') {
-            document.querySelector('#payment-modal h3').innerText = "Сумма доната";
-            paymentModal.dataset.itemId = data.itemId;
+        if (mode === 'donate' || mode === 'donate_dev') {
+            document.querySelector('#payment-modal h3').innerText = mode === 'donate' ? "Сумма доната" : "Поддержка";
+            if (mode === 'donate') paymentModal.dataset.itemId = data.itemId;
 
             // Show Spend Button, Hide Methods
             if (methodsGrid) methodsGrid.classList.add('hidden');
@@ -531,27 +531,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Sufficient Funds
                 userProfile.balance -= amount;
 
-                const itemId = paymentModal.dataset.itemId;
-                // ... (Existing Find Item Logic) ...
-                let targetItem = null;
-                if (isPublicView && window.guestWishes) {
-                    targetItem = window.guestWishes.find(i => i.id == itemId);
-                } else {
-                    targetItem = wishListItems.find(i => i.id == itemId);
-                }
+                const mode = paymentModal.dataset.mode;
 
-                if (targetItem) {
-                    targetItem.collected += amount;
-                    if (!isPublicView || !visitedProfile) {
-                        saveState();
-                        renderItems();
+                if (mode === 'donate_dev') {
+                    // Developer Support
+                    alert(`🙏 Спасибо за поддержку разработчика! \n${formatCurrency(amount)} отправлено.`);
+                } else {
+                    // Wish Donation
+                    const itemId = paymentModal.dataset.itemId;
+                    // ... (Existing Find Item Logic) ...
+                    let targetItem = null;
+                    if (isPublicView && window.guestWishes) {
+                        targetItem = window.guestWishes.find(i => i.id == itemId);
+                    } else {
+                        targetItem = wishListItems.find(i => i.id == itemId);
                     }
+
+                    if (targetItem) {
+                        targetItem.collected += amount;
+                        if (!isPublicView || !visitedProfile) {
+                            saveState();
+                            renderItems();
+                        }
+                    }
+                    alert(`🎁 Донат ${formatCurrency(amount)} отправлен!`);
                 }
 
                 saveState(); // Save balance deduction
                 updateProfileUI();
-
-                alert(`🎁 Донат ${formatCurrency(amount)} отправлен!`);
                 closeModal();
 
             } else {
@@ -563,6 +570,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     amountInput.value = needed;
                 }
             }
+        });
+    }
+
+    // Support Developer Button
+    const donateDevBtn = document.getElementById('donate-dev-btn');
+    if (donateDevBtn) {
+        donateDevBtn.addEventListener('click', () => {
+            openModal('donate_dev');
         });
     }
 
