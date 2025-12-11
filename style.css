@@ -2818,3 +2818,46 @@ input:checked+.slider:before {
 .join-input-group input {
     flex: 1;
 }
+
+/* WALLET THEME */
+.wallet-card {
+    background: linear-gradient(135deg, #1e1e24, #2a2a35);
+    border-radius: 16px;
+    padding: 20px;
+    margin: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.wallet-balance {
+    display: flex;
+    flex-direction: column;
+}
+
+.wallet-label {
+    font-size: 12px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.wallet-amount {
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    margin-top: 4px;
+}
+
+.wallet-actions .btn-topup {
+    background: #d4145a;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}

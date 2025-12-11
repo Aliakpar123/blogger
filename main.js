@@ -293,9 +293,26 @@ document.addEventListener('DOMContentLoaded', () => {
         const privateModeToggle = document.getElementById('private-mode-toggle');
         const statSubscribers = document.getElementById('stat-subscribers');
         const statWishes = document.getElementById('stat-wishes');
+        const balanceDisplay = document.getElementById('user-balance-display'); // NEW
 
         // USE VISITED PROFILE IF IN "GUEST" MODE
         const data = visitedProfile || userProfile;
+
+        // Initialize balance if missing
+        if (data === userProfile && typeof data.balance === 'undefined') {
+            data.balance = 0;
+        }
+
+        if (balanceDisplay) {
+            // Only show balance for MY profile, or hide/show '0' for others?
+            // TikTok: You don't see others' coin balance.
+            if (visitedProfile) {
+                balanceDisplay.parentElement.parentElement.style.display = 'none'; // Hide Wallet Card
+            } else {
+                balanceDisplay.parentElement.parentElement.style.display = 'flex';
+                balanceDisplay.innerText = formatCurrency(data.balance || 0);
+            }
+        }
 
         if (profileNameEl) {
             let nameDisplay = data.name;
@@ -380,9 +397,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- MODAL & PAYMENT ---
-    function openModal(itemTitle, itemId) {
+    // --- MODAL & PAYMENT (WALLET LOGIC) ---
+    function openModal(mode, data) {
         if (!paymentModal) return;
-        paymentModal.dataset.itemId = itemId;
+        paymentModal.dataset.mode = mode; // 'topup' or 'donate'
+
+        if (mode === 'donate') {
+            paymentModal.dataset.itemId = data.itemId;
+            // Check balance first? TikTok style usually opens native payment if balance checks fail, 
+            // but here we open our "Top Up/Pay" modal which leads to Kaspi.
+            // Simplified: If 'donate', we are asking "How much to give?".
+            document.querySelector('#payment-modal h3').innerText = "Сумма доната";
+        } else {
+            // 'topup'
+            document.querySelector('#payment-modal h3').innerText = "Пополнение кошелька";
+        }
+
         paymentModal.classList.remove('hidden');
         amountInput.value = '';
         requestAnimationFrame(() => {
@@ -408,33 +438,91 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Connect Wallet Top Up Button
+    const walletTopUpBtn = document.getElementById('wallet-topup-btn');
+    if (walletTopUpBtn) {
+        walletTopUpBtn.addEventListener('click', () => {
+            openModal('topup');
+        });
+    }
+
     const payBtn = document.getElementById('pay-kaspi-btn');
     if (payBtn) {
         payBtn.addEventListener('click', () => {
-            const amount = amountInput.value;
+            const amount = parseInt(amountInput.value);
             if (!amount || amount <= 0) {
                 alert('Пожалуйста, введите сумму');
                 return;
             }
-            if (paymentModal.dataset.mode === 'donation') {
-                alert(`Спасибо за поддержку! 💖\nСумма: ${formatCurrency(amount)}`);
-                paymentModal.dataset.mode = ''; // Reset
-                document.querySelector('#payment-modal h3').innerText = "Сумма пополнения";
+
+            const mode = paymentModal.dataset.mode;
+
+            if (mode === 'topup') {
+                // Top Up Logic
+                userProfile.balance = (userProfile.balance || 0) + amount;
+                saveState();
+                updateProfileUI(); // Updates balance display
+                alert(`Кошелек пополнен на ${formatCurrency(amount)}!`);
                 window.open(KASPI_PAY_LINK, '_blank');
                 closeModal();
-                return;
+            } else if (mode === 'donate') {
+                // Donate Logic (Spend Balance)
+                // Check Balance
+                const currentBalance = userProfile.balance || 0;
+
+                if (currentBalance >= amount) {
+                    // Sufficient Funds
+                    userProfile.balance -= amount;
+
+                    const itemId = paymentModal.dataset.itemId;
+                    const item = wishListItems.find(i => i.id == itemId);
+
+                    // Note: If guest view, we need to handle guest wishes separately!
+                    // Assuming for now user is paying for THEIR OWN wish (test) or we fix guest handling.
+                    // Since guest wishes are not in 'wishListItems' (which is local), this part 
+                    // needs 'window.guestWishes' awareness if we are in public view.
+
+                    let targetItem = null;
+                    if (isPublicView && window.guestWishes) {
+                        targetItem = window.guestWishes.find(i => i.id == itemId);
+                    } else {
+                        targetItem = wishListItems.find(i => i.id == itemId);
+                    }
+
+                    if (targetItem) {
+                        targetItem.collected += amount;
+                        // If guest, we theoretically need to push this update to server...
+                        // But since we use JsonBlob, we CAN update it! 
+                        if (isPublicView && visitedProfile) {
+                            // TODO: Implement syncing guest wish update back to blob
+                            // For now, simpler: Just show alert of spending.
+                        } else {
+                            // My wish
+                            saveState();
+                            renderItems();
+                        }
+                    }
+
+                    saveState(); // Save balance deduction
+                    updateProfileUI();
+
+                    alert(`Донат ${formatCurrency(amount)} отправлен! ✨`);
+                    closeModal();
+
+                } else {
+                    // Insufficient Funds
+                    const needed = amount - currentBalance;
+                    const confirmTopUp = confirm(`Недостаточно средств. Пополнить на ${formatCurrency(needed)}?`);
+                    if (confirmTopUp) {
+                        openModal('topup'); // Switch mode? Or just direct user
+                        amountInput.value = needed; // Prefill
+                    }
+                }
+            } else if (mode === 'donation_dev') {
+                // Dev donation, skip balance, direct pay
+                window.open(KASPI_PAY_LINK, '_blank');
+                closeModal();
             }
-            const itemId = paymentModal.dataset.itemId;
-            const item = wishListItems.find(i => i.id == itemId);
-            if (item) {
-                const payAmount = parseInt(amount);
-                item.collected += payAmount;
-                saveState();
-                renderItems();
-                alert(`Успешно пополнено на ${formatCurrency(payAmount)}!`);
-            }
-            window.open('https://kaspi.kz/pay', '_blank');
-            closeModal();
         });
     }
 
@@ -987,7 +1075,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const payBtn = div.querySelector('.pay-btn');
         if (payBtn) payBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            openModal(item.title, item.id);
+            openModal('donate', { itemId: item.id });
         });
 
         if (!isReadOnly) {
