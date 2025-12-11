@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // alert("✅ SYSTEM ONLINE v9.9.80"); 
-    console.log("SCRIPT STARTED v9.9.80");
+    // alert("✅ SYSTEM ONLINE v9.9.82"); 
+    console.log("SCRIPT STARTED v9.9.82");
 
     // Initialize Vercel Speed Insights check
     // (Loaded via module in index.html, so we just log if it's there or not)
