@@ -306,35 +306,63 @@
                 <p>Подпишитесь, чтобы увидеть список желаний</p>
                 <button class="btn btn-primary" id="subscribe-btn">Подписаться</button>
             </div>
+            ```
+            <div class="header-right">
+                <!-- <button class="btn-icon">🔔</button> -->
+                <button class="btn-icon" id="main-settings-btn">⚙️</button>
+            </div>
         </div>
+    </div>
 
-        <!-- SANTA VIEW REMOVED -->
-        <!-- SANTA VIEW GONE -->
+    <!-- SANTA VIEW REMOVED -->
+    <!-- SANTA VIEW GONE -->
 
-        <!-- Payment Modal -->
-        <div id="payment-modal" class="modal-overlay hidden">
-            <div class="modal-content">
-                <button class="close-modal">&times;</button>
-                <h3>Сумма пополнения</h3>
+    <!-- Payment Modal (Refactored) -->
+    <div id="payment-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button class="close-modal">&times;</button>
+            <h3>Пополнение кошелька</h3>
 
-                <div class="amount-input-wrapper">
-                    <input type="number" id="payment-amount" placeholder="5000" class="amount-input">
-                    <span class="currency-label">₸</span>
+            <div class="amount-input-wrapper">
+                <input type="number" id="payment-amount" placeholder="5000" class="amount-input">
+                <span class="currency-label">₸</span>
+            </div>
+
+            <!-- Spend Balance Button (Only for Donate Mode) -->
+            <button id="pay-from-wallet-btn" class="btn btn-primary full-width hidden" style="margin-top: 20px;">
+                Оплатить с баланса
+            </button>
+
+            <p style="margin-top: 20px; color: #888; font-size: 14px;" id="pay-methods-title">Выберите способ оплаты:
+            </p>
+
+            <div class="payment-methods-grid" id="payment-methods-grid">
+                <!-- Apple Pay (Telegram Integration) -->
+                <div class="pay-method-btn" id="pay-method-apple">
+                    <span class="pay-method-icon"></span>
+                    <span class="pay-method-label">Apple Pay</span>
                 </div>
 
-                <div class="header-right">
-                    <!-- <button class="btn-icon">🔔</button> -->
-                    <button class="btn-icon" id="main-settings-btn">⚙️</button>
+                <!-- USDT -->
+                <div class="pay-method-btn" id="pay-method-usdt">
+                    <span class="pay-method-icon">₮</span>
+                    <span class="pay-method-label">USDT (TRC20)</span>
+                </div>
+
+                <!-- Bank Card (Generic) -->
+                <div class="pay-method-btn" id="pay-method-card">
+                    <span class="pay-method-icon">💳</span>
+                    <span class="pay-method-label">Карта</span>
                 </div>
             </div>
 
-            <button id="pay-kaspi-btn" class="kaspi-btn">
-                <span class="btn-icon">🔴</span>
-                Оплатить через Kaspi
-            </button>
-
-            <p class="payment-hint">Переход в приложение Kaspi.kz</p>
+            <!-- Hint Area -->
+            <div id="payment-hint-area"
+                style="margin-top: 15px; font-size: 13px; color: #aaa; text-align: center; min-height: 20px;">
+                Оплата через Telegram Stars / Wallet
+            </div>
         </div>
+    </div>
     </div>
 
     <!-- Limit Reached Modal -->
