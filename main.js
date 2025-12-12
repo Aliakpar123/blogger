@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // alert("✅ SYSTEM ONLINE v9.9.82"); 
-    console.log("SCRIPT STARTED v9.9.82");
+    console.log("SCRIPT STARTED v9.9.9");
 
     // Initialize Vercel Speed Insights check
     // (Loaded via module in index.html, so we just log if it's there or not)
@@ -134,7 +134,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- MOVED FIXED_MOCKS HERE FOR GLOBAL ACCESS ---
     // --- MOVED FIXED_MOCKS HERE FOR GLOBAL ACCESS ---
-    const FIXED_MOCKS = []; // Removed defaults to rely on real server data
+    const FIXED_MOCKS = [
+        { id: 'm1', name: "Aigerim K.", username: "@aika", avatar: FESTIVE_AVATARS.elf[0], donated: "2.5M ₸", bio: "Startups 🚀", isPrivate: false, subscribers: 5200 },
+        { id: 'm2', name: "Alex B.", username: "@alexb", avatar: FESTIVE_AVATARS.santa[0], donated: "1.8M ₸", bio: "Investments 📈", isPrivate: false, subscribers: 3100 },
+        { id: 'm3', name: "Dana Life", username: "@danalife", avatar: FESTIVE_AVATARS.elf[1], donated: "950k ₸", bio: "Lifestyle ✨", isPrivate: true, subscribers: 15400 },
+        { id: 'm4', name: "Mr. Beast KZ", username: "@mrbeastkz", avatar: FESTIVE_AVATARS.santa[1], donated: "500k ₸", bio: "Charity", isPrivate: false, subscribers: 50000 },
+        { id: 'm5', name: "Zuhra A.", username: "@zuhraa", avatar: FESTIVE_AVATARS.elf[2], donated: "150k ₸", bio: "Philanthropy", isPrivate: true, subscribers: 25000 }
+    ];
 
     // Public View API
     let isPublicView = false;
@@ -1181,16 +1187,17 @@ document.addEventListener('DOMContentLoaded', () => {
         // Define Mocks (Fallback)
         // User requested to REMOVE all non-existent users.
         // So fallback is empty.
-        const fallbackMocks = [];
+        const fallbackMocks = FIXED_MOCKS;
 
         // Combine
         // Filter out current user from remote strings to avoid duplication if using ID check
         let displayList = [];
 
         if (remoteUsers.length > 0) {
-            displayList = remoteUsers.filter(u => u.id != userProfile.id);
+            displayList = [...remoteUsers.filter(u => u.id != userProfile.id), ...fallbackMocks];
         } else {
-            // Empy list case
+            // Empty list case -> Use mocks
+            displayList = [...fallbackMocks];
         }
 
         // Add Current User
