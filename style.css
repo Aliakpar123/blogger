@@ -2291,18 +2291,22 @@ input:checked+.slider:before {
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
+
 /* Shops Carousel */
 .shops-carousel-container {
     display: flex;
     overflow-x: auto;
     gap: 16px;
-    padding: 10px 4px 20px 4px; /* Bottom padding for shadow clipping */
+    padding: 10px 4px 20px 4px;
+    /* Bottom padding for shadow clipping */
     margin-bottom: 10px;
-    scrollbar-width: none; /* Hide scrollbar Firefox */
+    scrollbar-width: none;
+    /* Hide scrollbar Firefox */
 }
 
 .shops-carousel-container::-webkit-scrollbar {
-    display: none; /* Hide scrollbar Chrome/Safari */
+    display: none;
+    /* Hide scrollbar Chrome/Safari */
 }
 
 .shop-item {
@@ -2328,8 +2332,8 @@ input:checked+.slider:before {
     justify-content: center;
     font-size: 24px;
     font-weight: bold;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    border: 2px solid rgba(255,255,255,0.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.05);
 }
 
 .shop-logo.sub-gradient {
@@ -2355,7 +2359,8 @@ input:checked+.slider:before {
     object-fit: cover;
     border: 2px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    background: #fff; /* White bg for logos with transparency */
+    background: #fff;
+    /* White bg for logos with transparency */
 }
 
 /* Fallback hidden by default */
@@ -2374,7 +2379,8 @@ input:checked+.slider:before {
     backdrop-filter: blur(5px);
     z-index: 2000;
     display: flex;
-    align-items: flex-end; /* Bottom sheet */
+    align-items: flex-end;
+    /* Bottom sheet */
     justify-content: center;
     opacity: 0;
     pointer-events: none;
@@ -2392,7 +2398,7 @@ input:checked+.slider:before {
     max-width: 500px;
     border-radius: 20px 20px 0 0;
     padding: 24px;
-    box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
     transform: translateY(100%);
     transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
@@ -2429,7 +2435,7 @@ input:checked+.slider:before {
 }
 
 .sub-item {
-    background: rgba(255,255,255,0.05);
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 16px;
     padding: 12px;
     display: flex;
@@ -2440,7 +2446,7 @@ input:checked+.slider:before {
 }
 
 .sub-item:active {
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .sub-icon {
@@ -2492,7 +2498,8 @@ input:checked+.slider:before {
     background: #ffffff;
     border-radius: 24px;
     padding: 20px;
-    margin: 0 -16px 20px -16px; /* Negative margin to span full width if inside padding? */
+    margin: 0 -16px 20px -16px;
+    /* Negative margin to span full width if inside padding? */
     /* Accessing global padding might be an issue. .content-area usually has padding. 
        If I want full width sheet, I assume .content-area has padding 0? 
        Check style: main.content-area usually has padding. 
@@ -2503,7 +2510,8 @@ input:checked+.slider:before {
     margin-left: -20px;
     margin-right: -20px;
     box-sizing: border-box;
-    padding-left: 20px; /* Restore padding intent */
+    padding-left: 20px;
+    /* Restore padding intent */
 }
 
 /* Update carousel container to handle the cards */
@@ -2519,7 +2527,7 @@ input:checked+.slider:before {
     position: relative;
     overflow: hidden;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s;
     display: flex;
     flex-direction: column;
@@ -2551,7 +2559,7 @@ input:checked+.slider:before {
     font-size: 13px;
     font-weight: 700;
     color: white;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
     line-height: 1.2;
     text-align: left;
 }
@@ -2578,7 +2586,8 @@ input:checked+.slider:before {
 .shop-logo-wrapper {
     width: 68px;
     height: 68px;
-    padding: 3px; /* The gap */
+    padding: 3px;
+    /* The gap */
     border-radius: 50%;
     background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
     display: flex;
@@ -2588,19 +2597,25 @@ input:checked+.slider:before {
 
 /* Override for Subscriptions (First item) */
 #subscriptions-btn .shop-logo-wrapper {
-    background: linear-gradient(90deg, #00c6ff, #0072ff); /* Blue Custom Ring */
+    background: linear-gradient(90deg, #00c6ff, #0072ff);
+    /* Blue Custom Ring */
     /* Or maybe Gold? User said 'упор другим цветом'. Keep clear contrast. */
 }
 
 /* Ensure the image sits inside correctly */
-.shop-logo-img, .shop-logo.sub-gradient, .shop-logo.default-fallback {
-    width: 62px !important; /* wrapper - padding*2 */
+.shop-logo-img,
+.shop-logo.sub-gradient,
+.shop-logo.default-fallback {
+    width: 62px !important;
+    /* wrapper - padding*2 */
     height: 62px !important;
-    border: 2px solid #000; /* Gap color (black theme) */
+    border: 2px solid #000;
+    /* Gap color (black theme) */
     border-radius: 50%;
     background: #fff;
     object-fit: cover;
-    box-sizing: border-box; /* Include border in size */
+    box-sizing: border-box;
+    /* Include border in size */
 }
 
 /* Adjust generic logo classes */
@@ -2614,7 +2629,8 @@ input:checked+.slider:before {
     margin-top: 4px;
     font-weight: 600;
     font-size: 14px;
-    color: #4CAF50; /* Green for price */
+    color: #4CAF50;
+    /* Green for price */
 }
 
 /* Ensure details stack correctly */
@@ -2643,13 +2659,16 @@ input:checked+.slider:before {
     box-shadow: 0 4px 15px rgba(0, 114, 255, 0.3);
     transition: transform 0.2s;
 }
+
 .share-wishlist-btn:active {
     transform: scale(0.98);
 }
+
 .share-wishlist-btn svg {
     width: 20px;
     height: 20px;
 }
+
 .share-container {
     padding: 0 16px;
     margin-top: 10px;
@@ -2660,7 +2679,7 @@ input:checked+.slider:before {
     padding: 20px;
     text-align: center;
     min-height: 80vh;
-    background: linear-gradient(180deg, rgba(20,20,30,0.5) 0%, rgba(200, 30, 30, 0.1) 100%);
+    background: linear-gradient(180deg, rgba(20, 20, 30, 0.5) 0%, rgba(200, 30, 30, 0.1) 100%);
     border-radius: 20px;
 }
 
@@ -2750,7 +2769,7 @@ input:checked+.slider:before {
 .participant-item {
     display: flex;
     align-items: center;
-    background: rgba(255,255,255,0.03);
+    background: rgba(255, 255, 255, 0.03);
     padding: 10px;
     border-radius: 10px;
     margin-bottom: 8px;
@@ -2777,13 +2796,11 @@ input:checked+.slider:before {
 }
 
 .secret-cover {
-    background: repeating-linear-gradient(
-      45deg,
-      #d4145a,
-      #d4145a 10px,
-      #b00b46 10px,
-      #b00b46 20px
-    );
+    background: repeating-linear-gradient(45deg,
+            #d4145a,
+            #d4145a 10px,
+            #b00b46 10px,
+            #b00b46 20px);
     border-radius: 16px;
     width: 100%;
     height: 250px;
@@ -2828,7 +2845,7 @@ input:checked+.slider:before {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -2871,8 +2888,9 @@ input:checked+.slider:before {
 }
 
 .pay-method-btn {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
+    background: #f5f7fa;
+    border: 1px solid #e1e4e8;
+    color: #333;
     border-radius: 12px;
     padding: 15px;
     display: flex;
@@ -2881,11 +2899,15 @@ input:checked+.slider:before {
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
-.pay-method-btn:hover, .pay-method-btn.selected {
-    background: rgba(255,255,255,0.1);
-    border-color: #007aff;
+.pay-method-btn:hover,
+.pay-method-btn.selected {
+    background: #ffffff;
+    border-color: #4e8cff;
+    box-shadow: 0 4px 10px rgba(78, 140, 255, 0.2);
+    transform: translateY(-2px);
 }
 
 .pay-method-icon {
