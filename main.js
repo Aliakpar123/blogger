@@ -40,8 +40,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // === CONFIGURATION ===
-    const API_URL = 'https://blogger-aliakpar123s-projects.vercel.app/api'; // Production URL
-    // const API_URL = 'http://localhost:3000/api'; // Local for dev
+    // Use relative path for API to work on any Vercel deployment (preview or prod)
+    // Fallback to absolute if running locally without proxy (rare case for this setup)
+    const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const API_URL = IS_LOCAL ? 'http://localhost:3000/api' : '/api';
+
     const KASPI_PAY_LINK = 'https://kaspi.kz/pay/YOUR_MERCHANT_NAME';
     const BOT_USERNAME = 'wishlist_bloggers_bot'; // Real bot username
     const LEADERBOARD_UUID = '019b0851-d0bd-7943-9e47-56b0277b1aee'; // Persistent Leaderboard
@@ -58,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             if (!res.ok) throw new Error(`API Error: ${res.status}`);
             return await res.json();
+
         } catch (e) {
             console.error('API Request Failed:', e);
             return null; // Fallback to handling null (i.e., offline/no server)
