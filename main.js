@@ -43,7 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Use relative path for API to work on any Vercel deployment (preview or prod)
     // Fallback to absolute if running locally without proxy (rare case for this setup)
     const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    const API_URL = IS_LOCAL ? 'http://localhost:3000/api' : '/api';
+    const IS_FILE = window.location.protocol === 'file:';
+    const API_URL = IS_LOCAL ? 'http://localhost:3000/api' : (IS_FILE ? 'https://blogger-aliakpar123s-projects.vercel.app/api' : '/api');
 
     const KASPI_PAY_LINK = 'https://kaspi.kz/pay/YOUR_MERCHANT_NAME';
     const BOT_USERNAME = 'wishlist_bloggers_bot'; // Real bot username
