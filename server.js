@@ -105,16 +105,50 @@ app.get('/api/wishes/:userId', (req, res) => {
     res.json(userWishes);
 });
 
-// POST /api/wishes - Save ALL wishes for a user (simplest for syncing from localstorage initially)
-app.post('/api/wishes', (req, res) => {
-    const { userId, wishes } = req.body;
-    if (!userId) return res.status(400).json({ error: "No userId" });
+const db = readDB();
+const wishes = db.wishes[req.params.userId] || [];
+res.json(wishes);
+});
 
+// POST /api/wishes/:userId
+app.post('/api/wishes/:userId', (req, res) => {
     const db = readDB();
-    db.wishes[userId] = wishes || [];
+    db.wishes[req.params.userId] = req.body; // Expects array of wishes
     writeDB(db);
     res.json({ success: true });
 });
+
+// SHARE API (Replaces JsonBlob)
+app.post('/api/share', (req, res) => {
+    const db = readDB();
+    const uuid = crypto.randomUUID();
+
+    // Check if 'shares' exists, if not create logic (using 'wishes' or new 'shares' table)
+    if (!db.shares) db.shares = {};
+
+    db.shares[uuid] = req.body; // Body is { user: ..., wishes: ... }
+    writeDB(db);
+
+    res.json({ uuid: uuid });
+});
+
+app.get('/api/share/:uuid', (req, res) => {
+    const db = readDB();
+    if (!db.shares) db.shares = {};
+
+    const data = db.shares[req.params.uuid];
+    if (data) {
+        res.json(data);
+    } else {
+        res.status(404).json({ error: "Shared list not found" });
+    }
+});
+
+// Telegram Webhook (Proxy)
+// If you want to handle webhook in server.js instead of separate file:
+// But current setup uses api/webhook.js (Serverless function).
+// So this is for local dev or if running "npm start".
+// We can integrate valid webhook logic here too if needed.
 
 // Start Server
 app.listen(PORT, () => {

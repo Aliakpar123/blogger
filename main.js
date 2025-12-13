@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Server Sync Disabled
     }
 
-    // Sync Data to Server (Replaced by JsonBlob for Sharing)
+    // Sync Data to Server (Internal API)
     async function saveToCloud() {
         try {
             const payload = {
@@ -176,19 +176,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 wishes: wishListItems
             };
 
-            const res = await fetch('https://jsonblob.com/api/jsonBlob', {
+            const res = await apiFetch('/share', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
 
-            if (!res.ok) throw new Error('Save Failed');
-
-            // Location Header contains the URL /api/jsonBlob/<UUID>
-            const location = res.headers.get('Location');
-            // Extract UUID
-            const uuid = location.split('/').pop();
-            return uuid;
+            if (!res || !res.uuid) throw new Error('Save Failed');
+            return res.uuid;
         } catch (e) {
             console.error(e);
             return null;
@@ -220,11 +214,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Fetch from JsonBlob
-            const res = await fetch(`https://jsonblob.com/api/jsonBlob/${uuid}`);
-            if (!res.ok) throw new Error("Profile not found");
+            // Fetch from Internal API
+            const data = await apiFetch(`/share/${uuid}`);
+            if (!data) throw new Error("Profile not found");
 
-            const data = await res.json();
             const user = data.user;
             const wishes = data.wishes;
 
