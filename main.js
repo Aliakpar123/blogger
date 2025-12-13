@@ -356,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     actionsContainer.innerHTML = `
                         <div style="display:flex; gap:10px; width:100%;">
                             <button class="btn-insta-edit" id="edit-profile-btn" style="flex:1;">Редактировать</button>
-                            <button class="btn-insta-edit" id="inline-share-btn" style="flex:1; background: #0095f6; color: white; border: none;">Поделиться</button>
+                            <button class="btn-insta-edit" id="inline-share-btn" style="flex:1; background: #0095f6; color: white; border: none;">Поделиться 🚀</button>
                         </div>
                     `;
 
