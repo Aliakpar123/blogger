@@ -361,8 +361,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 } else {
                     actionsContainer.innerHTML = `
-                        <button class="btn-insta-edit" id="edit-profile-btn">Редактировать</button>
+                        <div style="display:flex; gap:10px; width:100%;">
+                            <button class="btn-insta-edit" id="edit-profile-btn" style="flex:1;">Редактировать</button>
+                            <button class="btn-insta-edit" id="inline-share-btn" style="flex:1; background: #0095f6; color: white; border: none;">Поделиться</button>
+                        </div>
                     `;
+
                     const editBtn = document.getElementById('edit-profile-btn');
                     if (editBtn) {
                         editBtn.addEventListener('click', () => {
@@ -371,6 +375,18 @@ document.addEventListener('DOMContentLoaded', () => {
                                 userProfile.name = newName;
                                 localStorage.setItem('user_profile', JSON.stringify(userProfile));
                                 updateProfileUI();
+                                syncUserWithServer();
+                            }
+                        });
+                    }
+
+                    const shareBtn = document.getElementById('inline-share-btn');
+                    if (shareBtn) {
+                        shareBtn.addEventListener('click', () => {
+                            const shareModal = document.getElementById('share-modal');
+                            if (shareModal) {
+                                shareModal.classList.remove('hidden');
+                                shareModal.classList.add('active');
                             }
                         });
                     }
