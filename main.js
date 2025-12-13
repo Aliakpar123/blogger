@@ -868,7 +868,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (targetId === 'tasks-view') headerTitle.textContent = 'Задания';
 
         if (targetId === 'user-profile-view') updateProfileUI();
-        if (targetId === 'profile-view') renderGenerousUsers();
+        if (targetId === 'profile-view') initLeaderboard();
     }
 
     navItems.forEach(nav => {
@@ -1163,110 +1163,85 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Server Users Logic - Using Mocks Only for Stability
     // Server Users Logic
-    async function renderGenerousUsers() {
+    // --- LEADERBOARD LOGIC (REBUILT) ---
+    async function initLeaderboard() {
         const listContainer = document.getElementById('generous-users-list');
         if (!listContainer) return;
 
-        // Show loading state if empty
+        // Loading State
         if (listContainer.children.length === 0) {
-            listContainer.innerHTML = '<div style="text-align:center; padding:20px; color:#666;">Загрузка...</div>';
+            listContainer.innerHTML = '<div style="padding:20px; text-align:center; color:#888;">Загрузка рейтинга...</div>';
         }
 
-        let remoteUsers = [];
+        // 1. Sync Current User First
+        await syncUserWithServer();
+
+        // 2. Fetch Remote Users
+        let users = [];
         try {
-            // Try fetching real users from Proxy API
-            const res = await apiFetch('/users');
-            if (res && Array.isArray(res)) {
-                remoteUsers = res;
-            } else {
-                // If apiFetch returns null or error is caught inside it, it logs it
-                // We can check if it returned null to explicitly show error if needed
-                if (res === null) throw new Error("API Unreachable");
-            }
+            users = await apiFetch('/users') || [];
         } catch (e) {
-            console.warn("Could not fetch remote users", e);
-            listContainer.innerHTML = `<div style="text-align:center; padding:20px; color:#ff6b6b; font-size:12px;">Ошибка связи: ${e.message}<br>Попробуйте позже</div>`;
-            return; // Stop rendering
+            console.warn("Leaderboard fetch failed, using mocks.", e);
         }
 
-        // Define Mocks (Fallback)
-        // User requested to REMOVE all non-existent users.
-        // So fallback is empty.
-        const fallbackMocks = FIXED_MOCKS;
+        // 3. Merge with Mocks (Always ensure visual density)
+        // If users < 5, add mocks that are NOT already in users list
+        const existingIds = new Set(users.map(u => String(u.id)));
+        const mocksToAdd = FIXED_MOCKS.filter(m => !existingIds.has(String(m.id)));
 
-        // Combine
-        // Filter out current user from remote strings to avoid duplication if using ID check
-        let displayList = [];
+        let finalList = [...users, ...mocksToAdd];
 
-        if (remoteUsers.length > 0) {
-            displayList = [...remoteUsers.filter(u => u.id != userProfile.id), ...fallbackMocks];
-        } else {
-            // Empty list case -> Use mocks
-            displayList = [...fallbackMocks];
-        }
+        // 4. Ensure Current User is updated in the list or added
+        // The fetch might have old data for me, so let's override 'me' with 'userProfile'
+        finalList = finalList.filter(u => String(u.id) !== String(userProfile.id));
+        finalList.push(userProfile);
 
-        // Add Current User
-        const currentUserEntry = {
-            ...userProfile,
-            donated: userProfile.donated || "0 ₸",
-            isCurrentUser: true
-        };
-
-        // Final List: Current User + Others
-        const finalUsers = [currentUserEntry, ...displayList];
-
-        // SORT: Descending by donated amount
-        // Helper to parse "2.5M ₸" or "100 ₸"
-        function parseDonatedAmount(str) {
-            if (!str) return 0;
+        // 5. Parse & Sort
+        function parseVal(str) {
             if (typeof str === 'number') return str;
-            let val = str.toString().replace(/[^0-9.kKmM]/g, '').toLowerCase(); // remove symbols
+            if (!str) return 0;
+            // Clean string: "2 500 ₸" -> "2500"
+            let val = str.toString().replace(/[^0-9.kKmM]/g, '').toLowerCase();
             let mult = 1;
             if (val.includes('k')) { mult = 1000; val = val.replace('k', ''); }
             else if (val.includes('m')) { mult = 1000000; val = val.replace('m', ''); }
             return (parseFloat(val) || 0) * mult;
         }
 
-        const uniqueUsers = [];
-        const seenIds = new Set();
-        for (const u of finalUsers) {
-            if (!seenIds.has(u.id)) {
-                seenIds.add(u.id);
-                uniqueUsers.push(u);
-            }
-        }
+        finalList.sort((a, b) => parseVal(b.donated) - parseVal(a.donated));
 
-        // Apply Sort
-        uniqueUsers.sort((a, b) => parseDonatedAmount(b.donated) - parseDonatedAmount(a.donated));
-
+        // 6. Render
         listContainer.innerHTML = '';
-        uniqueUsers.forEach((user, index) => {
-            const div = document.createElement('div');
-            div.className = 'user-card-item';
-            // Highlight current user
-            if (user.isCurrentUser) div.style.background = 'rgba(78, 140, 255, 0.1)';
+        finalList.forEach((u, index) => {
+            const isMe = String(u.id) === String(userProfile.id);
+            const el = document.createElement('div');
+            el.className = 'user-card-item';
+            if (isMe) el.classList.add('current-user-highlight'); // We will add CSS for this
 
-            div.innerHTML = `
+            // Avatar Handling
+            let avatarSrc = u.avatar || 'https://placehold.co/100';
+
+            el.innerHTML = `
                 <span class="uc-rank">${index + 1}</span>
-                <img src="${user.avatar || 'https://placehold.co/100'}" class="uc-avatar" onerror="this.src='https://placehold.co/100'">
+                <img src="${avatarSrc}" class="uc-avatar" onerror="this.src='https://placehold.co/100';">
                 <div class="uc-info">
-                    <span class="uc-name">${user.isCurrentUser ? (user.name + ' (Вы)') : user.name}</span>
-                    <span class="uc-donated">Подарил: ${user.donated || '0 ₸'}</span>
+                    <span class="uc-name">${isMe ? (u.name + ' (Вы)') : u.name}</span>
+                    <span class="uc-donated">Подарил: ${u.donated || '0 ₸'}</span>
                 </div>
             `;
-            div.addEventListener('click', () => {
-                // If clicking self
-                if (user.isCurrentUser) {
-                    document.querySelector('.nav-item.active')?.click();
-                    return;
-                }
-                visitedProfile = user;
+
+            // Click Handler
+            el.addEventListener('click', () => {
+                if (isMe) return;
+                // Visit Profile
+                visitedProfile = u;
                 isPublicView = true;
                 updateProfileUI();
                 renderItems();
                 navigateTo('user-profile-view');
             });
-            listContainer.appendChild(div);
+
+            listContainer.appendChild(el);
         });
     }
 
@@ -1358,7 +1333,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial Render calls
     updateSlotsUI();
     updateProfileUI();
-    renderGenerousUsers();
+    initLeaderboard();
     renderItems();
     renderTasks();
 
