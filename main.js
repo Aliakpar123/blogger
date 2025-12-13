@@ -807,8 +807,80 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Share Button - REMOVED BY USER REQUEST
-    // const mainShareBtn = ...;
+    // Share Button Logic
+    const shareModal = document.getElementById('share-modal');
+    const headerShareBtn = document.getElementById('header-action-btn');
+    const telegramShareBtn = document.getElementById('share-telegram-btn');
+
+    // Open Share Modal
+    if (headerShareBtn && shareModal) {
+        headerShareBtn.addEventListener('click', () => {
+            shareModal.classList.remove('hidden');
+            shareModal.classList.add('active'); // Ensure CSS handles opacity/display
+        });
+    }
+
+    // Close Share Modal (Generic)
+    if (shareModal) {
+        shareModal.addEventListener('click', (e) => {
+            if (e.target === shareModal || e.target.classList.contains('close-modal')) {
+                shareModal.classList.remove('active');
+                setTimeout(() => shareModal.classList.add('hidden'), 300);
+            }
+        });
+    }
+
+    // TELEGRAM SHARE CLICK
+    if (telegramShareBtn) {
+        telegramShareBtn.addEventListener('click', async () => {
+            const originalText = telegramShareBtn.innerText;
+            telegramShareBtn.innerText = 'Создание ссылки...';
+
+            try {
+                // 1. Save data to Cloud (JsonBlob)
+                const uuid = await saveToCloud();
+                if (!uuid) throw new Error("Cloud Save Failed");
+
+                // 2. Generate Link
+                const shareLink = `https://t.me/${BOT_USERNAME}/app?startapp=${uuid}`;
+
+                // 3. Generate Text List of Wishes
+                let textMessage = `✨ Мой Вишлист (${userProfile.name}):\n\n`;
+                const publicItems = wishListItems.filter(i => !i.isPrivate);
+
+                if (publicItems.length > 0) {
+                    publicItems.forEach((item, index) => {
+                        textMessage += `${index + 1}. ${item.title} — ${formatCompactNumber(item.goal)} ₸\n`;
+                    });
+                } else {
+                    textMessage += "Список желаний пока пуст.\n";
+                }
+
+                textMessage += `\n🔗 Открыть и подарить:\n${shareLink}`;
+
+                // 4. Open Telegram Share
+                const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(shareLink)}&text=${encodeURIComponent(textMessage)}`;
+
+                if (window.Telegram?.WebApp?.openTelegramLink) {
+                    window.Telegram.WebApp.openTelegramLink(telegramUrl);
+                } else {
+                    window.open(telegramUrl, '_blank');
+                }
+
+                // Close modal
+                if (shareModal) {
+                    shareModal.classList.remove('active');
+                    setTimeout(() => shareModal.classList.add('hidden'), 300);
+                }
+
+            } catch (e) {
+                alert("Ошибка при создании ссылки: " + e.message);
+                console.error(e);
+            } finally {
+                telegramShareBtn.innerText = originalText;
+            }
+        });
+    }
     // Navigation
     const navItems = document.querySelectorAll('.nav-item');
     const views = document.querySelectorAll('.content-area, .view-section');
