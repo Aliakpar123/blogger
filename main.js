@@ -694,10 +694,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     } catch (e) { }
                 }
 
-                // Fallback Regex
+                // Fallback Regex in Meta Description (Kaspi often puts price in description)
                 if (!price) {
-                    const match = htmlContent.match(/(\d{1,3}(?:\s\d{3})*)\s?[₸T]/);
-                    if (match && match[1]) price = parseInt(match[1].replace(/\s/g, ''));
+                    let description = doc.querySelector('meta[name="description"]')?.content ||
+                        doc.querySelector('meta[property="og:description"]')?.content || "";
+                    // Match "12 500 ₸" or "12500 T"
+                    let descMatch = description.match(/(\d[\d\s]*)\s?(₸|T|KZT|тг)/i);
+                    if (descMatch && descMatch[1]) {
+                        price = parseInt(descMatch[1].replace(/\s/g, ''));
+                    }
+                }
+
+                // Fallback Regex in HTML Body (Text search)
+                if (!price) {
+                    // Look for patterns like "12 990 ₸"
+                    // We take the first match that looks like a reasonable price (e.g. > 100)
+                    const matches = htmlContent.matchAll(/(\d[\d\s]*)(\s?)(₸|T|KZT|тг)/gi);
+                    for (const match of matches) {
+                        let val = parseInt(match[1].replace(/\s/g, ''));
+                        if (val > 100) { // arbitrary filter to avoid "0 ₸" or small numbers
+                            price = val;
+                            break;
+                        }
+                    }
                 }
 
                 document.querySelector('.create-step-1').classList.add('hidden');
