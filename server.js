@@ -118,29 +118,44 @@ app.post('/api/wishes/:userId', (req, res) => {
     res.json({ success: true });
 });
 
-// SHARE API (Replaces JsonBlob)
-app.post('/api/share', (req, res) => {
-    const db = readDB();
-    const uuid = crypto.randomUUID();
+// SHARE API (Proxy to JsonBlob because Vercel FS is Read-Only)
+const fetch = require('node-fetch'); // Ensure node-fetch is used
 
-    // Check if 'shares' exists, if not create logic (using 'wishes' or new 'shares' table)
-    if (!db.shares) db.shares = {};
+app.post('/api/share', async (req, res) => {
+    try {
+        const payload = req.body;
 
-    db.shares[uuid] = req.body; // Body is { user: ..., wishes: ... }
-    writeDB(db);
+        // Proxy to JsonBlob
+        const response = await fetch('https://jsonblob.com/api/jsonBlob', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
 
-    res.json({ uuid: uuid });
+        if (!response.ok) throw new Error('JsonBlob Upstream Error');
+
+        const location = response.headers.get('Location');
+        const uuid = location.split('/').pop();
+
+        res.json({ uuid: uuid });
+    } catch (e) {
+        console.error("Share Proxy Error:", e);
+        res.status(500).json({ error: "Share failed", details: e.message });
+    }
 });
 
-app.get('/api/share/:uuid', (req, res) => {
-    const db = readDB();
-    if (!db.shares) db.shares = {};
+app.get('/api/share/:uuid', async (req, res) => {
+    try {
+        const uuid = req.params.uuid;
+        const response = await fetch(`https://jsonblob.com/api/jsonBlob/${uuid}`);
 
-    const data = db.shares[req.params.uuid];
-    if (data) {
+        if (!response.ok) return res.status(404).json({ error: "Not found" });
+
+        const data = await response.json();
         res.json(data);
-    } else {
-        res.status(404).json({ error: "Shared list not found" });
+    } catch (e) {
+        console.error("Share Fetch Error:", e);
+        res.status(500).json({ error: "Fetch failed" });
     }
 });
 
