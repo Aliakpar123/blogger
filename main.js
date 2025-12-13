@@ -395,7 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 if (publicItems.length > 0) {
                                     publicItems.forEach((item, index) => {
                                         textMessage += `${index + 1}. ${item.title} — ${formatCompactNumber(item.goal)} ₸\n`;
-                                        if (item.url && item.url.startsWith('http')) {
+                                        if (item.url && item.url.length > 5) {
                                             textMessage += `👉 Купить: ${item.url}\n`;
                                         }
                                         textMessage += '\n';
@@ -662,8 +662,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 goal: parseInt(priceInput.value) || 0,
                 image: imageInput.src,
                 category: categoryInput ? categoryInput.value : "Разное",
+                category: categoryInput ? categoryInput.value : "Разное",
                 isPrivate: document.getElementById('new-item-visibility')?.value === 'private',
-                url: document.getElementById('kaspi-link')?.value || '' // Save Original Link
+                url: (() => {
+                    const raw = document.getElementById('kaspi-link')?.value || '';
+                    const match = raw.match(/(https?:\/\/[^\s]+)/); // Extract first URL
+                    return match ? match[0] : raw;
+                })()
             };
 
             wishListItems.unshift(newItem);
