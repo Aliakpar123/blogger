@@ -381,30 +381,42 @@ document.addEventListener('DOMContentLoaded', () => {
                             shareBtn.disabled = true;
 
                             try {
-                                // 1. Save to Cloud
-                                const uuid = await saveToCloud();
-                                if (!uuid) throw new Error("Save failed");
+                                // 1. Save to Cloud SKIPPED (User wants simple list)
+                                // const uuid = await saveToCloud();
+                                // const shareLink = `https://t.me/${BOT_USERNAME}/app?startapp=${uuid}`;
 
-                                // 2. Generate Link & Text
-                                const shareLink = `https://t.me/${BOT_USERNAME}/app?startapp=${uuid}`;
+                                // Simple App Link
+                                const shareLink = `https://t.me/${BOT_USERNAME}/app`;
+
+                                // 2. Generate Text with Links
                                 let textMessage = `✨ Мой Вишлист (${userProfile.name}):\n\n`;
                                 const publicItems = wishListItems.filter(i => !i.isPrivate);
 
                                 if (publicItems.length > 0) {
                                     publicItems.forEach((item, index) => {
                                         textMessage += `${index + 1}. ${item.title} — ${formatCompactNumber(item.goal)} ₸\n`;
+                                        if (item.url && item.url.startsWith('http')) {
+                                            textMessage += `👉 Купить: ${item.url}\n`;
+                                        }
+                                        textMessage += '\n';
                                     });
                                 } else {
                                     textMessage += "Список желаний пока пуст.\n";
                                 }
-                                textMessage += `\n🔗 Подарить:\n${shareLink}`;
+                                textMessage += `🔗 Мой профиль: ${shareLink}`;
 
                                 // 3. Open Telegram
-                                const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(shareLink)}&text=${encodeURIComponent(textMessage)}`;
+                                const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(textMessage)}`; // Note: putting everything in 'url' param or 'text' param?
+                                // Standard: url={link}&text={message}. But user wants LINKS in message.
+                                // If we put links in text, they might not be clickable if mixed? Telegram handles it fine.
+                                // Best practice: url=MAIN_LINK&text=LONG_TEXT
+
+                                const finalUrl = `https://t.me/share/url?url=${encodeURIComponent(shareLink)}&text=${encodeURIComponent(textMessage)}`;
+
                                 if (window.Telegram?.WebApp?.openTelegramLink) {
-                                    window.Telegram.WebApp.openTelegramLink(telegramUrl);
+                                    window.Telegram.WebApp.openTelegramLink(finalUrl);
                                 } else {
-                                    window.open(telegramUrl, '_blank');
+                                    window.open(finalUrl, '_blank');
                                 }
 
                             } catch (e) {
@@ -650,7 +662,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 goal: parseInt(priceInput.value) || 0,
                 image: imageInput.src,
                 category: categoryInput ? categoryInput.value : "Разное",
-                isPrivate: document.getElementById('new-item-visibility')?.value === 'private' // NEW
+                isPrivate: document.getElementById('new-item-visibility')?.value === 'private',
+                url: document.getElementById('kaspi-link')?.value || '' // Save Original Link
             };
 
             wishListItems.unshift(newItem);
