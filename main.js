@@ -375,11 +375,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     const shareBtn = document.getElementById('inline-share-btn');
                     if (shareBtn) {
-                        shareBtn.addEventListener('click', () => {
-                            const shareModal = document.getElementById('share-modal');
-                            if (shareModal) {
-                                shareModal.classList.remove('hidden');
-                                shareModal.classList.add('active');
+                        shareBtn.addEventListener('click', async () => {
+                            const originalText = shareBtn.innerText;
+                            shareBtn.innerText = '⏳...';
+                            shareBtn.disabled = true;
+
+                            try {
+                                // 1. Save to Cloud
+                                const uuid = await saveToCloud();
+                                if (!uuid) throw new Error("Save failed");
+
+                                // 2. Generate Link & Text
+                                const shareLink = `https://t.me/${BOT_USERNAME}/app?startapp=${uuid}`;
+                                let textMessage = `✨ Мой Вишлист (${userProfile.name}):\n\n`;
+                                const publicItems = wishListItems.filter(i => !i.isPrivate);
+
+                                if (publicItems.length > 0) {
+                                    publicItems.forEach((item, index) => {
+                                        textMessage += `${index + 1}. ${item.title} — ${formatCompactNumber(item.goal)} ₸\n`;
+                                    });
+                                } else {
+                                    textMessage += "Список желаний пока пуст.\n";
+                                }
+                                textMessage += `\n🔗 Подарить:\n${shareLink}`;
+
+                                // 3. Open Telegram
+                                const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(shareLink)}&text=${encodeURIComponent(textMessage)}`;
+                                if (window.Telegram?.WebApp?.openTelegramLink) {
+                                    window.Telegram.WebApp.openTelegramLink(telegramUrl);
+                                } else {
+                                    window.open(telegramUrl, '_blank');
+                                }
+
+                            } catch (e) {
+                                alert("Ошибка: " + e.message);
+                            } finally {
+                                shareBtn.innerText = originalText;
+                                shareBtn.disabled = false;
                             }
                         });
                     }
