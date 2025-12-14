@@ -85,6 +85,24 @@ document.addEventListener('DOMContentLoaded', () => {
     let maxSlots = parseInt(localStorage.getItem('max_slots')) || DEFAULT_SLOTS;
     let wishListItems = safeParse('wishlist_items', []);
 
+    // MIGRATION: Add Example Wish (iPhone 17 Pro)
+    if (!localStorage.getItem('example_added_v2')) {
+        const exampleWish = {
+            id: Date.now() + 999, // Ensure unique-ish
+            title: 'Apple iPhone 17 Pro 256GB Оранжевый',
+            collected: 0,
+            goal: 750000,
+            image: 'https://resources.cdn-kaspi.kz/img/m/p/hcf/h69/87295489843230.jpg?format=gallery-medium', // Mock image
+            category: 'Техника', // Restoring category usage just for this item or fallback to 'Общее'
+            isPrivate: false,
+            url: 'https://kaspi.kz/shop/p/apple-iphone-17-pro-256gb-oranzhevyi-145467625/?c=750000000'
+        };
+        // Add to TOP of list
+        wishListItems.unshift(exampleWish);
+        localStorage.setItem('wishlist_items', JSON.stringify(wishListItems));
+        localStorage.setItem('example_added_v2', 'true');
+    }
+
     const FESTIVE_AVATARS = {
         elf: [
             "https://media.giphy.com/media/3otPoSefCKYjsiyIxW/giphy.gif", // Will Ferrell Elf
