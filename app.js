@@ -884,12 +884,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 1. Simple App Link (No UUID/Cloud needed for text share)
                 const shareLink = `https://t.me/${BOT_USERNAME}/app`;
 
-                // 2. Generate Text with Links
+                // 2. Generate Text with Links (Share ALL items)
                 let textMessage = `✨ Мой Вишлист (${userProfile.name}):\n\n`;
-                const publicItems = wishListItems.filter(i => !i.isPrivate);
+                const itemsToShare = wishListItems; // Share everything since user clicked "Share"
 
-                if (publicItems.length > 0) {
-                    publicItems.forEach((item, index) => {
+                if (itemsToShare.length > 0) {
+                    itemsToShare.forEach((item, index) => {
                         textMessage += `${index + 1}. ${item.title} — ${formatCompactNumber(item.goal)} ₸\n`;
                         if (item.url && item.url.length > 5) {
                             textMessage += `👉 Купить: ${item.url}\n`;
