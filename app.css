@@ -2856,37 +2856,52 @@ input:checked+.slider:before {
             font-weight: 500;
         }
 
-        /* WALLET THEME (Minimal Premium Card) */
+        /* WALLET THEME (Neobank Reference Style) */
         .wallet-card {
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            /* Premium Deep Sea */
-            border-radius: 24px;
-            padding: 25px;
+            background: linear-gradient(135deg, #7F00FF 0%, #E100FF 100%);
+            /* Vibrant Violet/Pink */
+            /* Alternative: #8E2DE2 to #4A00E0 */
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            /* Deep Purple/Blue matching Ref */
+            border-radius: 28px;
+            padding: 28px;
             margin: 20px 0;
             display: flex;
             flex-direction: column;
-            /* Stack vertically like a real card */
             justify-content: space-between;
-            /* Balance top, Button bottom */
-            min-height: 160px;
-            /* Card height */
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-height: 180px;
+            box-shadow: 0 10px 40px rgba(118, 75, 162, 0.5);
+            /* Colored shadow */
             position: relative;
             overflow: hidden;
+            border: none;
         }
 
-        /* Gradient Overlay */
+        /* Abstract Shapes Overlay */
+        .wallet-card::after {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            filter: blur(20px);
+            pointer-events: none;
+        }
+
         .wallet-card::before {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+            bottom: 20px;
+            left: -20px;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            filter: blur(30px);
             pointer-events: none;
-            transform: rotate(30deg);
         }
 
         .wallet-balance {
@@ -2896,44 +2911,51 @@ input:checked+.slider:before {
         }
 
         .wallet-label {
-            font-size: 13px;
-            color: #aaa;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
             font-weight: 500;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
 
         .wallet-amount {
-            font-size: 28px;
+            font-size: 42px;
+            /* Huge Bold Text */
             font-weight: 800;
             color: #fff;
-            letter-spacing: -0.5px;
+            letter-spacing: -1px;
+            line-height: 1;
         }
 
         .wallet-actions {
-            align-self: flex-end;
-            /* Push button to bottom right */
+            align-self: flex-start;
+            /* Button usually left or full width in these designs */
+            width: 100%;
+            margin-top: auto;
             z-index: 2;
         }
 
         .wallet-actions .btn-topup {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(8px);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
+            background: #ffffff;
+            color: #764ba2;
+            /* Match Gradient Dark Tone */
+            border: none;
+            padding: 14px 20px;
+            border-radius: 16px;
+            font-size: 15px;
+            font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+            width: 100%;
+            /* Full width for action area often looks better on mobile cards */
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .wallet-actions .btn-topup:active {
-            transform: scale(0.95);
-            background: rgba(255, 255, 255, 0.2);
+            transform: scale(0.97);
+            background: #f0f0f0;
         }
 
         /* Remove old card elements */
