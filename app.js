@@ -86,21 +86,24 @@ document.addEventListener('DOMContentLoaded', () => {
     let wishListItems = safeParse('wishlist_items', []);
 
     // MIGRATION: Add Example Wish (iPhone 17 Pro)
-    if (!localStorage.getItem('example_added_v4')) {
+    if (!localStorage.getItem('example_added_v5')) {
+        // Clean up old versions of the iPhone mock to prevent duplicates
+        wishListItems = wishListItems.filter(i => !i.title.includes('iPhone 17 Pro'));
+
         const exampleWish = {
             id: Date.now() + 999, // Ensure unique-ish
             title: 'Apple iPhone 17 Pro 256GB Оранжевый',
             collected: 0,
             goal: 750000,
             image: 'logos/iphone17.jpg',
-            category: 'Техника', // Restoring category usage just for this item or fallback to 'Общее'
+            category: 'Техника',
             isPrivate: false,
             url: 'https://kaspi.kz/shop/p/apple-iphone-17-pro-256gb-oranzhevyi-145467625/?c=750000000'
         };
         // Add to TOP of list
         wishListItems.unshift(exampleWish);
         localStorage.setItem('wishlist_items', JSON.stringify(wishListItems));
-        localStorage.setItem('example_added_v4', 'true');
+        localStorage.setItem('example_added_v5', 'true');
     }
 
     const FESTIVE_AVATARS = {
