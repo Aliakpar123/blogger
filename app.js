@@ -239,6 +239,49 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Share Button Logic (Main)
+    const mainShareBtn = document.getElementById('main-share-btn');
+    if (mainShareBtn) {
+        mainShareBtn.addEventListener('click', async () => {
+            const originalText = mainShareBtn.innerText;
+            mainShareBtn.innerText = '⏳...';
+            mainShareBtn.disabled = true;
+
+            try {
+                const shareLink = `https://t.me/${BOT_USERNAME}/app`;
+                let textMessage = `✨ Мой Вишлист (${userProfile.name}):\n\n`;
+                const publicItems = wishListItems.filter(i => !i.isPrivate);
+
+                if (publicItems.length > 0) {
+                    publicItems.forEach((item, index) => {
+                        textMessage += `${index + 1}. ${item.title} — ${formatCompactNumber(item.goal)} ₸\n`;
+                        if (item.url && item.url.length > 5) {
+                            textMessage += `👉 Купить: ${item.url}\n`;
+                        }
+                        textMessage += '\n';
+                    });
+                } else {
+                    textMessage += "Список желаний пока пуст.\n";
+                }
+                textMessage += `🔗 Мой профиль: ${shareLink}`;
+
+                const finalUrl = `https://t.me/share/url?url=${encodeURIComponent(shareLink)}&text=${encodeURIComponent(textMessage)}`;
+
+                if (window.Telegram?.WebApp?.openTelegramLink) {
+                    window.Telegram.WebApp.openTelegramLink(finalUrl);
+                } else {
+                    window.open(finalUrl, '_blank');
+                }
+
+            } catch (e) {
+                alert("Ошибка: " + e.message);
+            } finally {
+                mainShareBtn.innerText = originalText;
+                mainShareBtn.disabled = false;
+            }
+        });
+    }
+
     // Category Logic
     const catPills = document.querySelectorAll('.cat-pill');
     catPills.forEach(pill => {
@@ -356,7 +399,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     actionsContainer.innerHTML = `
                         <div style="display:flex; gap:10px; width:100%;">
                             <button class="btn-insta-edit" id="edit-profile-btn" style="flex:1;">Редактировать</button>
-                            <button class="btn-insta-edit" id="inline-share-btn" style="flex:1; background: #0095f6; color: white; border: none;">Поделиться 🚀</button>
                         </div>
                     `;
 
@@ -369,61 +411,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                 localStorage.setItem('user_profile', JSON.stringify(userProfile));
                                 updateProfileUI();
                                 syncUserWithServer();
-                            }
-                        });
-                    }
-
-                    const shareBtn = document.getElementById('inline-share-btn');
-                    if (shareBtn) {
-                        shareBtn.addEventListener('click', async () => {
-                            const originalText = shareBtn.innerText;
-                            shareBtn.innerText = '⏳...';
-                            shareBtn.disabled = true;
-
-                            try {
-                                // 1. Save to Cloud SKIPPED (User wants simple list)
-                                // const uuid = await saveToCloud();
-                                // const shareLink = `https://t.me/${BOT_USERNAME}/app?startapp=${uuid}`;
-
-                                // Simple App Link
-                                const shareLink = `https://t.me/${BOT_USERNAME}/app`;
-
-                                // 2. Generate Text with Links
-                                let textMessage = `✨ Мой Вишлист (${userProfile.name}):\n\n`;
-                                const publicItems = wishListItems.filter(i => !i.isPrivate);
-
-                                if (publicItems.length > 0) {
-                                    publicItems.forEach((item, index) => {
-                                        textMessage += `${index + 1}. ${item.title} — ${formatCompactNumber(item.goal)} ₸\n`;
-                                        if (item.url && item.url.length > 5) {
-                                            textMessage += `👉 Купить: ${item.url}\n`;
-                                        }
-                                        textMessage += '\n';
-                                    });
-                                } else {
-                                    textMessage += "Список желаний пока пуст.\n";
-                                }
-                                textMessage += `🔗 Мой профиль: ${shareLink}`;
-
-                                // 3. Open Telegram
-                                const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(textMessage)}`; // Note: putting everything in 'url' param or 'text' param?
-                                // Standard: url={link}&text={message}. But user wants LINKS in message.
-                                // If we put links in text, they might not be clickable if mixed? Telegram handles it fine.
-                                // Best practice: url=MAIN_LINK&text=LONG_TEXT
-
-                                const finalUrl = `https://t.me/share/url?url=${encodeURIComponent(shareLink)}&text=${encodeURIComponent(textMessage)}`;
-
-                                if (window.Telegram?.WebApp?.openTelegramLink) {
-                                    window.Telegram.WebApp.openTelegramLink(finalUrl);
-                                } else {
-                                    window.open(finalUrl, '_blank');
-                                }
-
-                            } catch (e) {
-                                alert("Ошибка: " + e.message);
-                            } finally {
-                                shareBtn.innerText = originalText;
-                                shareBtn.disabled = false;
                             }
                         });
                     }
@@ -885,77 +872,49 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Share Button Logic
-    const shareModal = document.getElementById('share-modal');
-    const headerShareBtn = document.getElementById('header-action-btn');
-    const telegramShareBtn = document.getElementById('share-telegram-btn');
+    // --- NEW MAIN SHARE BUTTON LOGIC (Direct, No Modal) ---
 
-    // Open Share Modal
-    if (headerShareBtn && shareModal) {
-        headerShareBtn.addEventListener('click', () => {
-            shareModal.classList.remove('hidden');
-            shareModal.classList.add('active'); // Ensure CSS handles opacity/display
-        });
-    }
-
-    // Close Share Modal (Generic)
-    if (shareModal) {
-        shareModal.addEventListener('click', (e) => {
-            if (e.target === shareModal || e.target.classList.contains('close-modal')) {
-                shareModal.classList.remove('active');
-                setTimeout(() => shareModal.classList.add('hidden'), 300);
-            }
-        });
-    }
-
-    // TELEGRAM SHARE CLICK
-    if (telegramShareBtn) {
-        telegramShareBtn.addEventListener('click', async () => {
-            const originalText = telegramShareBtn.innerText;
-            telegramShareBtn.innerText = 'Создание ссылки...';
+    if (mainShareBtn) {
+        mainShareBtn.addEventListener('click', async () => {
+            const originalText = mainShareBtn.innerText;
+            mainShareBtn.innerText = 'Создаем ссылку...';
+            mainShareBtn.disabled = true;
 
             try {
-                // 1. Save data to Cloud (JsonBlob)
-                const uuid = await saveToCloud();
-                if (!uuid) throw new Error("Cloud Save Failed");
+                // 1. Simple App Link (No UUID/Cloud needed for text share)
+                const shareLink = `https://t.me/${BOT_USERNAME}/app`;
 
-                // 2. Generate Link
-                const shareLink = `https://t.me/${BOT_USERNAME}/app?startapp=${uuid}`;
-
-                // 3. Generate Text List of Wishes
+                // 2. Generate Text with Links
                 let textMessage = `✨ Мой Вишлист (${userProfile.name}):\n\n`;
                 const publicItems = wishListItems.filter(i => !i.isPrivate);
 
                 if (publicItems.length > 0) {
                     publicItems.forEach((item, index) => {
                         textMessage += `${index + 1}. ${item.title} — ${formatCompactNumber(item.goal)} ₸\n`;
+                        if (item.url && item.url.length > 5) {
+                            textMessage += `👉 Купить: ${item.url}\n`;
+                        }
+                        textMessage += '\n';
                     });
                 } else {
                     textMessage += "Список желаний пока пуст.\n";
                 }
+                textMessage += `🔗 Мой профиль: ${shareLink}`;
 
-                textMessage += `\n🔗 Открыть и подарить:\n${shareLink}`;
-
-                // 4. Open Telegram Share
-                const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(shareLink)}&text=${encodeURIComponent(textMessage)}`;
+                // 3. Open Telegram
+                const finalUrl = `https://t.me/share/url?url=${encodeURIComponent(shareLink)}&text=${encodeURIComponent(textMessage)}`;
 
                 if (window.Telegram?.WebApp?.openTelegramLink) {
-                    window.Telegram.WebApp.openTelegramLink(telegramUrl);
+                    window.Telegram.WebApp.openTelegramLink(finalUrl);
                 } else {
-                    window.open(telegramUrl, '_blank');
-                }
-
-                // Close modal
-                if (shareModal) {
-                    shareModal.classList.remove('active');
-                    setTimeout(() => shareModal.classList.add('hidden'), 300);
+                    window.open(finalUrl, '_blank');
                 }
 
             } catch (e) {
-                alert("Ошибка при создании ссылки: " + e.message);
-                console.error(e);
+                alert("Ошибка: " + e.message);
             } finally {
-                telegramShareBtn.innerText = originalText;
+                mainShareBtn.innerText = originalText;
+                mainShareBtn.disabled = false;
             }
         });
     }
