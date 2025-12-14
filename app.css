@@ -2972,8 +2972,6 @@ input:checked+.slider:before {
     justify-content: center;
     align-items: center;
     transition: all 0.2s;
-    box-shadow: 0 4px 15px rgba(255, 165, 0, 0.4);
-    /* Gold Glow */
     margin-top: 5px;
     /* Slight separation */
 }
