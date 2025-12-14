@@ -492,7 +492,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const walletTopUpBtn = document.getElementById('wallet-topup-btn');
     if (walletTopUpBtn) {
         walletTopUpBtn.addEventListener('click', () => {
-            openModal('topup');
+            alert('В разработке 🛠️');
+            // openModal('topup');
         });
     }
 
