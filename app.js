@@ -1256,10 +1256,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Event Listeners
         const payBtn = div.querySelector('.pay-btn');
-        if (payBtn) payBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            openModal('dev', { itemId: item.id });
-        });
+        if (payBtn) {
+            // Prevent Card Click Propagation on all interaction types
+            ['click', 'mousedown', 'touchstart'].forEach(evt => {
+                payBtn.addEventListener(evt, (e) => e.stopPropagation(), { passive: false });
+            });
+
+            // Actual Logic on Click
+            payBtn.addEventListener('click', (e) => {
+                e.preventDefault(); // Prevent default button behavior
+                e.stopPropagation(); // Double check
+                openModal('dev', { itemId: item.id });
+            });
+        }
 
         if (!isReadOnly) {
             const delBtn = div.querySelector('.delete-icon-btn');
