@@ -602,6 +602,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Kaspi Copy Feature
+    const copyKaspiBtn = document.getElementById('btn-copy-kaspi');
+    if (copyKaspiBtn) {
+        copyKaspiBtn.addEventListener('click', () => {
+            const cardNumber = '4400430351700882';
+            navigator.clipboard.writeText(cardNumber).then(() => {
+                // Visual Feedback
+                const originalIcon = copyKaspiBtn.innerText;
+                copyKaspiBtn.innerText = '✅';
+                setTimeout(() => {
+                    copyKaspiBtn.innerText = originalIcon;
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                // Fallback for older browsers or if clipboard fails
+                alert('Номер карты: ' + cardNumber);
+            });
+        });
+    }
+}
+
     // Bind Payment Methods
     // This section is now handled by bindPaymentEvents() inside openModal
     // const btnApple = document.getElementById('pay-method-apple');
@@ -624,539 +645,539 @@ document.addEventListener('DOMContentLoaded', () => {
     // See next edit.
     // Logic for "Spend from Wallet" Button
     const spendWalletBtn = document.getElementById('pay-from-wallet-btn');
-    if (spendWalletBtn) {
-        spendWalletBtn.addEventListener('click', () => {
-            const amount = parseInt(amountInput.value);
-            if (!amount || amount <= 0) {
-                alert('Пожалуйста, введите сумму');
-                return;
-            }
+if (spendWalletBtn) {
+    spendWalletBtn.addEventListener('click', () => {
+        const amount = parseInt(amountInput.value);
+        if (!amount || amount <= 0) {
+            alert('Пожалуйста, введите сумму');
+            return;
+        }
 
-            const currentBalance = userProfile.balance || 0;
-            if (currentBalance >= amount) {
-                // Sufficient Funds
-                userProfile.balance -= amount;
+        const currentBalance = userProfile.balance || 0;
+        if (currentBalance >= amount) {
+            // Sufficient Funds
+            userProfile.balance -= amount;
 
-                // TRACK TOTAL DONATED
-                const currentDonated = parseDonatedAmount(userProfile.donated);
-                userProfile.donated = formatCompactNumber(currentDonated + amount) + ' ₸';
+            // TRACK TOTAL DONATED
+            const currentDonated = parseDonatedAmount(userProfile.donated);
+            userProfile.donated = formatCompactNumber(currentDonated + amount) + ' ₸';
 
-                const mode = paymentModal.dataset.mode;
+            const mode = paymentModal.dataset.mode;
 
-                if (mode === 'donate_dev') {
-                    // Developer Support
-                    alert(`🙏 Спасибо за поддержку разработчика! \n${formatCurrency(amount)} отправлено.`);
-                } else {
-                    // Wish Donation
-                    const itemId = paymentModal.dataset.itemId;
-                    // ... (Existing Find Item Logic) ...
-                    let targetItem = null;
-                    if (isPublicView && window.guestWishes) {
-                        targetItem = window.guestWishes.find(i => i.id == itemId);
-                    } else {
-                        targetItem = wishListItems.find(i => i.id == itemId);
-                    }
-
-                    if (targetItem) {
-                        targetItem.collected += amount;
-                        if (!isPublicView || !visitedProfile) {
-                            saveState();
-                            renderItems();
-                        }
-                    }
-                    alert(`🎁 Донат ${formatCurrency(amount)} отправлен!`);
-                }
-
-                saveState(); // Save balance deduction & donated amount
-                syncUserWithServer(); // Push to leaderboard
-                updateProfileUI();
-                closeModal();
-
+            if (mode === 'donate_dev') {
+                // Developer Support
+                alert(`🙏 Спасибо за поддержку разработчика! \n${formatCurrency(amount)} отправлено.`);
             } else {
-                // Insufficient Funds
-                const needed = amount - currentBalance;
-                const confirmTopUp = confirm(`Недостаточно средств на кошельке.\nБаланс: ${formatCurrency(currentBalance)}\nНужно: ${formatCurrency(amount)}\n\nПополнить кошелек?`);
-                if (confirmTopUp) {
-                    openModal('topup');
-                    amountInput.value = needed;
+                // Wish Donation
+                const itemId = paymentModal.dataset.itemId;
+                // ... (Existing Find Item Logic) ...
+                let targetItem = null;
+                if (isPublicView && window.guestWishes) {
+                    targetItem = window.guestWishes.find(i => i.id == itemId);
+                } else {
+                    targetItem = wishListItems.find(i => i.id == itemId);
                 }
+
+                if (targetItem) {
+                    targetItem.collected += amount;
+                    if (!isPublicView || !visitedProfile) {
+                        saveState();
+                        renderItems();
+                    }
+                }
+                alert(`🎁 Донат ${formatCurrency(amount)} отправлен!`);
             }
-        });
-    }
 
-    // Support Developer Button
-    const donateDevBtn = document.getElementById('donate-dev-btn');
-    if (donateDevBtn) {
-        donateDevBtn.addEventListener('click', () => {
-            openModal('donate_dev');
-        });
-    }
+            saveState(); // Save balance deduction & donated amount
+            syncUserWithServer(); // Push to leaderboard
+            updateProfileUI();
+            closeModal();
 
-    document.querySelectorAll('.chip').forEach(chip => {
-        chip.addEventListener('click', () => {
-            const addVal = parseInt(chip.dataset.amount);
-            const currentVal = parseInt(amountInput.value) || 0;
-            amountInput.value = currentVal + addVal;
-        });
+        } else {
+            // Insufficient Funds
+            const needed = amount - currentBalance;
+            const confirmTopUp = confirm(`Недостаточно средств на кошельке.\nБаланс: ${formatCurrency(currentBalance)}\nНужно: ${formatCurrency(amount)}\n\nПополнить кошелек?`);
+            if (confirmTopUp) {
+                openModal('topup');
+                amountInput.value = needed;
+            }
+        }
     });
+}
 
-    // --- CREATE WISHLIST ---
-    // !!! CRITICAL FIX: Renamed variable to avoid collision with global ID
-    const createListBtn = document.getElementById('confirm-create-btn');
-    if (createListBtn) {
-        createListBtn.addEventListener('click', () => {
-            if (wishListItems.length >= maxSlots) {
-                alert("Слоты заполнены! Выполните задания.");
-                return;
+// Support Developer Button
+const donateDevBtn = document.getElementById('donate-dev-btn');
+if (donateDevBtn) {
+    donateDevBtn.addEventListener('click', () => {
+        openModal('donate_dev');
+    });
+}
+
+document.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+        const addVal = parseInt(chip.dataset.amount);
+        const currentVal = parseInt(amountInput.value) || 0;
+        amountInput.value = currentVal + addVal;
+    });
+});
+
+// --- CREATE WISHLIST ---
+// !!! CRITICAL FIX: Renamed variable to avoid collision with global ID
+const createListBtn = document.getElementById('confirm-create-btn');
+if (createListBtn) {
+    createListBtn.addEventListener('click', () => {
+        if (wishListItems.length >= maxSlots) {
+            alert("Слоты заполнены! Выполните задания.");
+            return;
+        }
+        const titleInput = document.getElementById('new-item-title');
+        const priceInput = document.getElementById('new-item-price');
+        const imageInput = document.getElementById('new-item-image');
+        const categoryInput = document.getElementById('new-item-category'); // NEW
+
+        const newItem = {
+            id: Date.now(),
+            title: titleInput.value,
+            collected: 0,
+            goal: parseInt(priceInput.value) || 0,
+            image: imageInput.src,
+            category: categoryInput ? categoryInput.value : "Общее",
+            isPrivate: document.getElementById('new-item-visibility')?.value === 'private',
+            url: (() => {
+                const raw = document.getElementById('kaspi-link')?.value || '';
+                const match = raw.match(/(https?:\/\/[^\s]+)/); // Extract first URL
+                return match ? match[0] : raw;
+            })()
+        };
+
+        wishListItems.unshift(newItem);
+        saveState();
+        renderItems();
+
+        document.getElementById('create-step-2').classList.add('hidden');
+        document.querySelector('.create-step-1').classList.remove('hidden');
+        document.getElementById('kaspi-link').value = '';
+        document.querySelector('[data-target="home-view"]').click();
+    });
+}
+
+// Parser Logic
+const parseBtn = document.getElementById('parse-link-btn');
+const kaspiInput = document.getElementById('kaspi-link');
+if (parseBtn && kaspiInput) {
+    kaspiInput.addEventListener('input', (e) => parseBtn.disabled = e.target.value.length < 5);
+    parseBtn.addEventListener('click', async () => {
+        const url = kaspiInput.value;
+        // Removed Kaspi-only check to allow all websites
+
+
+        parseBtn.textContent = 'Загрузка...';
+        parseBtn.disabled = true;
+
+        try {
+            let htmlContent = null;
+            const isShortLink = url.includes('l.kaspi.kz');
+
+            // 1. CorsProxy
+            if (isShortLink) {
+                try {
+                    let proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+                    let response = await fetch(proxyUrl);
+                    htmlContent = await response.text();
+                } catch (e) {
+                    console.warn("CorsProxy failed for short link", e);
+                }
             }
-            const titleInput = document.getElementById('new-item-title');
-            const priceInput = document.getElementById('new-item-price');
-            const imageInput = document.getElementById('new-item-image');
-            const categoryInput = document.getElementById('new-item-category'); // NEW
 
-            const newItem = {
-                id: Date.now(),
-                title: titleInput.value,
-                collected: 0,
-                goal: parseInt(priceInput.value) || 0,
-                image: imageInput.src,
-                category: categoryInput ? categoryInput.value : "Общее",
-                isPrivate: document.getElementById('new-item-visibility')?.value === 'private',
-                url: (() => {
-                    const raw = document.getElementById('kaspi-link')?.value || '';
-                    const match = raw.match(/(https?:\/\/[^\s]+)/); // Extract first URL
-                    return match ? match[0] : raw;
-                })()
-            };
+            // 2. AllOrigins
+            if (!htmlContent) {
+                try {
+                    let proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+                    let response = await fetch(proxyUrl);
+                    let data = await response.json();
+                    htmlContent = data.contents;
+                } catch (e) {
+                    console.warn("AllOrigins failed", e);
+                }
+            }
 
-            wishListItems.unshift(newItem);
-            saveState();
-            renderItems();
+            // 3. Retry CorsProxy
+            if (!htmlContent && !isShortLink) {
+                try {
+                    let proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+                    let response = await fetch(proxyUrl);
+                    htmlContent = await response.text();
+                } catch (e) { console.warn("CorsProxy retry failed", e); }
+            }
 
-            document.getElementById('create-step-2').classList.add('hidden');
-            document.querySelector('.create-step-1').classList.remove('hidden');
-            document.getElementById('kaspi-link').value = '';
-            document.querySelector('[data-target="home-view"]').click();
-        });
-    }
+            if (!htmlContent || htmlContent.length < 500) throw new Error('No content');
 
-    // Parser Logic
-    const parseBtn = document.getElementById('parse-link-btn');
-    const kaspiInput = document.getElementById('kaspi-link');
-    if (parseBtn && kaspiInput) {
-        kaspiInput.addEventListener('input', (e) => parseBtn.disabled = e.target.value.length < 5);
-        parseBtn.addEventListener('click', async () => {
-            const url = kaspiInput.value;
-            // Removed Kaspi-only check to allow all websites
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlContent, 'text/html');
 
+            let title = doc.querySelector('meta[property="og:title"]')?.content || doc.querySelector('h1')?.innerText || 'Товар';
+            title = title.replace(/\|.+$/, '').trim();
 
-            parseBtn.textContent = 'Загрузка...';
-            parseBtn.disabled = true;
+            let image = doc.querySelector('meta[property="og:image"]')?.content || 'https://placehold.co/600x400?text=Foto';
 
-            try {
-                let htmlContent = null;
-                const isShortLink = url.includes('l.kaspi.kz');
+            let price = 0;
+            // Try JSON-LD
+            const scripts = doc.querySelectorAll('script[type="application/ld+json"]');
+            for (let s of scripts) {
+                try {
+                    const json = JSON.parse(s.innerText);
+                    if (json.offers && json.offers.price) { price = parseInt(json.offers.price); break; }
+                } catch (e) { }
+            }
 
-                // 1. CorsProxy
-                if (isShortLink) {
-                    try {
-                        let proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
-                        let response = await fetch(proxyUrl);
-                        htmlContent = await response.text();
-                    } catch (e) {
-                        console.warn("CorsProxy failed for short link", e);
+            // Fallback Regex in Meta Description (Kaspi often puts price in description)
+            if (!price) {
+                let description = doc.querySelector('meta[name="description"]')?.content ||
+                    doc.querySelector('meta[property="og:description"]')?.content || "";
+                // Match "12 500 ₸" or "12500 T"
+                let descMatch = description.match(/(\d[\d\s]*)\s?(₸|T|KZT|тг)/i);
+                if (descMatch && descMatch[1]) {
+                    price = parseInt(descMatch[1].replace(/\s/g, ''));
+                }
+            }
+
+            // Fallback Regex in HTML Body (Text search)
+            if (!price) {
+                // Look for patterns like "12 990 ₸"
+                // We take the first match that looks like a reasonable price (e.g. > 100)
+                const matches = htmlContent.matchAll(/(\d[\d\s]*)(\s?)(₸|T|KZT|тг)/gi);
+                for (const match of matches) {
+                    let val = parseInt(match[1].replace(/\s/g, ''));
+                    if (val > 100) { // arbitrary filter to avoid "0 ₸" or small numbers
+                        price = val;
+                        break;
                     }
                 }
+            }
 
-                // 2. AllOrigins
-                if (!htmlContent) {
-                    try {
-                        let proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
-                        let response = await fetch(proxyUrl);
-                        let data = await response.json();
-                        htmlContent = data.contents;
-                    } catch (e) {
-                        console.warn("AllOrigins failed", e);
-                    }
-                }
+            document.querySelector('.create-step-1').classList.add('hidden');
+            document.getElementById('create-step-2').classList.remove('hidden');
+            document.getElementById('new-item-title').value = title;
+            document.getElementById('new-item-price').value = price || "";
+            document.getElementById('new-item-image').src = image;
 
-                // 3. Retry CorsProxy
-                if (!htmlContent && !isShortLink) {
-                    try {
-                        let proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
-                        let response = await fetch(proxyUrl);
-                        htmlContent = await response.text();
-                    } catch (e) { console.warn("CorsProxy retry failed", e); }
-                }
-
-                if (!htmlContent || htmlContent.length < 500) throw new Error('No content');
-
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(htmlContent, 'text/html');
-
-                let title = doc.querySelector('meta[property="og:title"]')?.content || doc.querySelector('h1')?.innerText || 'Товар';
-                title = title.replace(/\|.+$/, '').trim();
-
-                let image = doc.querySelector('meta[property="og:image"]')?.content || 'https://placehold.co/600x400?text=Foto';
-
-                let price = 0;
-                // Try JSON-LD
-                const scripts = doc.querySelectorAll('script[type="application/ld+json"]');
-                for (let s of scripts) {
-                    try {
-                        const json = JSON.parse(s.innerText);
-                        if (json.offers && json.offers.price) { price = parseInt(json.offers.price); break; }
-                    } catch (e) { }
-                }
-
-                // Fallback Regex in Meta Description (Kaspi often puts price in description)
-                if (!price) {
-                    let description = doc.querySelector('meta[name="description"]')?.content ||
-                        doc.querySelector('meta[property="og:description"]')?.content || "";
-                    // Match "12 500 ₸" or "12500 T"
-                    let descMatch = description.match(/(\d[\d\s]*)\s?(₸|T|KZT|тг)/i);
-                    if (descMatch && descMatch[1]) {
-                        price = parseInt(descMatch[1].replace(/\s/g, ''));
-                    }
-                }
-
-                // Fallback Regex in HTML Body (Text search)
-                if (!price) {
-                    // Look for patterns like "12 990 ₸"
-                    // We take the first match that looks like a reasonable price (e.g. > 100)
-                    const matches = htmlContent.matchAll(/(\d[\d\s]*)(\s?)(₸|T|KZT|тг)/gi);
-                    for (const match of matches) {
-                        let val = parseInt(match[1].replace(/\s/g, ''));
-                        if (val > 100) { // arbitrary filter to avoid "0 ₸" or small numbers
-                            price = val;
-                            break;
-                        }
-                    }
-                }
-
+        } catch (e) {
+            console.error("Parsing error:", e);
+            const manual = confirm("Не удалось загрузить данные автоматически. Заполнить вручную?");
+            if (manual) {
                 document.querySelector('.create-step-1').classList.add('hidden');
                 document.getElementById('create-step-2').classList.remove('hidden');
-                document.getElementById('new-item-title').value = title;
-                document.getElementById('new-item-price').value = price || "";
-                document.getElementById('new-item-image').src = image;
-
-            } catch (e) {
-                console.error("Parsing error:", e);
-                const manual = confirm("Не удалось загрузить данные автоматически. Заполнить вручную?");
-                if (manual) {
-                    document.querySelector('.create-step-1').classList.add('hidden');
-                    document.getElementById('create-step-2').classList.remove('hidden');
-                    document.getElementById('new-item-image').src = 'https://placehold.co/600x400?text=Foto';
-                }
-            } finally {
-                parseBtn.textContent = 'Далее';
-                parseBtn.disabled = false;
+                document.getElementById('new-item-image').src = 'https://placehold.co/600x400?text=Foto';
             }
-        });
-    }
+        } finally {
+            parseBtn.textContent = 'Далее';
+            parseBtn.disabled = false;
+        }
+    });
+}
 
-    const cancelBtn = document.getElementById('cancel-create-btn');
-    if (cancelBtn) {
-        cancelBtn.addEventListener('click', () => {
-            document.getElementById('create-step-2').classList.add('hidden');
-            document.querySelector('.create-step-1').classList.remove('hidden');
-        });
-    }
+const cancelBtn = document.getElementById('cancel-create-btn');
+if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+        document.getElementById('create-step-2').classList.add('hidden');
+        document.querySelector('.create-step-1').classList.remove('hidden');
+    });
+}
 
-    // Profile Actions
-    const editProfileBtn = document.getElementById('edit-profile-btn');
-    if (editProfileBtn) {
-        editProfileBtn.addEventListener('click', () => {
-            const newName = prompt("Имя:", userProfile.name);
-            if (newName) {
-                userProfile.name = newName;
-                localStorage.setItem('user_profile', JSON.stringify(userProfile));
-                updateProfileUI();
-                syncUserWithServer(); // Sync changes
-            }
-        });
-    }
-
-    const privateModeToggle = document.getElementById('private-mode-toggle');
-    if (privateModeToggle) {
-        privateModeToggle.addEventListener('change', (e) => {
-            userProfile.isPrivate = e.target.checked;
+// Profile Actions
+const editProfileBtn = document.getElementById('edit-profile-btn');
+if (editProfileBtn) {
+    editProfileBtn.addEventListener('click', () => {
+        const newName = prompt("Имя:", userProfile.name);
+        if (newName) {
+            userProfile.name = newName;
             localStorage.setItem('user_profile', JSON.stringify(userProfile));
             updateProfileUI();
+            syncUserWithServer(); // Sync changes
+        }
+    });
+}
+
+const privateModeToggle = document.getElementById('private-mode-toggle');
+if (privateModeToggle) {
+    privateModeToggle.addEventListener('change', (e) => {
+        userProfile.isPrivate = e.target.checked;
+        localStorage.setItem('user_profile', JSON.stringify(userProfile));
+        updateProfileUI();
+    });
+}
+
+const publicPreviewBtn = document.getElementById('public-preview-btn');
+const exitPublicViewLink = document.getElementById('exit-public-view');
+if (publicPreviewBtn) {
+    publicPreviewBtn.addEventListener('click', () => {
+        isPublicView = true;
+        isSubscribedMock = false;
+        document.querySelector('[data-target="home-view"]').click();
+        renderItems();
+    });
+}
+if (exitPublicViewLink) {
+    exitPublicViewLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        isPublicView = false;
+        renderItems();
+        document.querySelector('[data-target="profile-view"]').click();
+    });
+}
+
+const subscribeBtn = document.getElementById('subscribe-btn');
+if (subscribeBtn) {
+    subscribeBtn.addEventListener('click', () => {
+        isSubscribedMock = true;
+        renderItems();
+    });
+}
+
+// Invite & Channel
+const inviteBtn = document.getElementById('invite-btn');
+// ... invite logic skipped for brevity, standard ...
+
+// Subscriptions Modal Logic
+const subBtn = document.getElementById('subscriptions-btn');
+const subModal = document.getElementById('subs-modal');
+const closeSubBtn = document.getElementById('close-subs-modal');
+
+if (subBtn && subModal) {
+    subBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent navigation/other clicks
+        subModal.classList.remove('hidden');
+    });
+
+    if (closeSubBtn) {
+        closeSubBtn.addEventListener('click', () => {
+            subModal.classList.add('hidden');
         });
     }
 
-    const publicPreviewBtn = document.getElementById('public-preview-btn');
-    const exitPublicViewLink = document.getElementById('exit-public-view');
-    if (publicPreviewBtn) {
-        publicPreviewBtn.addEventListener('click', () => {
-            isPublicView = true;
-            isSubscribedMock = false;
-            document.querySelector('[data-target="home-view"]').click();
-            renderItems();
-        });
+    subModal.addEventListener('click', (e) => {
+        if (e.target === subModal) {
+            subModal.classList.add('hidden');
+        }
+    });
+}
+
+// --- NEW MAIN SHARE BUTTON LOGIC (Direct, No Modal) ---
+
+if (mainShareBtn) {
+    mainShareBtn.addEventListener('click', async () => {
+        const originalText = mainShareBtn.innerText;
+        mainShareBtn.innerText = 'Создаем ссылку...';
+        mainShareBtn.disabled = true;
+
+        try {
+            // 1. Simple App Link (No UUID/Cloud needed for text share)
+            const shareLink = `https://t.me/${BOT_USERNAME}/app`;
+
+            // 2. Generate Text with Links (Share ALL items)
+            let textMessage = `✨ Мой Вишлист (${userProfile.name}):\n\n`;
+            const itemsToShare = wishListItems; // Share everything since user clicked "Share"
+
+            if (itemsToShare.length > 0) {
+                itemsToShare.forEach((item, index) => {
+                    textMessage += `${index + 1}. ${item.title} — ${formatCompactNumber(item.goal)} ₸\n`;
+                    if (item.url && item.url.length > 5) {
+                        textMessage += `👉 Купить: ${item.url}\n`;
+                    }
+                    textMessage += '\n';
+                });
+            } else {
+                textMessage += "Список желаний пока пуст.\n";
+            }
+            textMessage += `🔗 Мой профиль: ${shareLink}`;
+
+            // 3. Open Telegram
+            const finalUrl = `https://t.me/share/url?url=${encodeURIComponent(shareLink)}&text=${encodeURIComponent(textMessage)}`;
+
+            if (window.Telegram?.WebApp?.openTelegramLink) {
+                window.Telegram.WebApp.openTelegramLink(finalUrl);
+            } else {
+                window.open(finalUrl, '_blank');
+            }
+
+        } catch (e) {
+            alert("Ошибка: " + e.message);
+        } finally {
+            mainShareBtn.innerText = originalText;
+            mainShareBtn.disabled = false;
+        }
+    });
+}
+// Navigation
+const navItems = document.querySelectorAll('.nav-item');
+const views = document.querySelectorAll('.content-area, .view-section');
+const headerBackBtn = document.getElementById('header-back-btn');
+const headerUserInfo = document.getElementById('header-user-info');
+const headerTitle = document.getElementById('header-title');
+let historyStack = ['home-view'];
+
+function navigateTo(targetId) {
+    if (targetId !== historyStack[historyStack.length - 1]) historyStack.push(targetId);
+
+    navItems.forEach(item => {
+        if (item.dataset.target === targetId) item.classList.add('active');
+        else item.classList.remove('active');
+    });
+    views.forEach(view => {
+        if (view.id === targetId) view.classList.remove('hidden');
+        else view.classList.add('hidden');
+    });
+
+    // Logic to determine if we are on a top-level tab or a sub-view
+    let isMainTab = ['home-view', 'profile-view', 'tasks-view'].includes(targetId);
+
+    // "Profile" tab logic: 
+    // If it's MY profile (visitedProfile is null) -> Main Tab (No Back Button)
+    // If it's GUEST profile (visitedProfile is set) -> Sub View (Show Back Button)
+    if (targetId === 'user-profile-view' && !visitedProfile) {
+        isMainTab = true;
     }
-    if (exitPublicViewLink) {
-        exitPublicViewLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            isPublicView = false;
-            renderItems();
-            document.querySelector('[data-target="profile-view"]').click();
-        });
-    }
 
-    const subscribeBtn = document.getElementById('subscribe-btn');
-    if (subscribeBtn) {
-        subscribeBtn.addEventListener('click', () => {
-            isSubscribedMock = true;
-            renderItems();
-        });
-    }
+    if (isMainTab) {
+        headerBackBtn.classList.add('hidden');
+        headerUserInfo.style.display = (targetId === 'home-view') ? 'flex' : 'none';
+        if (targetId !== 'home-view') headerTitle.classList.remove('hidden');
+        else headerTitle.classList.add('hidden');
 
-    // Invite & Channel
-    const inviteBtn = document.getElementById('invite-btn');
-    // ... invite logic skipped for brevity, standard ...
-
-    // Subscriptions Modal Logic
-    const subBtn = document.getElementById('subscriptions-btn');
-    const subModal = document.getElementById('subs-modal');
-    const closeSubBtn = document.getElementById('close-subs-modal');
-
-    if (subBtn && subModal) {
-        subBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent navigation/other clicks
-            subModal.classList.remove('hidden');
-        });
-
-        if (closeSubBtn) {
-            closeSubBtn.addEventListener('click', () => {
-                subModal.classList.add('hidden');
+        if (window.Telegram?.WebApp?.BackButton) window.Telegram.WebApp.BackButton.hide();
+    } else {
+        headerBackBtn.classList.remove('hidden');
+        headerUserInfo.style.display = 'none';
+        headerTitle.classList.remove('hidden');
+        if (window.Telegram?.WebApp?.BackButton) {
+            window.Telegram.WebApp.BackButton.show();
+            window.Telegram.WebApp.BackButton.onClick(() => {
+                historyStack.pop();
+                navigateTo(historyStack[historyStack.length - 1] || 'home-view');
             });
         }
-
-        subModal.addEventListener('click', (e) => {
-            if (e.target === subModal) {
-                subModal.classList.add('hidden');
-            }
-        });
     }
 
-    // --- NEW MAIN SHARE BUTTON LOGIC (Direct, No Modal) ---
-
-    if (mainShareBtn) {
-        mainShareBtn.addEventListener('click', async () => {
-            const originalText = mainShareBtn.innerText;
-            mainShareBtn.innerText = 'Создаем ссылку...';
-            mainShareBtn.disabled = true;
-
-            try {
-                // 1. Simple App Link (No UUID/Cloud needed for text share)
-                const shareLink = `https://t.me/${BOT_USERNAME}/app`;
-
-                // 2. Generate Text with Links (Share ALL items)
-                let textMessage = `✨ Мой Вишлист (${userProfile.name}):\n\n`;
-                const itemsToShare = wishListItems; // Share everything since user clicked "Share"
-
-                if (itemsToShare.length > 0) {
-                    itemsToShare.forEach((item, index) => {
-                        textMessage += `${index + 1}. ${item.title} — ${formatCompactNumber(item.goal)} ₸\n`;
-                        if (item.url && item.url.length > 5) {
-                            textMessage += `👉 Купить: ${item.url}\n`;
-                        }
-                        textMessage += '\n';
-                    });
-                } else {
-                    textMessage += "Список желаний пока пуст.\n";
-                }
-                textMessage += `🔗 Мой профиль: ${shareLink}`;
-
-                // 3. Open Telegram
-                const finalUrl = `https://t.me/share/url?url=${encodeURIComponent(shareLink)}&text=${encodeURIComponent(textMessage)}`;
-
-                if (window.Telegram?.WebApp?.openTelegramLink) {
-                    window.Telegram.WebApp.openTelegramLink(finalUrl);
-                } else {
-                    window.open(finalUrl, '_blank');
-                }
-
-            } catch (e) {
-                alert("Ошибка: " + e.message);
-            } finally {
-                mainShareBtn.innerText = originalText;
-                mainShareBtn.disabled = false;
-            }
-        });
+    if (targetId === 'home-view' && visitedProfile) headerTitle.innerHTML = `В гостях: ${visitedProfile.name}`;
+    if (targetId === 'create-view') headerTitle.textContent = 'Создать';
+    if (targetId === 'profile-view') headerTitle.textContent = 'Рейтинг';
+    if (targetId === 'user-profile-view') {
+        headerTitle.textContent = visitedProfile ? visitedProfile.name : 'Профиль';
     }
-    // Navigation
-    const navItems = document.querySelectorAll('.nav-item');
-    const views = document.querySelectorAll('.content-area, .view-section');
-    const headerBackBtn = document.getElementById('header-back-btn');
-    const headerUserInfo = document.getElementById('header-user-info');
-    const headerTitle = document.getElementById('header-title');
-    let historyStack = ['home-view'];
+    if (targetId === 'tasks-view') headerTitle.textContent = 'Задания';
 
-    function navigateTo(targetId) {
-        if (targetId !== historyStack[historyStack.length - 1]) historyStack.push(targetId);
+    if (targetId === 'user-profile-view') updateProfileUI();
+    if (targetId === 'profile-view') initLeaderboard();
+}
 
-        navItems.forEach(item => {
-            if (item.dataset.target === targetId) item.classList.add('active');
-            else item.classList.remove('active');
-        });
-        views.forEach(view => {
-            if (view.id === targetId) view.classList.remove('hidden');
-            else view.classList.add('hidden');
-        });
+navItems.forEach(nav => {
+    nav.addEventListener('click', (e) => {
+        const target = e.currentTarget.dataset.target;
 
-        // Logic to determine if we are on a top-level tab or a sub-view
-        let isMainTab = ['home-view', 'profile-view', 'tasks-view'].includes(targetId);
+        // "Return Immediately" / Reset Logic
+        // Applied to Profile tab AND Rating tab (profile-view) as requested
+        if (target === 'user-profile-view' || target === 'profile-view') {
+            visitedProfile = null;
+            isPublicView = false;
+            isSubscribedMock = false;
 
-        // "Profile" tab logic: 
-        // If it's MY profile (visitedProfile is null) -> Main Tab (No Back Button)
-        // If it's GUEST profile (visitedProfile is set) -> Sub View (Show Back Button)
-        if (targetId === 'user-profile-view' && !visitedProfile) {
-            isMainTab = true;
-        }
-
-        if (isMainTab) {
-            headerBackBtn.classList.add('hidden');
-            headerUserInfo.style.display = (targetId === 'home-view') ? 'flex' : 'none';
-            if (targetId !== 'home-view') headerTitle.classList.remove('hidden');
-            else headerTitle.classList.add('hidden');
-
-            if (window.Telegram?.WebApp?.BackButton) window.Telegram.WebApp.BackButton.hide();
-        } else {
-            headerBackBtn.classList.remove('hidden');
-            headerUserInfo.style.display = 'none';
-            headerTitle.classList.remove('hidden');
-            if (window.Telegram?.WebApp?.BackButton) {
-                window.Telegram.WebApp.BackButton.show();
-                window.Telegram.WebApp.BackButton.onClick(() => {
-                    historyStack.pop();
-                    navigateTo(historyStack[historyStack.length - 1] || 'home-view');
-                });
+            // Force immediate UI update to ensure we exit "Guest Mode"
+            if (target === 'user-profile-view') {
+                updateProfileUI(); // Reset header/bio to self
+                renderItems();     // Reset wishes to self
             }
         }
 
-        if (targetId === 'home-view' && visitedProfile) headerTitle.innerHTML = `В гостях: ${visitedProfile.name}`;
-        if (targetId === 'create-view') headerTitle.textContent = 'Создать';
-        if (targetId === 'profile-view') headerTitle.textContent = 'Рейтинг';
-        if (targetId === 'user-profile-view') {
-            headerTitle.textContent = visitedProfile ? visitedProfile.name : 'Профиль';
-        }
-        if (targetId === 'tasks-view') headerTitle.textContent = 'Задания';
+        // If clicking Home tab, maybe also reset? 
+        // Usually Home is "My Registry" OR "Guest Registry". 
+        // If user wants to "exit" guest mode, they usually click Profile or a specific "Exit" button.
+        // Let's stick to fixing Profile tab as requested.
 
-        if (targetId === 'user-profile-view') updateProfileUI();
-        if (targetId === 'profile-view') initLeaderboard();
-    }
-
-    navItems.forEach(nav => {
-        nav.addEventListener('click', (e) => {
-            const target = e.currentTarget.dataset.target;
-
-            // "Return Immediately" / Reset Logic
-            // Applied to Profile tab AND Rating tab (profile-view) as requested
-            if (target === 'user-profile-view' || target === 'profile-view') {
-                visitedProfile = null;
-                isPublicView = false;
-                isSubscribedMock = false;
-
-                // Force immediate UI update to ensure we exit "Guest Mode"
-                if (target === 'user-profile-view') {
-                    updateProfileUI(); // Reset header/bio to self
-                    renderItems();     // Reset wishes to self
-                }
-            }
-
-            // If clicking Home tab, maybe also reset? 
-            // Usually Home is "My Registry" OR "Guest Registry". 
-            // If user wants to "exit" guest mode, they usually click Profile or a specific "Exit" button.
-            // Let's stick to fixing Profile tab as requested.
-
-            if (target) navigateTo(target);
-        });
+        if (target) navigateTo(target);
     });
+});
 
-    headerBackBtn.addEventListener('click', () => {
-        historyStack.pop();
-        navigateTo(historyStack[historyStack.length - 1] || 'home-view');
-    });
+headerBackBtn.addEventListener('click', () => {
+    historyStack.pop();
+    navigateTo(historyStack[historyStack.length - 1] || 'home-view');
+});
 
-    // Search Logic
-    const searchInput = document.getElementById('user-search-input');
-    const searchResults = document.getElementById('search-results');
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase();
-            if (query.length < 2) {
-                searchResults.classList.add('hidden');
-                return;
-            }
-            const filtered = FIXED_MOCKS.filter(u => u.name.toLowerCase().includes(query) || u.username.toLowerCase().includes(query));
-            renderSearchResults(filtered);
-        });
-    }
-
-    function renderSearchResults(users) {
-        searchResults.innerHTML = '';
-        if (users.length === 0) {
+// Search Logic
+const searchInput = document.getElementById('user-search-input');
+const searchResults = document.getElementById('search-results');
+if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        if (query.length < 2) {
             searchResults.classList.add('hidden');
             return;
         }
-        searchResults.classList.remove('hidden');
-        users.forEach(user => {
-            const div = document.createElement('div');
-            div.className = 'search-result-item';
-            div.innerHTML = `<img src="${user.avatar}" class="result-avatar"><span>${user.name}</span>`;
-            div.addEventListener('click', () => {
-                visitedProfile = user;
-                isPublicView = true;
-                updateProfileUI();
-                searchResults.classList.add('hidden');
-                renderItems();
-                document.querySelector('[data-target="user-profile-view"]').click();
-            });
-            searchResults.appendChild(div);
-        });
+        const filtered = FIXED_MOCKS.filter(u => u.name.toLowerCase().includes(query) || u.username.toLowerCase().includes(query));
+        renderSearchResults(filtered);
+    });
+}
+
+function renderSearchResults(users) {
+    searchResults.innerHTML = '';
+    if (users.length === 0) {
+        searchResults.classList.add('hidden');
+        return;
     }
+    searchResults.classList.remove('hidden');
+    users.forEach(user => {
+        const div = document.createElement('div');
+        div.className = 'search-result-item';
+        div.innerHTML = `<img src="${user.avatar}" class="result-avatar"><span>${user.name}</span>`;
+        div.addEventListener('click', () => {
+            visitedProfile = user;
+            isPublicView = true;
+            updateProfileUI();
+            searchResults.classList.add('hidden');
+            renderItems();
+            document.querySelector('[data-target="user-profile-view"]').click();
+        });
+        searchResults.appendChild(div);
+    });
+}
 
-    // Render Items
-    // Render Items
-    function renderItems() {
-        try {
-            const listContainer = document.getElementById('wish-list-container');
-            const guestContainer = document.getElementById('guest-wish-list-container');
+// Render Items
+// Render Items
+function renderItems() {
+    try {
+        const listContainer = document.getElementById('wish-list-container');
+        const guestContainer = document.getElementById('guest-wish-list-container');
 
-            // 1. Home View Render
-            if (listContainer) {
-                listContainer.innerHTML = '';
+        // 1. Home View Render
+        if (listContainer) {
+            listContainer.innerHTML = '';
 
-                // Share Button Logic Removed as per user request
-                // Was checking if (!isPublicView && currentCategory === 'Все')
+            // Share Button Logic Removed as per user request
+            // Was checking if (!isPublicView && currentCategory === 'Все')
 
-                // Logic: Render User's Own Items
-                if (!isPublicView) {
-                    // Filter by Category
-                    const filteredItems = currentCategory === 'Все'
-                        ? wishListItems
-                        : wishListItems.filter(item => item.category === currentCategory);
+            // Logic: Render User's Own Items
+            if (!isPublicView) {
+                // Filter by Category
+                const filteredItems = currentCategory === 'Все'
+                    ? wishListItems
+                    : wishListItems.filter(item => item.category === currentCategory);
 
-                    // Render Items
-                    filteredItems.forEach(item => {
-                        const card = createCard(item, false);
-                        listContainer.appendChild(card);
-                    });
+                // Render Items
+                filteredItems.forEach(item => {
+                    const card = createCard(item, false);
+                    listContainer.appendChild(card);
+                });
 
-                    // Render "Add New" Button
-                    if (wishListItems.length < maxSlots) {
-                        const addBtn = document.createElement('div');
-                        addBtn.className = 'wish-card empty-state';
-                        addBtn.style.cursor = 'pointer';
-                        addBtn.style.display = 'flex';
-                        addBtn.style.flexDirection = 'column';
-                        addBtn.style.justifyContent = 'center';
-                        addBtn.style.alignItems = 'center';
-                        addBtn.style.minHeight = '200px';
-                        addBtn.innerHTML = `
+                // Render "Add New" Button
+                if (wishListItems.length < maxSlots) {
+                    const addBtn = document.createElement('div');
+                    addBtn.className = 'wish-card empty-state';
+                    addBtn.style.cursor = 'pointer';
+                    addBtn.style.display = 'flex';
+                    addBtn.style.flexDirection = 'column';
+                    addBtn.style.justifyContent = 'center';
+                    addBtn.style.alignItems = 'center';
+                    addBtn.style.minHeight = '200px';
+                    addBtn.innerHTML = `
                             <div style="margin-bottom: 15px; width: 80px; height: 80px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                     <g stroke="rgba(255,255,255,0.3)" stroke-width="2">
@@ -1171,56 +1192,56 @@ document.addEventListener('DOMContentLoaded', () => {
                             <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 5px;">Добавить желание</h3>
                             <p style="font-size: 13px; color: #888;">Доступно слотов: ${maxSlots - wishListItems.length}</p>
                         `;
-                        addBtn.addEventListener('click', () => {
-                            document.querySelector('[data-target="create-view"]').click();
-                        });
-                        listContainer.appendChild(addBtn);
-                    }
+                    addBtn.addEventListener('click', () => {
+                        document.querySelector('[data-target="create-view"]').click();
+                    });
+                    listContainer.appendChild(addBtn);
                 }
             }
-
-            // 2. Guest/Public View Render
-            if (guestContainer && isPublicView) {
-                guestContainer.innerHTML = '';
-                if (visitedProfile) {
-                    // Check Private
-                    if (visitedProfile.isPrivate && !isSubscribedMock) {
-                        document.getElementById('locked-overlay').classList.remove('hidden');
-                        guestContainer.style.display = 'none';
-                    } else {
-                        document.getElementById('locked-overlay').classList.add('hidden');
-                        guestContainer.style.display = 'grid';
-
-                        // Render Guest Items
-                        const sourceItems = window.guestWishes || wishListItems;
-                        // Filter out private items if not subscribed? Usually private items are hidden unless "My" view.
-                        // Assuming Guest View only shows Public items.
-                        sourceItems.filter(item => !item.isPrivate).forEach(item => {
-                            const card = createCard(item, true);
-                            guestContainer.appendChild(card);
-                        });
-
-                        // If empty
-                        if (sourceItems.filter(item => !item.isPrivate).length === 0) {
-                            guestContainer.innerHTML = '<p style="text-align:center; opacity:0.6; padding:20px; grid-column: 1/-1;">Список желаний пуст</p>';
-                        }
-                    }
-                }
-            }
-        } catch (e) {
-            console.error("Critical Render Error:", e);
-            alert("Ошибка отображения: " + e.message);
         }
+
+        // 2. Guest/Public View Render
+        if (guestContainer && isPublicView) {
+            guestContainer.innerHTML = '';
+            if (visitedProfile) {
+                // Check Private
+                if (visitedProfile.isPrivate && !isSubscribedMock) {
+                    document.getElementById('locked-overlay').classList.remove('hidden');
+                    guestContainer.style.display = 'none';
+                } else {
+                    document.getElementById('locked-overlay').classList.add('hidden');
+                    guestContainer.style.display = 'grid';
+
+                    // Render Guest Items
+                    const sourceItems = window.guestWishes || wishListItems;
+                    // Filter out private items if not subscribed? Usually private items are hidden unless "My" view.
+                    // Assuming Guest View only shows Public items.
+                    sourceItems.filter(item => !item.isPrivate).forEach(item => {
+                        const card = createCard(item, true);
+                        guestContainer.appendChild(card);
+                    });
+
+                    // If empty
+                    if (sourceItems.filter(item => !item.isPrivate).length === 0) {
+                        guestContainer.innerHTML = '<p style="text-align:center; opacity:0.6; padding:20px; grid-column: 1/-1;">Список желаний пуст</p>';
+                    }
+                }
+            }
+        }
+    } catch (e) {
+        console.error("Critical Render Error:", e);
+        alert("Ошибка отображения: " + e.message);
     }
+}
 
-    // Helper: Create Card HTML
-    function createCard(item, isReadOnly) {
-        const div = document.createElement('div');
-        div.className = 'wish-card';
+// Helper: Create Card HTML
+function createCard(item, isReadOnly) {
+    const div = document.createElement('div');
+    div.className = 'wish-card';
 
-        const percent = Math.min(100, Math.floor((item.collected / item.goal) * 100));
+    const percent = Math.min(100, Math.floor((item.collected / item.goal) * 100));
 
-        div.innerHTML = `
+    div.innerHTML = `
             <div class="card-image-container">
                 <img src="${item.image}" class="card-image" onerror="this.src='https://placehold.co/600x400?text=No+Image'">
                 <div class="image-overlay">
@@ -1239,9 +1260,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="card-actions">
                     ${item.collected >= item.goal
-                ? `<button class="btn" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; cursor: default; box-shadow: 0 4px 15px rgba(56, 239, 125, 0.3);">Исполнено ✨</button>`
-                : `<button class="btn btn-primary pay-btn" data-id="${item.id}">Поддержать (Донат)</button>`
-            }
+            ? `<button class="btn" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; cursor: default; box-shadow: 0 4px 15px rgba(56, 239, 125, 0.3);">Исполнено ✨</button>`
+            : `<button class="btn btn-primary pay-btn" data-id="${item.id}">Поддержать (Донат)</button>`
+        }
                     ${!isReadOnly ? `
                         <div class="privacy-toggle-container" title="Переключить видимость">
                             <label class="privacy-switch">
@@ -1254,112 +1275,112 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
 
-        // Event Listeners
-        const payBtn = div.querySelector('.pay-btn');
-        if (payBtn) {
-            // Prevent Card Click Propagation on all interaction types
-            ['click', 'mousedown', 'touchstart'].forEach(evt => {
-                payBtn.addEventListener(evt, (e) => e.stopPropagation(), { passive: false });
-            });
+    // Event Listeners
+    const payBtn = div.querySelector('.pay-btn');
+    if (payBtn) {
+        // Prevent Card Click Propagation on all interaction types
+        ['click', 'mousedown', 'touchstart'].forEach(evt => {
+            payBtn.addEventListener(evt, (e) => e.stopPropagation(), { passive: false });
+        });
 
-            // Actual Logic on Click
-            payBtn.addEventListener('click', (e) => {
-                e.preventDefault(); // Prevent default button behavior
-                e.stopPropagation(); // Double check
-                openModal('dev', { itemId: item.id });
-            });
-        }
-
-        if (!isReadOnly) {
-            const delBtn = div.querySelector('.delete-icon-btn');
-            if (delBtn) delBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (confirm('Удалить это желание?')) {
-                    deleteItem(item.id);
-                }
-            });
-
-            const toggleInput = div.querySelector('.privacy-checkbox');
-            // Prevent click propagation on the label/input so it doesn't trigger card click (if any)
-            if (toggleInput) {
-                toggleInput.addEventListener('click', (e) => e.stopPropagation());
-                toggleInput.addEventListener('change', (e) => {
-                    // Checked = Public (!isPrivate)
-                    // Unchecked = Private (isPrivate)
-                    item.isPrivate = !e.target.checked;
-                    saveState();
-                    // We don't re-render entire list to avoid jitter, just update the lock indicator if we want?
-                    // But renderItems() updates the lock icon in the overlay.
-                    // Let's re-render for consistency.
-                    renderItems();
-                });
-            }
-        }
-
-        return div;
+        // Actual Logic on Click
+        payBtn.addEventListener('click', (e) => {
+            e.preventDefault(); // Prevent default button behavior
+            e.stopPropagation(); // Double check
+            openModal('dev', { itemId: item.id });
+        });
     }
 
-    // Server Users Logic - Using Mocks Only for Stability
-    // Server Users Logic
-    // --- LEADERBOARD LOGIC (REBUILT) ---
-    async function initLeaderboard() {
-        const listContainer = document.getElementById('generous-users-list');
-        if (!listContainer) return;
+    if (!isReadOnly) {
+        const delBtn = div.querySelector('.delete-icon-btn');
+        if (delBtn) delBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (confirm('Удалить это желание?')) {
+                deleteItem(item.id);
+            }
+        });
 
-        // Loading State
-        if (listContainer.children.length === 0) {
-            listContainer.innerHTML = '<div style="padding:20px; text-align:center; color:#888;">Загрузка рейтинга...</div>';
+        const toggleInput = div.querySelector('.privacy-checkbox');
+        // Prevent click propagation on the label/input so it doesn't trigger card click (if any)
+        if (toggleInput) {
+            toggleInput.addEventListener('click', (e) => e.stopPropagation());
+            toggleInput.addEventListener('change', (e) => {
+                // Checked = Public (!isPrivate)
+                // Unchecked = Private (isPrivate)
+                item.isPrivate = !e.target.checked;
+                saveState();
+                // We don't re-render entire list to avoid jitter, just update the lock indicator if we want?
+                // But renderItems() updates the lock icon in the overlay.
+                // Let's re-render for consistency.
+                renderItems();
+            });
         }
+    }
 
-        // 1. Sync Current User First
-        await syncUserWithServer();
+    return div;
+}
 
-        // 2. Fetch Remote Users
-        let users = [];
-        try {
-            users = await apiFetch('/users') || [];
-        } catch (e) {
-            console.warn("Leaderboard fetch failed, using mocks.", e);
-        }
+// Server Users Logic - Using Mocks Only for Stability
+// Server Users Logic
+// --- LEADERBOARD LOGIC (REBUILT) ---
+async function initLeaderboard() {
+    const listContainer = document.getElementById('generous-users-list');
+    if (!listContainer) return;
 
-        // 3. Merge with Mocks (Always ensure visual density)
-        // If users < 5, add mocks that are NOT already in users list
-        const existingIds = new Set(users.map(u => String(u.id)));
-        const mocksToAdd = FIXED_MOCKS.filter(m => !existingIds.has(String(m.id)));
+    // Loading State
+    if (listContainer.children.length === 0) {
+        listContainer.innerHTML = '<div style="padding:20px; text-align:center; color:#888;">Загрузка рейтинга...</div>';
+    }
 
-        let finalList = [...users, ...mocksToAdd];
+    // 1. Sync Current User First
+    await syncUserWithServer();
 
-        // 4. Ensure Current User is updated in the list or added
-        // The fetch might have old data for me, so let's override 'me' with 'userProfile'
-        finalList = finalList.filter(u => String(u.id) !== String(userProfile.id));
-        finalList.push(userProfile);
+    // 2. Fetch Remote Users
+    let users = [];
+    try {
+        users = await apiFetch('/users') || [];
+    } catch (e) {
+        console.warn("Leaderboard fetch failed, using mocks.", e);
+    }
 
-        // 5. Parse & Sort
-        function parseVal(str) {
-            if (typeof str === 'number') return str;
-            if (!str) return 0;
-            // Clean string: "2 500 ₸" -> "2500"
-            let val = str.toString().replace(/[^0-9.kKmM]/g, '').toLowerCase();
-            let mult = 1;
-            if (val.includes('k')) { mult = 1000; val = val.replace('k', ''); }
-            else if (val.includes('m')) { mult = 1000000; val = val.replace('m', ''); }
-            return (parseFloat(val) || 0) * mult;
-        }
+    // 3. Merge with Mocks (Always ensure visual density)
+    // If users < 5, add mocks that are NOT already in users list
+    const existingIds = new Set(users.map(u => String(u.id)));
+    const mocksToAdd = FIXED_MOCKS.filter(m => !existingIds.has(String(m.id)));
 
-        finalList.sort((a, b) => parseVal(b.donated) - parseVal(a.donated));
+    let finalList = [...users, ...mocksToAdd];
 
-        // 6. Render
-        listContainer.innerHTML = '';
-        finalList.forEach((u, index) => {
-            const isMe = String(u.id) === String(userProfile.id);
-            const el = document.createElement('div');
-            el.className = 'user-card-item';
-            if (isMe) el.classList.add('current-user-highlight'); // We will add CSS for this
+    // 4. Ensure Current User is updated in the list or added
+    // The fetch might have old data for me, so let's override 'me' with 'userProfile'
+    finalList = finalList.filter(u => String(u.id) !== String(userProfile.id));
+    finalList.push(userProfile);
 
-            // Avatar Handling
-            let avatarSrc = u.avatar || 'https://placehold.co/100';
+    // 5. Parse & Sort
+    function parseVal(str) {
+        if (typeof str === 'number') return str;
+        if (!str) return 0;
+        // Clean string: "2 500 ₸" -> "2500"
+        let val = str.toString().replace(/[^0-9.kKmM]/g, '').toLowerCase();
+        let mult = 1;
+        if (val.includes('k')) { mult = 1000; val = val.replace('k', ''); }
+        else if (val.includes('m')) { mult = 1000000; val = val.replace('m', ''); }
+        return (parseFloat(val) || 0) * mult;
+    }
 
-            el.innerHTML = `
+    finalList.sort((a, b) => parseVal(b.donated) - parseVal(a.donated));
+
+    // 6. Render
+    listContainer.innerHTML = '';
+    finalList.forEach((u, index) => {
+        const isMe = String(u.id) === String(userProfile.id);
+        const el = document.createElement('div');
+        el.className = 'user-card-item';
+        if (isMe) el.classList.add('current-user-highlight'); // We will add CSS for this
+
+        // Avatar Handling
+        let avatarSrc = u.avatar || 'https://placehold.co/100';
+
+        el.innerHTML = `
                 <span class="uc-rank">${index + 1}</span>
                 <img src="${avatarSrc}" class="uc-avatar" onerror="this.src='https://placehold.co/100';">
                 <div class="uc-info">
@@ -1368,81 +1389,81 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
 
-            // Click Handler
-            el.addEventListener('click', () => {
-                if (isMe) return;
-                // Visit Profile
-                visitedProfile = u;
-                isPublicView = true;
-                updateProfileUI();
-                renderItems();
-                navigateTo('user-profile-view');
-            });
-
-            listContainer.appendChild(el);
+        // Click Handler
+        el.addEventListener('click', () => {
+            if (isMe) return;
+            // Visit Profile
+            visitedProfile = u;
+            isPublicView = true;
+            updateProfileUI();
+            renderItems();
+            navigateTo('user-profile-view');
         });
+
+        listContainer.appendChild(el);
+    });
+}
+
+// TASKS SYSTEM
+const TASKS = [
+    {
+        id: 't_tg',
+        title: 'Вступить в сообщество Wish List',
+        reward: '+1 слот',
+        icon: '📢',
+        link: 'https://t.me/wishlistfeedback',
+        completed: false
+    },
+    {
+        id: 't_inst',
+        title: 'Подписаться на Instagram Wish List',
+        reward: '+1 слот',
+        icon: '📸',
+        link: 'https://www.instagram.com/merci.wishlist',
+        completed: false
+    },
+    {
+        id: 't_invite',
+        title: 'Пригласить друга',
+        reward: '+1 слот',
+        icon: '🤝',
+        link: 'https://t.me/share/url?url=https://t.me/wishlist_bloggers_bot/app&text=Создай%20свой%20вишлист%20здесь!%20🎁',
+        completed: false
+    },
+    {
+        id: 't_add3',
+        title: 'Добавить 3 желания',
+        reward: '+3 слота',
+        icon: '✨',
+        link: null,
+        completed: false
     }
+];
 
-    // TASKS SYSTEM
-    const TASKS = [
-        {
-            id: 't_tg',
-            title: 'Вступить в сообщество Wish List',
-            reward: '+1 слот',
-            icon: '📢',
-            link: 'https://t.me/wishlistfeedback',
-            completed: false
-        },
-        {
-            id: 't_inst',
-            title: 'Подписаться на Instagram Wish List',
-            reward: '+1 слот',
-            icon: '📸',
-            link: 'https://www.instagram.com/merci.wishlist',
-            completed: false
-        },
-        {
-            id: 't_invite',
-            title: 'Пригласить друга',
-            reward: '+1 слот',
-            icon: '🤝',
-            link: 'https://t.me/share/url?url=https://t.me/wishlist_bloggers_bot/app&text=Создай%20свой%20вишлист%20здесь!%20🎁',
-            completed: false
-        },
-        {
-            id: 't_add3',
-            title: 'Добавить 3 желания',
-            reward: '+3 слота',
-            icon: '✨',
-            link: null,
-            completed: false
+function renderTasks() {
+    const container = document.getElementById('tasks-list');
+    if (!container) return;
+    container.innerHTML = '';
+
+    TASKS.forEach(task => {
+        const isCompleted = localStorage.getItem('task_' + task.id) === 'true';
+        const isPending = localStorage.getItem('task_pending_' + task.id) === 'true'; // New state
+
+        const div = document.createElement('div');
+        div.className = 'task-card';
+        if (isCompleted) div.classList.add('completed');
+
+        let btnText = 'Выполнить';
+        let btnClass = '';
+        if (isCompleted) {
+            btnText = 'Выполнено';
+            btnClass = 'done';
+        } else if (isPending) {
+            btnText = 'Проверить';
+            btnClass = 'check'; // Yellow/Blue style
         }
-    ];
 
-    function renderTasks() {
-        const container = document.getElementById('tasks-list');
-        if (!container) return;
-        container.innerHTML = '';
-
-        TASKS.forEach(task => {
-            const isCompleted = localStorage.getItem('task_' + task.id) === 'true';
-            const isPending = localStorage.getItem('task_pending_' + task.id) === 'true'; // New state
-
-            const div = document.createElement('div');
-            div.className = 'task-card';
-            if (isCompleted) div.classList.add('completed');
-
-            let btnText = 'Выполнить';
-            let btnClass = '';
-            if (isCompleted) {
-                btnText = 'Выполнено';
-                btnClass = 'done';
-            } else if (isPending) {
-                btnText = 'Проверить';
-                btnClass = 'check'; // Yellow/Blue style
-            }
-
-            div.innerHTML = `
+        div.innerHTML = `
                 <div class="task-icon">${task.icon}</div>
                 <div class="task-info">
                     <div class="task-title">${task.title}</div>
@@ -1453,68 +1474,68 @@ document.addEventListener('DOMContentLoaded', () => {
                 </button>
             `;
 
-            const btn = div.querySelector('.task-btn');
-            if (!isCompleted) {
-                btn.addEventListener('click', () => {
-                    // Logic for internal checks (No link)
-                    if (task.id === 't_add3') {
-                        if (wishListItems.length >= 3) {
-                            completeTask(task, 3);
-                        } else {
-                            alert(`Нужно добавить еще ${3 - wishListItems.length} желания!`);
-                        }
-                        return;
-                    }
-
-                    if (!isPending) {
-                        // Step 1: Execute -> Open Link (Use TG WebApp if available)
-                        if (window.Telegram?.WebApp?.openLink && task.link) {
-                            window.Telegram.WebApp.openLink(task.link);
-                        } else if (task.link) {
-                            window.open(task.link, '_blank');
-                        }
-                        // Set Pending State
-                        localStorage.setItem('task_pending_' + task.id, 'true');
-                        renderTasks(); // Re-render to show "Check"
+        const btn = div.querySelector('.task-btn');
+        if (!isCompleted) {
+            btn.addEventListener('click', () => {
+                // Logic for internal checks (No link)
+                if (task.id === 't_add3') {
+                    if (wishListItems.length >= 3) {
+                        completeTask(task, 3);
                     } else {
-                        // Step 2: Check -> Verify
-                        btn.textContent = 'Проверяю...';
-                        setTimeout(() => {
-                            completeTask(task, 1);
-                        }, 1500);
+                        alert(`Нужно добавить еще ${3 - wishListItems.length} желания!`);
                     }
-                });
-            }
+                    return;
+                }
 
-            container.appendChild(div);
-        });
-    }
+                if (!isPending) {
+                    // Step 1: Execute -> Open Link (Use TG WebApp if available)
+                    if (window.Telegram?.WebApp?.openLink && task.link) {
+                        window.Telegram.WebApp.openLink(task.link);
+                    } else if (task.link) {
+                        window.open(task.link, '_blank');
+                    }
+                    // Set Pending State
+                    localStorage.setItem('task_pending_' + task.id, 'true');
+                    renderTasks(); // Re-render to show "Check"
+                } else {
+                    // Step 2: Check -> Verify
+                    btn.textContent = 'Проверяю...';
+                    setTimeout(() => {
+                        completeTask(task, 1);
+                    }, 1500);
+                }
+            });
+        }
 
-    function completeTask(task, rewardAmount) {
-        localStorage.removeItem('task_pending_' + task.id);
-        localStorage.setItem('task_' + task.id, 'true');
+        container.appendChild(div);
+    });
+}
 
-        maxSlots += rewardAmount;
-        localStorage.setItem('max_slots', maxSlots);
-        updateSlotsUI();
-        renderTasks();
-        alert(`Вы получили ${task.reward}!`);
+function completeTask(task, rewardAmount) {
+    localStorage.removeItem('task_pending_' + task.id);
+    localStorage.setItem('task_' + task.id, 'true');
 
-        // Confetti if available
-        if (window.confetti) window.confetti();
-    }
-
-    // Initial Render calls
+    maxSlots += rewardAmount;
+    localStorage.setItem('max_slots', maxSlots);
     updateSlotsUI();
-    updateProfileUI();
-    initLeaderboard();
-    renderItems();
     renderTasks();
+    alert(`Вы получили ${task.reward}!`);
 
-    // Request initial sync to appear in leaderboard
-    syncUserWithServer();
+    // Confetti if available
+    if (window.confetti) window.confetti();
+}
 
-    document.querySelector('.nav-item.active')?.click();
+// Initial Render calls
+updateSlotsUI();
+updateProfileUI();
+initLeaderboard();
+renderItems();
+renderTasks();
+
+// Request initial sync to appear in leaderboard
+syncUserWithServer();
+
+document.querySelector('.nav-item.active')?.click();
 
     // --- SECRET SANTA LOGIC REMOVED ---
 
