@@ -609,10 +609,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const cardNumber = '4400430351700882';
             navigator.clipboard.writeText(cardNumber).then(() => {
                 // Visual Feedback
-                const originalIcon = copyKaspiBtn.innerText;
-                copyKaspiBtn.innerText = '✅';
+                const originalContent = copyKaspiBtn.innerHTML;
+                copyKaspiBtn.style.width = 'auto'; // ensure width adapts
+                copyKaspiBtn.innerText = 'Скопировано';
+                copyKaspiBtn.style.fontSize = '12px';
+                copyKaspiBtn.style.color = '#4cd964'; // Green color for feedback
+
                 setTimeout(() => {
-                    copyKaspiBtn.innerText = originalIcon;
+                    copyKaspiBtn.innerHTML = originalContent;
+                    copyKaspiBtn.style.fontSize = ''; // Reset style
+                    copyKaspiBtn.style.color = '';
                 }, 2000);
             }).catch(err => {
                 console.error('Failed to copy: ', err);
