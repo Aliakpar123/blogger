@@ -479,7 +479,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // 'topup'
             document.querySelector('#payment-modal h3').innerText = "Пополнение кошелька";
 
-            document.getElementById('payment-methods-container').style.display = 'block';
+            document.getElementById('payment-methods-grid').style.display = 'block';
             document.getElementById('payment-hint-area').style.display = 'block';
             const walletPayBtn = document.getElementById('pay-from-wallet-btn');
             if (walletPayBtn) walletPayBtn.style.display = 'none'; // Default hidden
@@ -487,7 +487,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // DEV MODE Check
             if (mode === 'dev') {
                 paymentTitle.innerText = 'В разработке 🛠️';
-                document.getElementById('payment-methods-container').innerHTML = `
+                document.getElementById('payment-methods-grid').innerHTML = `
                 <div style="text-align: center; padding: 20px; color: #888;">
                     <p style="font-size: 16px; margin-bottom: 10px;">Эта функция скоро появится!</p>
                     <p style="font-size: 13px;">Мы работаем над интеграцией платежей.</p>
@@ -497,20 +497,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             } else {
                 // Restore Payment Methods if overwritten
-                document.getElementById('payment-methods-container').innerHTML = `
-                <div class="payment-methods-grid">
-                    <div class="pay-method-btn" id="pay-method-apple">
-                        <span class="pay-method-icon"></span>
-                        <span class="pay-method-label">Apple Pay</span>
-                    </div>
-                    <div class="pay-method-btn" id="pay-method-usdt">
-                        <span class="pay-method-icon">₮</span>
-                        <span class="pay-method-label">USDT (TRC20)</span>
-                    </div>
-                    <div class="pay-method-btn" id="pay-method-card">
-                        <span class="pay-method-icon">💳</span>
-                        <span class="pay-method-label">Карта</span>
-                    </div>
+                document.getElementById('payment-methods-grid').innerHTML = `
+                <!-- Apple Pay -->
+                <div class="pay-method-btn" id="pay-method-apple">
+                    <span class="pay-method-icon"></span>
+                    <span class="pay-method-label">Apple Pay</span>
+                </div>
+                <!-- USDT -->
+                <div class="pay-method-btn" id="pay-method-usdt">
+                    <span class="pay-method-icon">₮</span>
+                    <span class="pay-method-label">USDT (TRC20)</span>
+                </div>
+                <!-- Card -->
+                <div class="pay-method-btn" id="pay-method-card">
+                    <span class="pay-method-icon">💳</span>
+                    <span class="pay-method-label">Карта</span>
                 </div>
             `;
                 // Re-bind events because innerHTML wiped them
