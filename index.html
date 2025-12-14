@@ -17,11 +17,11 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <link rel="stylesheet" href="app.css?v=12.2.0">
+    <link rel="stylesheet" href="app.css?v=12.3.0">
     <!-- Telegram WebApp Script -->
-    <script src="https://telegram.org/js/telegram-web-app.js?v=12.2.0"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js?v=12.3.0"></script>
     <!-- Main Script -->
-    <script src="app.js?v=12.2.0" defer></script>
+    <script src="app.js?v=12.3.0" defer></script>
     <script>
         // URGE UNREGISTER SERVICE WORKERS
         if ('serviceWorker' in navigator) {
@@ -266,17 +266,12 @@
 
             <!-- Wallet Card (Clean Style) -->
             <div class="wallet-card">
-                <div class="wallet-balance">
-                    <span class="wallet-label">Баланс</span>
-                    <span class="wallet-amount" id="user-balance-display">0 ₸</span>
+                <div class="wallet-actions">
+                    <button id="donate-dev-btn" class="btn-support-dev">
+                        <span>Поддержать разработчика 🎅</span>
+                    </button>
                 </div>
-
             </div>
-
-            <!-- Support Developer Button (Separate) -->
-            <button id="donate-dev-btn" class="btn-support-dev" style="margin-top: 10px; margin-bottom: 20px;">
-                <span>Поддержать разработчика 🎅</span>
-            </button>
 
             <!-- Guest Wish List Container -->
             <div id="guest-wish-list-container" class="grid-container" style="padding-bottom: 80px; padding-top: 20px;">
