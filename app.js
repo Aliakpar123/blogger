@@ -1317,7 +1317,7 @@ document.addEventListener('DOMContentLoaded', () => {
             title: 'Подписаться на Instagram Wish List',
             reward: '+1 слот',
             icon: '📸',
-            link: 'https://instagram.com/wishlist_placeholder',
+            link: 'https://www.instagram.com/merci.wishlist',
             completed: false
         }
     ];
