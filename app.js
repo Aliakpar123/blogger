@@ -1306,10 +1306,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const TASKS = [
         {
             id: 't_tg',
-            title: 'Подписаться на канал Wish List',
+            title: 'Вступить в сообщество Wish List',
             reward: '+1 слот',
             icon: '📢',
-            link: 'https://t.me/wishlist_channel_placeholder',
+            link: 'https://t.me/wishlistfeedback',
             completed: false
         },
         {
