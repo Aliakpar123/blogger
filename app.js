@@ -648,8 +648,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 collected: 0,
                 goal: parseInt(priceInput.value) || 0,
                 image: imageInput.src,
-                category: categoryInput ? categoryInput.value : "Разное",
-                category: categoryInput ? categoryInput.value : "Разное",
+                category: categoryInput ? categoryInput.value : "Общее",
                 isPrivate: document.getElementById('new-item-visibility')?.value === 'private',
                 url: (() => {
                     const raw = document.getElementById('kaspi-link')?.value || '';
