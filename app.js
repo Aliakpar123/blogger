@@ -1319,6 +1319,14 @@ document.addEventListener('DOMContentLoaded', () => {
             icon: '📸',
             link: 'https://www.instagram.com/merci.wishlist',
             completed: false
+        },
+        {
+            id: 't_invite',
+            title: 'Пригласить друга',
+            reward: '+1 слот',
+            icon: '🤝',
+            link: 'https://t.me/share/url?url=https://t.me/wishlist_bloggers_bot/app&text=Создай%20свой%20вишлист%20здесь!%20🎁',
+            completed: false
         }
     ];
 
