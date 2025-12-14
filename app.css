@@ -2976,6 +2976,40 @@ input:checked+.slider:before {
     /* Slight separation */
 }
 
+/* Kaspi Copy Row */
+.kaspi-copy-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px 12px;
+    border-radius: 12px;
+}
+
+.kaspi-number {
+    font-family: monospace;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: 0.5px;
+}
+
+.btn-copy-kaspi {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.btn-copy-kaspi:active {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(0.9);
+}
+
 .btn-support-dev:active {
     transform: scale(0.97);
     filter: brightness(0.95);
