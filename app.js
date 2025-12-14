@@ -676,10 +676,8 @@ document.addEventListener('DOMContentLoaded', () => {
         kaspiInput.addEventListener('input', (e) => parseBtn.disabled = e.target.value.length < 5);
         parseBtn.addEventListener('click', async () => {
             const url = kaspiInput.value;
-            if (!url.includes('kaspi.kz')) {
-                alert('Нужна ссылка на Kaspi.kz');
-                return;
-            }
+            // Removed Kaspi-only check to allow all websites
+
 
             parseBtn.textContent = 'Загрузка...';
             parseBtn.disabled = true;
