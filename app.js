@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let wishListItems = safeParse('wishlist_items', []);
 
     // MIGRATION: Add Example Wish (iPhone 17 Pro)
-    if (!localStorage.getItem('example_added_v2')) {
+    if (!localStorage.getItem('example_added_v3')) {
         const exampleWish = {
             id: Date.now() + 999, // Ensure unique-ish
             title: 'Apple iPhone 17 Pro 256GB Оранжевый',
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Add to TOP of list
         wishListItems.unshift(exampleWish);
         localStorage.setItem('wishlist_items', JSON.stringify(wishListItems));
-        localStorage.setItem('example_added_v2', 'true');
+        localStorage.setItem('example_added_v3', 'true');
     }
 
     const FESTIVE_AVATARS = {
