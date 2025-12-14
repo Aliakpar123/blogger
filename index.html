@@ -254,13 +254,27 @@
             </div>
 
             <!-- Wallet Card (TikTok Style) -->
+            <!-- Wallet Card (Premium Bank Style) -->
             <div class="wallet-card">
+                <div class="card-chip"></div>
+                <div class="card-contactless">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="contactless-icon">
+                        <path
+                            d="M12 18.5a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13zM12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"
+                            fill="rgba(255,255,255,0.6)" />
+                    </svg>
+                </div>
+
                 <div class="wallet-balance">
-                    <span class="wallet-label">Баланс</span>
+                    <span class="wallet-label">Current Balance</span>
                     <span class="wallet-amount" id="user-balance-display">0 ₸</span>
                 </div>
-                <div class="wallet-actions">
-                    <button class="btn-topup" id="wallet-topup-btn">Пополнить</button>
+
+                <div class="card-bottom-row">
+                    <div class="card-number">**** **** **** 8800</div>
+                    <button class="btn-topup" id="wallet-topup-btn">
+                        <span style="font-size: 16px; margin-right: 4px;">+</span> Пополнить
+                    </button>
                 </div>
             </div>
 
