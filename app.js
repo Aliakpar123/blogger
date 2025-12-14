@@ -1102,57 +1102,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (listContainer) {
                 listContainer.innerHTML = '';
 
-                // Share Button (Only in 'All' category and not public view)
-                if (!isPublicView && currentCategory === 'Все') {
-                    const shareContainer = document.createElement('div');
-                    shareContainer.className = 'share-container';
-                    shareContainer.innerHTML = `
-                        <button class="share-wishlist-btn" id="share-wishlist-action">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="18" cy="5" r="3"></circle>
-                                <circle cx="6" cy="12" r="3"></circle>
-                                <circle cx="18" cy="19" r="3"></circle>
-                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-                            </svg>
-                            Поделиться желаниями
-                        </button>
-                    `;
-                    listContainer.appendChild(shareContainer);
-
-                    setTimeout(() => {
-                        document.getElementById('share-wishlist-action')?.addEventListener('click', async () => {
-                            const btn = document.getElementById('share-wishlist-action');
-                            const originalText = btn.innerHTML;
-                            btn.innerText = 'Создаем ссылку...';
-
-                            // 1. Sync to JsonBlob
-                            const uuid = await saveToCloud();
-
-                            if (!uuid) {
-                                alert("Ошибка сохранения. Попробуйте позже.");
-                                btn.innerHTML = originalText;
-                                return;
-                            }
-
-                            // 2. Generate Link
-                            const startParam = `blob_${uuid}`;
-                            const shareUrl = `https://t.me/${BOT_USERNAME}/app?startapp=${startParam}`;
-                            const text = `Мой вишлист! ✨\nПодари мне что-нибудь: ${shareUrl}`;
-
-                            // 3. Open Telegram Share
-                            const tgShareUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`;
-
-                            if (window.Telegram?.WebApp?.openTelegramLink) {
-                                window.Telegram.WebApp.openTelegramLink(tgShareUrl);
-                            } else {
-                                window.open(tgShareUrl, '_blank');
-                            }
-
-                            btn.innerHTML = originalText;
-                        });
-                    }, 0);
-                }
+                // Share Button Logic Removed as per user request
+                // Was checking if (!isPublicView && currentCategory === 'Все')
 
                 // Logic: Render User's Own Items
                 if (!isPublicView) {
