@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
             title: 'Apple iPhone 17 Pro 256GB Оранжевый',
             collected: 0,
             goal: 750000,
-            image: 'https://resources.cdn-kaspi.kz/img/m/p/hcf/h69/87295489843230.jpg?format=gallery-medium', // Mock image
+            image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/IPhone_14_Pro_vector.svg/640px-IPhone_14_Pro_vector.svg.png', // Reliable fallback
             category: 'Техника', // Restoring category usage just for this item or fallback to 'Общее'
             isPrivate: false,
             url: 'https://kaspi.kz/shop/p/apple-iphone-17-pro-256gb-oranzhevyi-145467625/?c=750000000'
