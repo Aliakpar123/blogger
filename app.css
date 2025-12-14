@@ -2990,9 +2990,9 @@ input:checked+.slider:before {
 
 .kaspi-label {
     font-size: 14px;
-    font-weight: 700;
-    color: #ff3b30;
-    /* Kaspi Red */
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+    /* Neutral White */
     margin-right: 4px;
 }
 
