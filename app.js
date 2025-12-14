@@ -1327,6 +1327,14 @@ document.addEventListener('DOMContentLoaded', () => {
             icon: '🤝',
             link: 'https://t.me/share/url?url=https://t.me/wishlist_bloggers_bot/app&text=Создай%20свой%20вишлист%20здесь!%20🎁',
             completed: false
+        },
+        {
+            id: 't_add3',
+            title: 'Добавить 3 желания',
+            reward: '+3 слота',
+            icon: '✨',
+            link: null,
+            completed: false
         }
     ];
 
@@ -1367,11 +1375,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = div.querySelector('.task-btn');
             if (!isCompleted) {
                 btn.addEventListener('click', () => {
+                    // Logic for internal checks (No link)
+                    if (task.id === 't_add3') {
+                        if (wishListItems.length >= 3) {
+                            completeTask(task, 3);
+                        } else {
+                            alert(`Нужно добавить еще ${3 - wishListItems.length} желания!`);
+                        }
+                        return;
+                    }
+
                     if (!isPending) {
                         // Step 1: Execute -> Open Link (Use TG WebApp if available)
-                        if (window.Telegram?.WebApp?.openLink) {
+                        if (window.Telegram?.WebApp?.openLink && task.link) {
                             window.Telegram.WebApp.openLink(task.link);
-                        } else {
+                        } else if (task.link) {
                             window.open(task.link, '_blank');
                         }
                         // Set Pending State
@@ -1379,24 +1397,30 @@ document.addEventListener('DOMContentLoaded', () => {
                         renderTasks(); // Re-render to show "Check"
                     } else {
                         // Step 2: Check -> Verify
-                        // Simulate verification (or just instant success for now)
                         btn.textContent = 'Проверяю...';
                         setTimeout(() => {
-                            localStorage.removeItem('task_pending_' + task.id);
-                            localStorage.setItem('task_' + task.id, 'true');
-
-                            maxSlots++;
-                            localStorage.setItem('max_slots', maxSlots);
-                            updateSlotsUI();
-                            renderTasks();
-                            alert(`Вы получили ${task.reward}!`);
-                        }, 1500); // Short delay for "checking" feel
+                            completeTask(task, 1);
+                        }, 1500);
                     }
                 });
             }
 
             container.appendChild(div);
         });
+    }
+
+    function completeTask(task, rewardAmount) {
+        localStorage.removeItem('task_pending_' + task.id);
+        localStorage.setItem('task_' + task.id, 'true');
+
+        maxSlots += rewardAmount;
+        localStorage.setItem('max_slots', maxSlots);
+        updateSlotsUI();
+        renderTasks();
+        alert(`Вы получили ${task.reward}!`);
+
+        // Confetti if available
+        if (window.confetti) window.confetti();
     }
 
     // Initial Render calls
