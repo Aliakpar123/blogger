@@ -1360,8 +1360,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!isCompleted) {
                 btn.addEventListener('click', () => {
                     if (!isPending) {
-                        // Step 1: Execute -> Open Link
-                        window.open(task.link, '_blank');
+                        // Step 1: Execute -> Open Link (Use TG WebApp if available)
+                        if (window.Telegram?.WebApp?.openLink) {
+                            window.Telegram.WebApp.openLink(task.link);
+                        } else {
+                            window.open(task.link, '_blank');
+                        }
                         // Set Pending State
                         localStorage.setItem('task_pending_' + task.id, 'true');
                         renderTasks(); // Re-render to show "Check"
