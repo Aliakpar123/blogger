@@ -2795,286 +2795,286 @@ input:checked+.slider:before {
     min-height: 250px;
 }
 
-.secret-cover {
 
-    background: repeating-linear-gradient(45deg,
-        /* Leaderboard Styles */
-        .user-card-item {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            margin-bottom: 15px;
-            padding: 15px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            cursor: pointer;
-            transition: transform 0.2s, background 0.2s;
-        }
+.user-card-item {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+}
 
-        .user-card-item:hover {
-            background: rgba(255, 255, 255, 0.08);
-        }
+.user-card-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
 
-        .user-card-item.current-user-highlight {
-            background: rgba(78, 140, 255, 0.15);
-            border: 1px solid rgba(78, 140, 255, 0.4);
-            box-shadow: 0 4px 15px rgba(78, 140, 255, 0.1);
-        }
+.user-card-item.current-user-highlight {
+    background: rgba(78, 140, 255, 0.15);
+    border: 1px solid rgba(78, 140, 255, 0.4);
+    box-shadow: 0 4px 15px rgba(78, 140, 255, 0.1);
+}
 
-        .uc-rank {
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--text-secondary);
-            width: 30px;
-            text-align: center;
-        }
+.uc-rank {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-secondary);
+    width: 30px;
+    text-align: center;
+}
 
-        .uc-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--card-border);
-        }
+.uc-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--card-border);
+}
 
-        .uc-info {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
+.uc-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
 
-        .uc-name {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-main);
-        }
+.uc-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-main);
+}
 
-        .uc-donated {
-            font-size: 13px;
-            color: var(--primary);
-            font-weight: 500;
-        }
+.uc-donated {
+    font-size: 13px;
+    color: var(--primary);
+    font-weight: 500;
+}
 
-        /* WALLET THEME (Neobank Reference Style) */
-        .wallet-card {
-            background: linear-gradient(135deg, #7F00FF 0%, #E100FF 100%);
-            /* Vibrant Violet/Pink */
-            /* Alternative: #8E2DE2 to #4A00E0 */
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            /* Deep Purple/Blue matching Ref */
-            border-radius: 28px;
-            padding: 28px;
-            margin: 20px 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            min-height: 180px;
-            box-shadow: 0 10px 40px rgba(118, 75, 162, 0.5);
-            /* Colored shadow */
-            position: relative;
-            overflow: hidden;
-            border: none;
-        }
+/* WALLET THEME (Neobank Reference Style) */
+.wallet-card {
+    background: linear-gradient(135deg, #7F00FF 0%, #E100FF 100%);
+    /* Vibrant Violet/Pink */
+    /* Alternative: #8E2DE2 to #4A00E0 */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    /* Deep Purple/Blue matching Ref */
+    border-radius: 28px;
+    padding: 28px;
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 180px;
+    box-shadow: 0 10px 40px rgba(118, 75, 162, 0.5);
+    /* Colored shadow */
+    position: relative;
+    overflow: hidden;
+    border: none;
+}
 
-        /* Abstract Shapes Overlay */
-        .wallet-card::after {
-            content: '';
-            position: absolute;
-            top: -20px;
-            right: -20px;
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            filter: blur(20px);
-            pointer-events: none;
-        }
+/* Abstract Shapes Overlay */
+.wallet-card::after {
+    content: '';
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    filter: blur(20px);
+    pointer-events: none;
+}
 
-        .wallet-card::before {
-            content: '';
-            position: absolute;
-            bottom: 20px;
-            left: -20px;
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.05);
-            filter: blur(30px);
-            pointer-events: none;
-        }
+.wallet-card::before {
+    content: '';
+    position: absolute;
+    bottom: 20px;
+    left: -20px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    filter: blur(30px);
+    pointer-events: none;
+}
 
-        .wallet-balance {
-            display: flex;
-            flex-direction: column;
-            z-index: 2;
-        }
+.wallet-balance {
+    display: flex;
+    flex-direction: column;
+    z-index: 2;
+}
 
-        .wallet-label {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.8);
-            font-weight: 500;
-            margin-bottom: 8px;
-        }
+.wallet-label {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+    margin-bottom: 8px;
+}
 
-        .wallet-amount {
-            font-size: 42px;
-            /* Huge Bold Text */
-            font-weight: 800;
-            color: #fff;
-            letter-spacing: -1px;
-            line-height: 1;
-        }
+.wallet-amount {
+    font-size: 42px;
+    /* Huge Bold Text */
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -1px;
+    line-height: 1;
+}
 
-        .wallet-actions {
-            align-self: flex-start;
-            /* Button usually left or full width in these designs */
-            width: 100%;
-            margin-top: auto;
-            z-index: 2;
-        }
+.wallet-actions {
+    align-self: flex-start;
+    /* Button usually left or full width in these designs */
+    width: 100%;
+    margin-top: auto;
+    z-index: 2;
+}
 
-        .wallet-actions .btn-topup {
-            background: #ffffff;
-            color: #764ba2;
-            /* Match Gradient Dark Tone */
-            border: none;
-            padding: 14px 20px;
-            border-radius: 16px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
-            width: 100%;
-            /* Full width for action area often looks better on mobile cards */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+.wallet-actions .btn-topup {
+    background: #ffffff;
+    color: #764ba2;
+    /* Match Gradient Dark Tone */
+    border: none;
+    padding: 14px 20px;
+    border-radius: 16px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+    width: 100%;
+    /* Full width for action area often looks better on mobile cards */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-        .wallet-actions .btn-topup:active {
-            transform: scale(0.97);
-            background: #f0f0f0;
-        }
+.wallet-actions .btn-topup:active {
+    transform: scale(0.97);
+    background: #f0f0f0;
+}
 
-        /* Remove old card elements */
-        .card-chip, .card-contactless, .card-bottom-row, .card-number {
-            display: none;
-        }
+/* Remove old card elements */
+.card-chip,
+.card-contactless,
+.card-bottom-row,
+.card-number {
+    display: none;
+}
 
-        /* PAYMENT METHODS */
-        .payment-methods-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 20px;
-        }
+/* PAYMENT METHODS */
+.payment-methods-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 20px;
+}
 
-        .pay-method-btn {
-            background: #f5f7fa;
-            border: 1px solid #e1e4e8;
-            color: #333;
-            border-radius: 12px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-        }
+.pay-method-btn {
+    background: #f5f7fa;
+    border: 1px solid #e1e4e8;
+    color: #333;
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
 
-        .pay-method-btn:hover,
-        .pay-method-btn.selected {
-            background: #ffffff;
-            border-color: #4e8cff;
-            box-shadow: 0 4px 10px rgba(78, 140, 255, 0.2);
-            transform: translateY(-2px);
-        }
+.pay-method-btn:hover,
+.pay-method-btn.selected {
+    background: #ffffff;
+    border-color: #4e8cff;
+    box-shadow: 0 4px 10px rgba(78, 140, 255, 0.2);
+    transform: translateY(-2px);
+}
 
-        .pay-method-icon {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
+.pay-method-icon {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
 
-        .pay-method-label {
-            font-size: 13px;
-            font-weight: 500;
-        }
+.pay-method-label {
+    font-size: 13px;
+    font-weight: 500;
+}
 
-        /* Apple Pay Specific */
-        .btn-apple-pay {
-            background: #000;
-            color: white;
-            width: 100%;
-            margin-top: 15px;
-            border-radius: 8px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: 600;
-        }
+/* Apple Pay Specific */
+.btn-apple-pay {
+    background: #000;
+    color: white;
+    width: 100%;
+    margin-top: 15px;
+    border-radius: 8px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 600;
+}
 
-        .btn-usdt {
-            background: #26a17b;
-            color: white;
-        }
+.btn-usdt {
+    background: #26a17b;
+    color: white;
+}
 
-        /* Main Share Button (Premium UI) */
-        .btn-share-main {
-            background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%);
-            /* Fallback/Static */
-            background-size: 200% auto;
-            color: white;
-            font-weight: 700;
-            font-size: 17px;
-            letter-spacing: 0.5px;
-            border-radius: 20px;
-            padding: 18px;
-            box-shadow: 0 10px 30px rgba(221, 36, 118, 0.4);
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            /* Bouncy */
-            animation: gradientFlow 3s ease infinite;
-        }
+/* Main Share Button (Premium UI) */
+.btn-share-main {
+    background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%);
+    /* Fallback/Static */
+    background-size: 200% auto;
+    color: white;
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: 0.5px;
+    border-radius: 20px;
+    padding: 18px;
+    box-shadow: 0 10px 30px rgba(221, 36, 118, 0.4);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    /* Bouncy */
+    animation: gradientFlow 3s ease infinite;
+}
 
-        @keyframes gradientFlow {
-            0% {
-                background-position: 0% 50%;
-            }
+@keyframes gradientFlow {
+    0% {
+        background-position: 0% 50%;
+    }
 
-            50% {
-                background-position: 100% 50%;
-            }
+    50% {
+        background-position: 100% 50%;
+    }
 
-            100% {
-                background-position: 0% 50%;
-            }
-        }
+    100% {
+        background-position: 0% 50%;
+    }
+}
 
-        .btn-share-main:active {
-            transform: scale(0.95);
-            box-shadow: 0 4px 15px rgba(221, 36, 118, 0.3);
-        }
+.btn-share-main:active {
+    transform: scale(0.95);
+    box-shadow: 0 4px 15px rgba(221, 36, 118, 0.3);
+}
 
-        /* Shine Effect */
-        .btn-share-main::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transition: 0.5s;
-        }
+/* Shine Effect */
+.btn-share-main::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: 0.5s;
+}
 
-        .btn-share-main:hover::before {
-            left: 100%;
-        }
+.btn-share-main:hover::before {
+    left: 100%;
+}
