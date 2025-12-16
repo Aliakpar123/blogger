@@ -473,19 +473,27 @@ document.addEventListener('DOMContentLoaded', () => {
             if (mode === 'donate') paymentModal.dataset.itemId = data.itemId;
 
             // Show Spend Button, Hide Methods
-            if (methodsGrid) methodsGrid.classList.add('hidden');
-            if (methodsTitle) methodsTitle.classList.add('hidden');
-            if (spendBtn) spendBtn.classList.remove('hidden');
+            if (methodsGrid) methodsGrid.style.display = 'none'; // Force hide
+            if (methodsTitle) methodsTitle.style.display = 'none'; // Force hide
+            if (spendBtn) {
+                spendBtn.classList.remove('hidden');
+                spendBtn.innerText = 'Пожертвовать'; // Simple text
+            }
             if (hintArea) hintArea.classList.add('hidden');
+
+            document.querySelector('.amount-input-wrapper').style.display = 'block'; // Ensure input is shown
+            document.querySelector('.quick-amounts').style.display = 'flex'; // Ensure chips shown
 
         } else {
             // 'topup'
             document.querySelector('#payment-modal h3').innerText = "Пополнение кошелька";
 
-            document.getElementById('payment-methods-grid').style.display = 'block';
+            if (methodsGrid) methodsGrid.style.display = 'block';
+            if (methodsTitle) methodsTitle.style.display = 'block';
+
             document.getElementById('payment-hint-area').style.display = 'block';
             const walletPayBtn = document.getElementById('pay-from-wallet-btn');
-            if (walletPayBtn) walletPayBtn.style.display = 'none'; // Default hidden
+            if (walletPayBtn) walletPayBtn.classList.add('hidden'); // Hide spend button for topup
 
             // DEV MODE -> CRYPTO DETAILS
             if (mode === 'dev') {
@@ -524,7 +532,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             } else {
                 // Restore Payment Methods if overwritten
-                document.getElementById('payment-methods-grid').innerHTML = `
+                if (methodsGrid) methodsGrid.innerHTML = `
                 <!-- Apple Pay -->
                 <div class="pay-method-btn" id="pay-method-apple">
                     <span class="pay-method-icon"></span>
@@ -547,13 +555,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (mode === 'topup') {
                 paymentTitle.innerText = 'Пополнить кошелек';
-            } else if (mode === 'donate') {
-                paymentTitle.innerText = 'Исполнить желание';
-                // Show "Pay from Wallet" option
-                if (walletPayBtn) {
-                    walletPayBtn.style.display = 'block';
-                    walletPayBtn.innerText = `Оплатить с баланса (${formatCompactNumber(userProfile.balance || 0)})`;
-                }
             } else if (mode === 'donate_dev') {
                 paymentTitle.innerText = 'Поддержать автора';
             }
