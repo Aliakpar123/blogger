@@ -1294,7 +1294,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="card-actions">
                     ${item.collected >= item.goal
                 ? `<button class="btn" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; cursor: default; box-shadow: 0 4px 15px rgba(56, 239, 125, 0.3);">Исполнено ✨</button>`
-                : `<button class="btn btn-primary pay-btn" data-id="${item.id}">Поддержать (Донат)</button>`
+                : `<button class="btn btn-primary pay-btn" data-id="${item.id}" style="font-size: 13px; padding: 10px;">Поддержать</button>`
             }
                     ${!isReadOnly ? `
                         <div class="privacy-toggle-container" title="Переключить видимость">
