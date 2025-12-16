@@ -484,16 +484,40 @@ document.addEventListener('DOMContentLoaded', () => {
             const walletPayBtn = document.getElementById('pay-from-wallet-btn');
             if (walletPayBtn) walletPayBtn.style.display = 'none'; // Default hidden
 
-            // DEV MODE Check
+            // DEV MODE -> CRYPTO DETAILS
             if (mode === 'dev') {
-                paymentTitle.innerText = 'В разработке 🛠️';
+                paymentTitle.innerText = 'Пополнить Crypto 💎';
                 document.getElementById('payment-methods-grid').innerHTML = `
-                <div style="text-align: center; padding: 20px; color: #888;">
-                    <p style="font-size: 16px; margin-bottom: 10px;">Эта функция скоро появится!</p>
-                    <p style="font-size: 13px;">Мы работаем над интеграцией платежей.</p>
+                <div style="background: rgba(255,255,255,0.08); border-radius: 16px; padding: 20px; text-align: center; margin-top: 10px;">
+                    <p style="color: #aaa; font-size: 14px; margin-bottom: 12px; font-weight: 500;">Адрес USDT (TON) / TON</p>
+                    
+                    <div style="display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; text-align: left;">
+                        <span style="font-family: monospace; color: #fff; font-size: 12px; word-break: break-all; line-height: 1.4; flex: 1;">
+                            UQCpjLd0Zyn2c1LvacxhKSa4YzOXtOKlSL5unOST2sUwX0TB
+                        </span>
+                        <button id="btn-copy-crypto" style="background: none; border: none; cursor: pointer; color: #fff; padding: 4px; display: flex; align-items: center; justify-content: center;">
+                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        </button>
+                    </div>
+                    <p style="font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 12px;">Отправляйте только TON или USDT (TON)</p>
                 </div>
             `;
                 document.getElementById('payment-hint-area').style.display = 'none';
+
+                // Bind Copy Logic
+                setTimeout(() => {
+                    const btn = document.getElementById('btn-copy-crypto');
+                    if (btn) {
+                        btn.onclick = () => {
+                            navigator.clipboard.writeText('UQCpjLd0Zyn2c1LvacxhKSa4YzOXtOKlSL5unOST2sUwX0TB')
+                                .then(() => {
+                                    const original = btn.innerHTML;
+                                    btn.innerHTML = '✅';
+                                    setTimeout(() => btn.innerHTML = original, 2000);
+                                });
+                        };
+                    }
+                }, 50);
                 return;
             } else {
                 // Restore Payment Methods if overwritten
