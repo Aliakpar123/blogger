@@ -1313,7 +1313,7 @@ document.addEventListener('DOMContentLoaded', () => {
             payBtn.addEventListener('click', (e) => {
                 e.preventDefault(); // Prevent default button behavior
                 e.stopPropagation(); // Double check
-                openModal('dev', { itemId: item.id });
+                openModal('donate', { itemId: item.id });
             });
         }
 
