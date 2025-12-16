@@ -477,7 +477,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (methodsTitle) methodsTitle.style.display = 'none'; // Force hide
             if (spendBtn) {
                 spendBtn.classList.remove('hidden');
-                spendBtn.innerText = 'Пожертвовать'; // Simple text
+                spendBtn.innerText = 'Отправить'; // User requested "Отправить"
             }
             if (hintArea) hintArea.classList.add('hidden');
 
