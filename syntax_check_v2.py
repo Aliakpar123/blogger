@@ -1,9 +1,41 @@
-аа
-import re
+import sys
 
-filename = 'main.js'
-with open(filename, 'r') as f:
-    text = f.read()
+def check_syntax(filename):
+    try:
+        with open(filename, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+    except FileNotFoundError:
+        print(f"Error: File '{filename}' not found.")
+        return
+
+    stack = []
+    pairs = {'{': '}', '(': ')', '[': ']'}
+    
+    for i, line in enumerate(lines):
+        for char in line:
+            if char in pairs:
+                stack.append((char, i + 1))
+            elif char in pairs.values():
+                if not stack:
+                    print(f"Error: Unexpected '{char}' at line {i + 1}")
+                    return
+                last_char, last_line = stack.pop()
+                if pairs[last_char] != char:
+                    print(f"Error: Mismatched '{char}' at line {i + 1}. Expected closing for '{last_char}' from line {last_line}")
+                    return
+
+    if stack:
+        char, line = stack[-1]
+        print(f"Error: Unclosed '{char}' from line {line}")
+    else:
+        print("Syntax OK: Braces/Parentheses balanced.")
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python3 syntax_check_v2.py <filename>")
+    else:
+        check_syntax(sys.argv[1])
+
 
 # Mask comments to preserve formatting/indices but ignore content
 def mask_comments(text):
