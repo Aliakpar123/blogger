@@ -347,7 +347,8 @@ body {
 
 .card-actions {
     display: flex;
-    gap: 10px;
+    gap: 6px;
+    /* Reduced gap */
     align-items: center;
     /* Ensure vertical center */
     width: 100%;
@@ -358,7 +359,8 @@ body {
     /* Take available space */
     width: auto;
     /* Allow shrinking */
-    padding: 10px;
+    padding: 8px 4px;
+    /* Minimal side padding */
     font-size: 12px;
     /* Slightly smaller for safety */
     font-weight: 600;
@@ -366,6 +368,27 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    white-space: nowrap;
+    /* Prevent wrapping */
+}
+
+/* Privacy Toggle Switch */
+.privacy-toggle-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    margin-left: 0;
+    /* Removed redundant margin */
+}
+
+.privacy-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    /* Even smaller */
+    height: 28px;
+    /* Slightly shorter */
 }
 
 .btn {
@@ -2206,17 +2229,9 @@ input:checked+.slider:before {
     color: #fff;
 }
 
-/* Privacy Toggle Switch */
-.privacy-toggle-container {
-    position: relative;
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-    /* Prevent shrinking */
-    margin-left: 8px;
-    /* Gap from button */
-}
+/* Cleaned up below */
 
+/* Privacy Toggle Switch */
 .privacy-switch {
     position: relative;
     display: inline-block;
