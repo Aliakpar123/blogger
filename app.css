@@ -1682,23 +1682,26 @@ input:checked+.slider:before {
 
 .wallet-balance {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    /* Center horizontally */
+    flex-direction: row;
+    /* Row to align side-by-side */
+    align-items: baseline;
+    /* Align base of text */
     justify-content: center;
     margin-bottom: 24px;
+    gap: 6px;
 }
 
 .wallet-balance .currency-symbol {
-    font-size: 16px;
+    font-size: 24px;
+    /* Visible beside amount */
     opacity: 0.8;
-    margin-bottom: 4px;
-    font-weight: 500;
+    margin-bottom: 0;
+    font-weight: 600;
 }
 
 #wallet-amount {
-    font-size: 48px;
-    /* HUGE */
+    font-size: 40px;
+    /* Slightly smaller */
     font-weight: 800;
     line-height: 1;
     letter-spacing: -1px;
