@@ -1281,15 +1281,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${item.isPrivate ? '🔒 ' : ''}${item.category || 'Общее'}
                 </div>
                 ${!isReadOnly ? `<button class="delete-icon-btn" data-id="${item.id}">×</button>` : ''}
-                
-                ${!isReadOnly ? `
-                    <div class="privacy-toggle-container" title="Переключить видимость">
-                        <label class="privacy-switch">
-                            <input type="checkbox" class="privacy-checkbox" data-id="${item.id}" ${!item.isPrivate ? 'checked' : ''}>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                ` : ''}
             </div>
             <div class="card-content">
                 <h3>${item.title}</h3>
