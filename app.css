@@ -1668,13 +1668,40 @@ input:checked+.slider:before {
     color: var(--text-primary);
 }
 
-.wallet-balance h2 {
-    font-size: 36px;
-    /* Much larger */
-    font-weight: 700;
-    margin: 5px 0 0 0;
-    letter-spacing: -0.5px;
-    color: var(--text-primary);
+/* Clean Wallet Card */
+.wallet-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 24px;
+    color: white;
+    margin-top: 24px;
+    box-shadow: 0 10px 20px rgba(118, 75, 162, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.wallet-balance {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Center horizontally */
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.wallet-balance .currency-symbol {
+    font-size: 16px;
+    opacity: 0.8;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+#wallet-amount {
+    font-size: 48px;
+    /* HUGE */
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -1px;
 }
 
 .mini-info p {
