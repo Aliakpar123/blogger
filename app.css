@@ -1668,6 +1668,15 @@ input:checked+.slider:before {
     color: var(--text-primary);
 }
 
+.wallet-balance h2 {
+    font-size: 36px;
+    /* Much larger */
+    font-weight: 700;
+    margin: 5px 0 0 0;
+    letter-spacing: -0.5px;
+    color: var(--text-primary);
+}
+
 .mini-info p {
     font-size: 13px;
     color: var(--text-secondary);
