@@ -2193,13 +2193,19 @@ input:checked+.slider:before {
     position: relative;
     display: flex;
     align-items: center;
+    flex-shrink: 0;
+    /* Prevent shrinking */
+    margin-left: 8px;
+    /* Gap from button */
 }
 
 .privacy-switch {
     position: relative;
     display: inline-block;
-    width: 64px;
-    height: 32px;
+    width: 52px;
+    /* Smaller width */
+    height: 34px;
+    /* Match button height roughly */
 }
 
 .privacy-switch input {
