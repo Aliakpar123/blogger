@@ -463,6 +463,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const hintArea = document.getElementById('payment-hint-area');
 
         paymentModal.classList.remove('hidden');
+        // Force reflow
+        void paymentModal.offsetWidth;
+        paymentModal.classList.add('active');
         amountInput.value = '';
 
         if (mode === 'donate' || mode === 'donate_dev') {
