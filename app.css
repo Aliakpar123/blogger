@@ -347,48 +347,41 @@ body {
 
 .card-actions {
     display: flex;
-    gap: 6px;
-    /* Reduced gap */
-    align-items: center;
-    /* Ensure vertical center */
     width: 100%;
 }
 
 .wish-card .btn {
-    flex: 1;
-    /* Take available space */
-    width: auto;
-    /* Allow shrinking */
-    padding: 8px 4px;
-    /* Minimal side padding */
-    font-size: 12px;
-    /* Slightly smaller for safety */
+    width: 100%;
+    padding: 10px;
+    font-size: 13px;
     font-weight: 600;
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    white-space: nowrap;
-    /* Prevent wrapping */
 }
 
-/* Privacy Toggle Switch */
+/* Privacy Toggle Switch - Overlay Style */
 .privacy-toggle-container {
-    position: relative;
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    border-radius: 20px;
+    padding: 2px 6px;
     display: flex;
     align-items: center;
-    flex-shrink: 0;
-    margin-left: 0;
-    /* Removed redundant margin */
+    justify-content: center;
 }
 
 .privacy-switch {
     position: relative;
     display: inline-block;
-    width: 44px;
-    /* Even smaller */
-    height: 28px;
-    /* Slightly shorter */
+    width: 40px;
+    /* Small and compact */
+    height: 24px;
 }
 
 .btn {

@@ -1281,6 +1281,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${item.isPrivate ? '🔒 ' : ''}${item.category || 'Общее'}
                 </div>
                 ${!isReadOnly ? `<button class="delete-icon-btn" data-id="${item.id}">×</button>` : ''}
+                
+                ${!isReadOnly ? `
+                    <div class="privacy-toggle-container" title="Переключить видимость">
+                        <label class="privacy-switch">
+                            <input type="checkbox" class="privacy-checkbox" data-id="${item.id}" ${!item.isPrivate ? 'checked' : ''}>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                ` : ''}
             </div>
             <div class="card-content">
                 <h3>${item.title}</h3>
@@ -1296,14 +1305,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 ? `<button class="btn" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; cursor: default; box-shadow: 0 4px 15px rgba(56, 239, 125, 0.3);">Исполнено ✨</button>`
                 : `<button class="btn btn-primary pay-btn" data-id="${item.id}" style="font-size: 13px; padding: 10px;">Донат</button>`
             }
-                    ${!isReadOnly ? `
-                        <div class="privacy-toggle-container" title="Переключить видимость">
-                            <label class="privacy-switch">
-                                <input type="checkbox" class="privacy-checkbox" data-id="${item.id}" ${!item.isPrivate ? 'checked' : ''}>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                    ` : ''}
                 </div>
             </div>
         `;
