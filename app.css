@@ -348,6 +348,24 @@ body {
 .card-actions {
     display: flex;
     gap: 10px;
+    align-items: center;
+    /* Ensure vertical center */
+    width: 100%;
+}
+
+.wish-card .btn {
+    flex: 1;
+    /* Take available space */
+    width: auto;
+    /* Allow shrinking */
+    padding: 10px;
+    font-size: 12px;
+    /* Slightly smaller for safety */
+    font-weight: 600;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn {
