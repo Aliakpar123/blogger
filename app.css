@@ -1684,8 +1684,8 @@ input:checked+.slider:before {
     display: flex;
     flex-direction: row;
     /* Row to align side-by-side */
-    align-items: baseline;
-    /* Align base of text */
+    align-items: center;
+    /* Center visually (fixes 'too low') */
     justify-content: center;
     margin-bottom: 24px;
     gap: 6px;
